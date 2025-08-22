@@ -14,7 +14,7 @@
     "**/*.{js, ts, jsx, tsx}": "eslint --fix"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.51.0",
+    "@supabase/supabase-js": "^2.56.0",
     "@tailwindcss/vite": "^4.1.12",
     "chart.js": "^4.5.0",
     "clsx": "^2.1.1",
