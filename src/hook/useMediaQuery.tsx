@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { throttle } from "@/utils/throttle";
 
+
+
 export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia(query).matches : false
