@@ -1,5 +1,23 @@
-
-
 @theme {
- --color-accent: rgb(67 56 202);
+  --color-accent: rgb(67 56 202);
+  --animate-arrow-rise: arrow-rise 1.2s ease-in-out infinite;
+}
+
+@keyframes arrow-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  60% {
+    opacity: 0.6;
+    transform: translateY(-4px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
 }
