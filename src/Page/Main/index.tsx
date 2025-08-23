@@ -1,4 +1,5 @@
 import { useMainStore } from "@/store/mainStore";
+import supabase from "@/utils/supabase";
 import Swal from "sweetalert2";
 
 function Main() {
@@ -15,6 +16,10 @@ function Main() {
         }
       >
         swal 호출
+      </button>
+
+      <button type="button" onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}>
+        구글 로그인 테스트
       </button>
     </div>
   );
