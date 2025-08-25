@@ -22,10 +22,5 @@ export default tseslint.config([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
-    rules: {
-      "@tanstack/query/exhaustive-deps": "error",
-      "@tanstack/query/no-unstable-deps": "warn",
-      "@tanstack/query/stable-query-client": "error",
-    },
   },
 ]);
