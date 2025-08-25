@@ -1,3 +1,4 @@
+import OverlayHost from "@/Components/Layout/OverlayHost";
 import Header from "@/Components/Layout/Header";
 import ScrollTopButton from "@/Components/ScrollTopButton";
 import { useRootUIShellStore } from "@/store/useRootUIShellStore";
@@ -11,6 +12,7 @@ function Root() {
 
   return (
     <div>
+      <OverlayHost />
       <ScrollTopButton isVisible={scrollTopButtonVisible} />
       <Header />
 
