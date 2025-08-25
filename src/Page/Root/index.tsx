@@ -11,9 +11,9 @@ function Root() {
   );
 
   return (
-    <div>
-      <OverlayHost />
-      <ScrollTopButton isVisible={scrollTopButtonVisible} />
+    <div className="min-h-screen w-full">
+      <OverlayHost/>
+      <ScrollTopButton isVisible = {scrollTopButtonVisible}/>
       <Header />
 
       <Outlet />

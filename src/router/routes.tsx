@@ -3,6 +3,7 @@ import Root from "@/Page/Root";
 import NotFound from '@/Page/NotFound';
 import { createBrowserRouter } from "react-router";
 import Test from "@/Page/Test";
+import Search from "@/Page/Search";
 
 export const routes = createBrowserRouter([
   {
@@ -13,10 +14,14 @@ export const routes = createBrowserRouter([
         index:true,
         Component:Main,
         loader:() => console.log('loader 위치')
-      }
-      ,{
+      },
+      {
         path:'test',
         Component:Test,
+      },
+      {
+        path:'search',
+        Component:Search
       }
     ],
   },
