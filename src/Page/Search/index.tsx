@@ -1,7 +1,9 @@
+import BookItem from "./Component/bookItem"
+
 function Search() {
   return (
-    <div>
-      
+    <div className="min-h-full">
+      <BookItem />
     </div>
   )
 }

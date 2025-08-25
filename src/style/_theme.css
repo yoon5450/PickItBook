@@ -1,6 +1,12 @@
 @theme {
   --color-accent: rgb(67 56 202);
   --animate-arrow-rise: arrow-rise 1.2s ease-in-out infinite;
+  --color-background-white: #F5F5F5FF;
+  --color-background-gray: #C6C6C6FF;
+  --color-primary: #E0AB0FFF;
+  --color-primary-black: #292927FF;
+  --color-gray-10: #F5F5F5FF;
+  --color-gray-50: #F0F0F0FF;
 }
 
 @keyframes arrow-rise {

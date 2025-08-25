@@ -9,7 +9,7 @@ function Test() {
   const openModal = useRootUIShellStore(s => s.openModal)
 
   return (
-    <div className="h-screen">
+    <div className="h-screen bg-black">
       메인페이지입니다.
       <button
         type="button"

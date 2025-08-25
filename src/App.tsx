@@ -5,7 +5,7 @@ function App() {
 
 
   return (
-    <div className='flex'>
+    <div className='flex min-h-full'>
       <RouterProvider router={routes}/>
     </div>
  

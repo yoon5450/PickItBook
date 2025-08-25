@@ -1,43 +1,38 @@
-
-
 @layer base {
-  html{
+  html {
     min-block-size: 99vh;
+    font-family: "Pretendard Variable", sans-serif;
   }
 
   body {
     margin: 0;
   }
 
-  [hidden]{
+  [hidden] {
     display: none !important;
   }
 
-  h1,h2,h3{
-    @apply text-indigo-700 leading-tight;
-  }
-
-  h1{
+  h1 {
     @apply text-2xl;
   }
 
-  h2{
+  h2 {
     @apply text-xl;
   }
 
-  h3{
-    @apply text-xl
+  h3 {
+    @apply text-xl;
   }
 
-  h3{
-    @apply text-lg
+  h3 {
+    @apply text-lg;
   }
 
-  p{
-    @apply text-slate-700 text-base leading-normal
+  p {
+    @apply text-slate-700 text-base leading-normal;
   }
 
-  button{
+  button {
     @apply disabled:cursor-not-allowed;
   }
 }

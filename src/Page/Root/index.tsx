@@ -8,8 +8,9 @@ function Root() {
   const scrollTopButtonVisible = useRootUIShellStore((s) => s.scrollTopButtonVisible);
 
   return (
-    <div>
+    <div className="min-h-screen w-full">
       <OverlayHost/>
+      
       <ScrollTopButton isVisible = {scrollTopButtonVisible}/>
       <header>
         <h1>pickitBook</h1>
