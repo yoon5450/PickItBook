@@ -1,3 +1,4 @@
+import OverlayHost from "@/Components/Layout/OverlayHost";
 import ScrollTopButton from "@/Components/ScrollTopButton";
 import { useRootUIShellStore } from "@/store/useRootUIShellStore";
 import { Outlet } from "react-router";
@@ -8,6 +9,7 @@ function Root() {
 
   return (
     <div>
+      <OverlayHost/>
       <ScrollTopButton isVisible = {scrollTopButtonVisible}/>
       <header>
         <h1>pickitBook</h1>
