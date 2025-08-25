@@ -1,10 +1,16 @@
 import { AiFillStar } from "react-icons/ai";
 import { BiBookmark } from "react-icons/bi";
+import type {BookItemType} from '@/@types/global';
 
-function BookItem() {
+type Props = {
+  item:BookItemType
+}
+
+function BookItem({item}:Props) {
   return (
     <>
-      <div className="flex justify-between items-center px-2 py-6">
+      <li className="flex justify-between items-center px-2 py-6 border-b border-gray-10" key={item.isbn13}>
+        {/* 책 이미지 */}
         <div className="flex gap-7">
           <img
             src="https://bookthumb-phinf.pstatic.net/cover/060/596/06059601.jpg?type=m1&udate=20110930"
@@ -12,16 +18,17 @@ function BookItem() {
             className="h-35"
           />
 
+          {/* 책 정보 */}
           <div className="flex flex-col gap-0.75">
             <h3 className="font-semibold text-primary-black max-w-70 line-clamp-2 cursor-pointer">
-              용의자 X의 헌신
+              <a href={`/book_detail/${item.isbn13}`}>{item.bookname}</a>
             </h3>
             <p className="text-gray-500">
               <a className="hover:underline hover:decoration-gray-500 cursor-pointer">
-                히가시노 게이고
+                {item.authors}
               </a>
             </p>
-            <p className="text-gray-500">현대문학 2009</p>
+            <p className="text-gray-500">{item.publisher} {item.publication_year}</p>
             <p>추리</p>
             <div className="flex gap-6">
               <button
@@ -40,16 +47,17 @@ function BookItem() {
           </div>
         </div>
 
+        {/* 책 설명 */}
         <p className="w-1/3 line-clamp-5">책 설명이긴 한데....</p>
 
+        {/* 아이템 버튼  */}
         <button
           type="button"
           className=" px-4 box-border h-11 bg-primary rounded-[10px] cursor-pointer"
         >
           내 서재에 추가
         </button>
-      </div>
-      <hr className="text-background-gray" />
+      </li>
     </>
   );
 }

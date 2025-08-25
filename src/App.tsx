@@ -1,15 +1,15 @@
-import { RouterProvider } from 'react-router'
-import { routes } from './router/routes'
+import { RouterProvider } from "react-router";
+import { routes } from "./router/routes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function App() {
-
+  const queryClient = new QueryClient();
 
   return (
-    <div className='flex min-h-full'>
-      <RouterProvider router={routes}/>
-    </div>
- 
-  )
+    <QueryClientProvider client={queryClient}>
+        <RouterProvider router={routes} />
+    </QueryClientProvider>
+  );
 }
 
-export default App
+export default App;
