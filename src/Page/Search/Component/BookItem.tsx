@@ -9,18 +9,18 @@ type Props = {
 function BookItem({item}:Props) {
   return (
     <>
-      <li className="flex justify-between items-center px-2 py-6 border-b border-gray-10" key={item.isbn13}>
+      <li className="flex justify-between items-center px-2 py-6 border-b border-gray-10" >
         {/* 책 이미지 */}
         <div className="flex gap-7">
           <img
-            src="https://bookthumb-phinf.pstatic.net/cover/060/596/06059601.jpg?type=m1&udate=20110930"
+            src={item.bookImageURL}
             alt="책 이미지"
             className="h-35"
           />
 
           {/* 책 정보 */}
-          <div className="flex flex-col gap-0.75">
-            <h3 className="font-semibold text-primary-black max-w-70 line-clamp-2 cursor-pointer">
+          <div className="flex flex-col gap-0.75 w-70">
+            <h3 className="font-semibold text-primary-black  line-clamp-2 cursor-pointer">
               <a href={`/book_detail/${item.isbn13}`}>{item.bookname}</a>
             </h3>
             <p className="text-gray-500">
@@ -29,7 +29,7 @@ function BookItem({item}:Props) {
               </a>
             </p>
             <p className="text-gray-500">{item.publisher} {item.publication_year}</p>
-            <p>추리</p>
+            <p>{item.class_nm}</p>
             <div className="flex gap-6">
               <button
                 type="button"

@@ -21,7 +21,7 @@ export const routes = createBrowserRouter([
       },
       {
         path:'search',
-        Component:Search
+        Component:Search,
       }
     ],
   },
