@@ -1,6 +1,9 @@
 
 
 @layer base {
+  *{
+    box-sizing: border-box;
+  }
   html{
     min-block-size: 99vh;
   }

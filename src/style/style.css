@@ -8,3 +8,7 @@
 
 @import 'tailwindcss/utilities.css' layer(utilities);
 @import './_utilities.css';
+
+* {
+  font-family: Pretendard;
+}

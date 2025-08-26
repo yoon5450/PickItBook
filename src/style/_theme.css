@@ -1,7 +1,12 @@
 @theme {
   --color-accent: rgb(67 56 202);
   --animate-arrow-rise: arrow-rise 1.2s ease-in-out infinite;
+  --animate-form-right-lg : form-right-lg 2s forwards;
+  --animate-form-right-md : form-right-md 2s forwards;
+  --animate-form-right-sm : form-right-sm 2s forwards;
 }
+
+
 
 @keyframes arrow-rise {
   0% {
@@ -20,4 +25,22 @@
     opacity: 0;
     transform: translateY(-12px);
   }
+}
+
+@keyframes form-right-lg {
+  0%   { transform: translateX(-520px); }   
+  100% { transform: translateX(0); }
+}
+@keyframes form-right-md {
+  0%   { transform: translateX(-384px); }   
+  100% { transform: translateX(0); }
+}
+@keyframes form-right-sm {
+  0%   { transform: translateX(-288px); }   
+  100% { transform: translateX(0); }
+}
+
+@keyframes form-left {
+  0%   { transform: translateX(0); }   
+  100% { transform: translateX(-520px); }
 }
