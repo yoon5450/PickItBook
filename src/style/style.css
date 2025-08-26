@@ -1,13 +1,16 @@
 @layer theme, base, components, utilities;
 
-@import 'tailwindcss/theme.css' layer(theme);
-@import './_theme.css';
+@import "tailwindcss/theme.css" layer(theme);
+@import "./_theme.css";
 
-@import 'tailwindcss/preflight.css' layer(base);
-@import './_base.css';
+@import "tailwindcss/preflight.css" layer(base);
+@import "./_base.css";
 
-@import 'tailwindcss/utilities.css' layer(utilities);
-@import './_utilities.css';
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "./_utilities.css";
+
+@import "./components/_index.css";
+
 
 * {
   font-family: Pretendard;
