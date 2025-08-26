@@ -1,11 +1,7 @@
 import { useSearchParams } from "react-router";
 import BookList from "./Component/BookList";
 import SearchForm from "./Component/SearchForm";
-import { useMemo } from "react";
-import { makeSearchURL } from "@/constant/constant";
-import { useQuery } from "@tanstack/react-query";
-import type { BookItemType } from "@/@types/global";
-import { fetcher } from "@/api/fetcher";
+import { useEffect, useMemo } from "react";
 import loaderIcon from "@/assets/loading.svg";
 import { useBookFetching } from "@/api/searchBook";
 
@@ -31,19 +27,26 @@ function Search() {
   // placeholderData : 다음 데이터 불러오기 전까지 지정할 데이터
   // staleTime : 같은 요청에 대해서 어떻게 지정할지
   // abortingsignal 관련 공부
-  const { data, isFetching } = useQuery({
-    queryKey: ["books", keyword, page],
-    queryFn: ({ signal }) =>
-      fetcher(makeSearchURL(keyword, page).href, { signal }),
-    enabled: !!keyword,
-    placeholderData: (prev) => prev,
-    select: (raw) =>
-      raw.response.docs.map((item: { doc: BookItemType }) => item.doc),
-    staleTime: 60_000,
-    gcTime: 5 * 60_000,
-  });
 
-  useBookFetching("히가시노", 1)
+  const { data, isFetching } = useBookFetching(keyword, page);
+
+  console.log(data.items);
+
+  const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
+
+  const prevDisabled = isFetching || page <= 1;
+  const nextDisabled = isFetching || page >= totalPages;
+
+  useEffect(() => {
+    if (data.total > 0) {
+      const tp = Math.max(1, Math.ceil(data.total / data.pageSize));
+      if (page > tp) {
+        const sp = new URLSearchParams(searchParams);
+        sp.set("page", String(tp));
+        setSearchParams(sp, { replace: true }); // 히스토리 오염 방지
+      }
+    }
+  }, [data.total, data.pageSize, page]);
 
   return (
     <div className="flex flex-col  items-center min-h-screen w-[1200px] bg-background-white">
@@ -60,14 +63,25 @@ function Search() {
           alt="로딩중"
         />
       ) : null}
-      <BookList bookList={data} className="w-full"/>
+      <BookList bookList={data.items} className="w-full" />
 
-      <nav className="mt-4">
-        <button onClick={() => movePage(page - 1)} disabled={page <= 1}>
+      <nav className="mt-4 flex items-center gap-2">
+        <button onClick={() => movePage(page - 1)} disabled={prevDisabled}>
           이전
         </button>
-        <span className="mx-2">{page}</span>
-        <button onClick={() => movePage(page + 1)} disabled={page >= 2}>다음</button>
+        <span className="flex gap-2 text-center">
+          <a className="cursor-pointer" onClick={() => movePage(page-2)}>{page- 2}</a> 
+          <a onClick={() => movePage(page-1)}>{page- 1}</a> 
+          <a onClick={() => movePage(page)}>{page}</a> 
+          <a onClick={() => movePage(page+1)}>{page+1}</a> 
+          <a onClick={() => movePage(page+2)}>{page+2}</a> 
+        </span>
+        <button onClick={() => movePage(page + 1)} disabled={nextDisabled}>
+          다음
+        </button>
+        <span className="ml-2 text-sm text-gray-500">
+          총 {data.total.toLocaleString()}권
+        </span>
       </nav>
     </div>
   );

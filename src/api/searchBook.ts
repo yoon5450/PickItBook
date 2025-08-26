@@ -12,7 +12,6 @@ type BooksData = {
 
 const EMPTY: BooksData = { items: [], total: 0, pageSize: 10, page: 1 };
 
-
 type Raw = {
   response?: {
     request?: { keyword?: string; pageNo?: number | string; pageSize?: number | string };
@@ -20,7 +19,6 @@ type Raw = {
     docs?: { doc: BookItemType }[];
   };
 };
-
 
 export const buildBooksKey = (keyword: string, page: number): QueryKey =>
   ["books", keyword, page] as const;
@@ -41,20 +39,18 @@ export const useBookFetching = (
     enabled = !!keyword,
     staleTime = 60_000,
     gcTime = 5 * 60_000,
-    refetchOnWindowFocus = true,
   } = opts;
 
-  const query = useQuery<Raw, Error, BookItemType[]>({
+  const query = useQuery<Raw, Error, BooksData>({
     queryKey: ["books", keyword, page],
-    queryFn: ({ signal }) =>
-      fetcher(makeSearchURL(keyword, page).href, { signal }),
+    queryFn: ({ signal }) => fetcher(makeSearchURL(keyword, page).href, { signal }),
+    placeholderData: (prev) => prev, // v5에서 keepPreviousData 역할
     enabled,
-    placeholderData: (prev) => prev,
     staleTime,
     gcTime,
-    refetchOnWindowFocus,
     select: (raw) => {
       const r = raw.response ?? {};
+      console.log(r);
       const req = r.request ?? {};
       const items = (r.docs ?? []).map((i) => i.doc);
       const total = Number(r.numFound ?? 0);
