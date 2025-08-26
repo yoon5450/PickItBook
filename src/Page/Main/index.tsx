@@ -1,6 +1,7 @@
 import { useMainStore } from "@/store/mainStore";
 import supabase from "@/utils/supabase";
 import Swal from "sweetalert2";
+import Logout from "../Auth/Components/Logout";
 
 function Main() {
   const id = useMainStore((s) => s.id);
@@ -21,6 +22,8 @@ function Main() {
       <button type="button" onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })}>
         구글 로그인 테스트
       </button>
+      <hr />
+      <Logout />
     </div>
   );
 }
