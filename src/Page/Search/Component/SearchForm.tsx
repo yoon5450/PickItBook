@@ -3,12 +3,13 @@ import { makeSearchURL } from "@/constant/constant";
 import React, { useId, useRef } from "react";
 import Swal from "sweetalert2";
 import { useSearchStore } from "../Store/useSearchStore";
-import type {BookItemType} from "@/@types/global"
+import type { BookItemType } from "@/@types/global";
+import { BiSearch } from 'react-icons/bi';
 
 function SearchForm() {
   const textareaId = useId();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const setBookList = useSearchStore((s) => s.setSearchData)
+  const setBookList = useSearchStore((s) => s.setSearchData);
 
   // 엔터 눌렀을 때 검색 동작하도록
   const handleTextKeydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -42,26 +43,34 @@ function SearchForm() {
       return;
     }
 
-    const bookRawData = await fetcher(makeSearchURL(keyword, 1).href)
-    setBookList(bookRawData.response.docs.map((item:{doc:BookItemType}) => item.doc));
+    const bookRawData = await fetcher(makeSearchURL(keyword, 1).href);
+    setBookList(
+      bookRawData.response.docs.map((item: { doc: BookItemType }) => item.doc)
+    );
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label className="a11y" id={textareaId}>
-        검색창
-      </label>
-      <textarea
-        className="resize-none text-2xl bg-white w-[90%]"
-        rows={1}
-        name={textareaId}
-        id={textareaId}
-        ref={textareaRef}
-        onInput={handleInputText}
-        onKeyDown={handleTextKeydown}
-      />
-      <button type="submit">검색</button>
-    </form>
+    <div className="w-full px-22 py-4">
+      <form
+        onSubmit={handleSubmit}
+        className="flex justify-between items-center bg-white h-14 px-4 rounded-2xl"
+      >
+        <label className="a11y" id={textareaId}>
+          검색창
+        </label>
+        <textarea
+          className="resize-none text-xl bg-white w-[90%] focus:outline-0"
+          rows={1}
+          name={textareaId}
+          id={textareaId}
+          ref={textareaRef}
+          onInput={handleInputText}
+          onKeyDown={handleTextKeydown}
+          placeholder="검색어를 입력하세요"
+        />
+        <button type="submit" className="cursor-pointer w-fit"><BiSearch height='80px'/></button>
+      </form>
+    </div>
   );
 }
 export default SearchForm;

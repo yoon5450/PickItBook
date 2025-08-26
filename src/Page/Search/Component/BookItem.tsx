@@ -1,22 +1,20 @@
 import { AiFillStar } from "react-icons/ai";
 import { BiBookmark } from "react-icons/bi";
-import type {BookItemType} from '@/@types/global';
+import type { BookItemType } from "@/@types/global";
 
 type Props = {
-  item:BookItemType
-}
+  item: BookItemType;
+};
 
-function BookItem({item}:Props) {
+function BookItem({ item }: Props) {
   return (
     <>
-      <li className="flex justify-between items-center px-2 py-6 border-b border-gray-10" >
+      <li className="flex justify-between items-center px-2 py-6 border-b border-gray-50">
         {/* 책 이미지 */}
         <div className="flex gap-7">
-          <img
-            src={item.bookImageURL}
-            alt="책 이미지"
-            className="h-35"
-          />
+          <div className="min-w-30">
+            <img src={item.bookImageURL} alt="책 이미지" className="h-35" />
+          </div>
 
           {/* 책 정보 */}
           <div className="flex flex-col gap-0.75 w-70">
@@ -28,7 +26,9 @@ function BookItem({item}:Props) {
                 {item.authors}
               </a>
             </p>
-            <p className="text-gray-500">{item.publisher} {item.publication_year}</p>
+            <p className="text-gray-500">
+              {item.publisher} {item.publication_year}
+            </p>
             <p>{item.class_nm}</p>
             <div className="flex gap-6">
               <button

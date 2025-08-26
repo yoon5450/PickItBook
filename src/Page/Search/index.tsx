@@ -6,10 +6,10 @@ function Search() {
   const bookList = useSearchStore((s) => s.searchData);
 
   return (
-    <div className="min-h-full">
+    <div className="min-h-screen w-[1200px] bg-background-white">
       <SearchForm />
 
-      <BookList bookList={bookList} />
+      <BookList bookList={bookList}/>
     </div>
   );
 }

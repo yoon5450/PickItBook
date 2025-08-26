@@ -12,11 +12,13 @@ function Root() {
 
   return (
     <div className="min-h-screen w-full">
-      <OverlayHost/>
-      <ScrollTopButton isVisible = {scrollTopButtonVisible}/>
+      <OverlayHost />
+      <ScrollTopButton isVisible={scrollTopButtonVisible} />
       <Header />
 
-      <Outlet />
+      <div className="pt-15 flex justify-center w-full">
+        <Outlet />
+      </div>
 
       <footer>
         <small> &copy; 2025 CRA</small>
