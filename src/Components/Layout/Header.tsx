@@ -148,7 +148,7 @@ const Header = () => {
           )}
         >
           <Link to="/">
-            <img className="h-[34px]" src={logo} alt="pickitbook" />
+            <img className="h-[32px]" src={logo} alt="pickitbook" />
           </Link>
         </h1>
 
@@ -161,7 +161,11 @@ const Header = () => {
               isOpen ? "opacity-0 pointer-events-none" : "opacity-100"
             )}
           >
-            <LuUserRound size={24} aria-label="로그인/마이페이지" />
+            <LuUserRound
+              className="text-primary-black"
+              size={24}
+              aria-label="로그인/마이페이지"
+            />
           </button>
           <button
             type="button"
