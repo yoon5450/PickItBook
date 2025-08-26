@@ -1,15 +1,22 @@
 import { useSearchParams } from "react-router";
 import BookList from "./Component/BookList";
 import SearchForm from "./Component/SearchForm";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import loaderIcon from "@/assets/loading.svg";
 import { useBookFetching } from "@/api/searchBook";
 import { normalizeSearchFields } from "@/utils/normalizeSearchParams";
 import type { SearchKey } from "@/@types/global";
 import tw from "@/utils/tw";
+import { scrollTop } from "@/utils/scrollFunctions";
+import PopularKeywords from "./Component/PopularKeywords";
+import { RxHamburgerMenu, RxGrid } from "react-icons/rx";
+
+
+export type listMode = "line" | "grid"
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [listMode, setListMode] = useState<listMode>("line")
 
   const keyword = (searchParams.get("keyword") ?? "").trim();
   const title = (searchParams.get("title") ?? "").trim();
@@ -33,11 +40,11 @@ function Search() {
     const anchors = [];
     for (let i = -2; i <= 2; i++) {
       const pageNum = cur + i;
-      if (cur > 0 && cur < totalPages) {
+      if (pageNum > 0 && pageNum <= totalPages) {
         anchors.push(
           <a
             className={tw("cursor-pointer", i === 0 && "font-semibold")}
-            key={"anchor" + cur}
+            key={"anchor" + pageNum}
             onClick={() => movePage(pageNum)}
           >
             {pageNum}
@@ -57,6 +64,7 @@ function Search() {
     const sp = new URLSearchParams(searchParams);
     sp.set("page", String(Math.max(1, next)));
     setSearchParams(sp);
+    scrollTop();
   };
 
   const { data, isFetching } = useBookFetching(
@@ -80,12 +88,32 @@ function Search() {
   }, [data.total, data.pageSize, page]);
 
   return (
-    <div className="flex flex-col  items-center min-h-screen w-[1200px] bg-background-white">
+    <div className="flex flex-col  items-center min-h-screen w-[1200px] px-22 bg-background-white">
       <SearchForm
         key={keyword}
         initialValue={keyword}
         onSearch={handleSearch}
       />
+
+      <div className="pb-5 px-4 flex w-full border-b border-black items-center justify-between">
+        <PopularKeywords onSearch={handleSearch} />
+        <div className="flex gap-2 items-center justify-center">
+          <button
+            className="cursor-pointer hover:bg-primary transition rounded-xl active:bg-white"
+            type="button"
+            onClick={() => setListMode('line')}
+          >
+            <RxHamburgerMenu size={32} />
+          </button>
+          <button
+            className="cursor-pointer hover:bg-primary transition rounded-xl active:bg-white"
+            type="button"
+            onClick={() => setListMode('grid')}
+          >
+            <RxGrid size={32} />
+          </button>
+        </div>
+      </div>
 
       {isFetching ? (
         <img
@@ -94,13 +122,19 @@ function Search() {
           alt="로딩중"
         />
       ) : null}
-      <BookList bookList={data.items} className="w-full" />
+
+      <BookList
+        mode={listMode}
+        bookList={data.items}
+        className="w-full"
+        onSearch={handleSearch}
+      />
 
       <nav className="mt-4 flex items-center gap-2">
         <button onClick={() => movePage(page - 1)} disabled={prevDisabled}>
           이전
         </button>
-        <span className="flex gap-2 text-center">
+        <span key={page} className="flex gap-2 text-center">
           {renderPageAnchors(page)}
         </span>
         <button onClick={() => movePage(page + 1)} disabled={nextDisabled}>

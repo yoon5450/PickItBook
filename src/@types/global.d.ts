@@ -16,4 +16,4 @@ export type BookItemType = {
 
 export type BookDocRaw = { doc: BookItemType };
 export type BookSearchRaw = { response?: { docs?: BookDocRaw[] } };
-export type SearchKey = "keyword" | "title" | "author" | "isbn13";
+export type SearchKey = "keyword" | "title" | "author" | "isbn13" | "publisher";

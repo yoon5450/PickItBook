@@ -8,8 +8,7 @@ const LIBRARY_API_KEY = import.meta.env.VITE_LIBRARY_API_KEY;
 
 export type SearchFields = Partial<Record<"keyword" | "title" | "author", string>>;
 
-
-export const makeSearchURL = (searchParams:SearchFields, pageNo: number | string = 1, pageSize:number | string = 10) => {  
+export const makeSearchURL = (searchParams:SearchFields, pageNo: number | string = 1, pageSize:number | string = 20) => {  
   const url = new URL(libSearchUrl);
   const sp = new URLSearchParams({
     authKey: LIBRARY_API_KEY,

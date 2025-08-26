@@ -15,6 +15,7 @@ function ScrollTopButton({
   className,
   ...rest
 }: ExtendProps) {
+
   const handleClick = () => {
     if (target) target.scroll({ top: 0, behavior: "smooth" });
     else window.scroll({ top: 0, behavior: "smooth" });

@@ -53,10 +53,10 @@ function SearchForm({ onSearch, initialValue, disabled }: Props) {
   }
 
   return (
-    <div className="w-full px-22 py-4">
+    <div className="w-full py-4">
       <form
         onSubmit={handleSubmit}
-        className="flex justify-between items-center bg-white h-14 px-4 rounded-2xl"
+        className="flex justify-between items-center bg-white h-14 px-4 rounded-2xl gap-2"
       >
         <select
           value={searchKey}
