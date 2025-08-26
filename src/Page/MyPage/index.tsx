@@ -1,7 +1,10 @@
 
+
 import { setFilePreview } from "@/utils/setFilePreview";
 import supabase from "@/utils/supabase";
 import { useEffect, useState } from "react";
+// import Divider from "@/Components/Divider";
+
 
 function MyPage() {
   const [profile, setProfile] = useState<{
