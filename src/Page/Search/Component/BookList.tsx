@@ -8,13 +8,13 @@ type Props = {
 };
 
 function BookList({ bookList, className }: Props) {
-
-  console.log(bookList);
   return (
     <ul className={tw("flex flex-col justify-center px-22", className)}>
-      {bookList && bookList.map((item) => (
-        <BookItem item={item} key={item.isbn13} />
-      ))}
+      {bookList && bookList.length === 0 ? (
+        <div>검색 결과가 없습니다.</div>
+      ) : (
+        bookList.map((item) => <BookItem item={item} key={item.isbn13} />)
+      )}
     </ul>
   );
 }

@@ -6,19 +6,25 @@ export const libSearchUrl = "https://data4library.kr/api/srchBooks";
 
 const LIBRARY_API_KEY = import.meta.env.VITE_LIBRARY_API_KEY;
 
+export type SearchFields = Partial<Record<"keyword" | "title" | "author", string>>;
 
-export const makeSearchURL = (keyword: string, pageNo: number | string = 1, pageSize:number | string = 10) => {
-  const searchKeyword = keyword.trim();
-  
+
+export const makeSearchURL = (searchParams:SearchFields, pageNo: number | string = 1, pageSize:number | string = 10) => {  
   const url = new URL(libSearchUrl);
-  url.search = new URLSearchParams({
+  const sp = new URLSearchParams({
     authKey: LIBRARY_API_KEY,
-    keyword: searchKeyword,
     pageNo: typeof pageNo === "number" ? pageNo.toString() : pageNo,
     pageSize: typeof pageSize === "number" ? pageSize.toString() : pageSize,
     exactMatch:"true",
-    format:"json"
-  }).toString();
+    format:"json",
+  })
+
+  for (const [k, v] of Object.entries(searchParams)) {
+    const val = v?.trim();
+    if (val) sp.set(k, val);
+  }
+
+  url.search = sp.toString();
 
   return url;
 };

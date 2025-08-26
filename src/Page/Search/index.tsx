@@ -4,11 +4,49 @@ import SearchForm from "./Component/SearchForm";
 import { useEffect, useMemo } from "react";
 import loaderIcon from "@/assets/loading.svg";
 import { useBookFetching } from "@/api/searchBook";
+import { normalizeSearchFields } from "@/utils/normalizeSearchParams";
+import type { SearchKey } from "@/@types/global";
+import tw from "@/utils/tw";
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const keyword = (searchParams.get("keyword") ?? "").trim();
+  const title = (searchParams.get("title") ?? "").trim();
+  const author = (searchParams.get("author") ?? "").trim();
+
+  const handleSearch = ({ key, value }: { key: SearchKey; value: string }) => {
+    const v = value.trim();
+    const sp = new URLSearchParams(searchParams);
+
+    // 단일 키 검색이라면, 다른 검색 키는 지워서 AND를 피함
+    ["keyword", "title", "author", "isbn13", "publisher"].forEach((k) =>
+      sp.delete(k)
+    );
+
+    if (v) sp.set(key, v);
+    sp.set("page", "1");
+    setSearchParams(sp);
+  };
+
+  const renderPageAnchors = (cur: number) => {
+    const anchors = [];
+    for (let i = -2; i <= 2; i++) {
+      const pageNum = cur + i;
+      if (cur > 0 && cur < totalPages) {
+        anchors.push(
+          <a
+            className={tw("cursor-pointer", i === 0 && "font-semibold")}
+            key={"anchor" + cur}
+            onClick={() => movePage(pageNum)}
+          >
+            {pageNum}
+          </a>
+        );
+      }
+    }
+    return anchors;
+  };
 
   const page = useMemo(() => {
     const n = Number(searchParams.get("page") ?? 1);
@@ -21,19 +59,12 @@ function Search() {
     setSearchParams(sp);
   };
 
-  // queryKey : 중복 호출 방지를 위한 쿼리키
-  // queryFn : 쿼리 함수
-  // enabled : 키워드가 없다면 호출 x
-  // placeholderData : 다음 데이터 불러오기 전까지 지정할 데이터
-  // staleTime : 같은 요청에 대해서 어떻게 지정할지
-  // abortingsignal 관련 공부
-
-  const { data, isFetching } = useBookFetching(keyword, page);
-
-  console.log(data.items);
+  const { data, isFetching } = useBookFetching(
+    normalizeSearchFields({ keyword, title, author }),
+    page
+  );
 
   const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
-
   const prevDisabled = isFetching || page <= 1;
   const nextDisabled = isFetching || page >= totalPages;
 
@@ -53,7 +84,7 @@ function Search() {
       <SearchForm
         key={keyword}
         initialValue={keyword}
-        onSearch={(v: string) => setSearchParams({ keyword: v, page: "1" })}
+        onSearch={handleSearch}
       />
 
       {isFetching ? (
@@ -70,11 +101,7 @@ function Search() {
           이전
         </button>
         <span className="flex gap-2 text-center">
-          <a className="cursor-pointer" onClick={() => movePage(page-2)}>{page- 2}</a> 
-          <a onClick={() => movePage(page-1)}>{page- 1}</a> 
-          <a onClick={() => movePage(page)}>{page}</a> 
-          <a onClick={() => movePage(page+1)}>{page+1}</a> 
-          <a onClick={() => movePage(page+2)}>{page+2}</a> 
+          {renderPageAnchors(page)}
         </span>
         <button onClick={() => movePage(page + 1)} disabled={nextDisabled}>
           다음

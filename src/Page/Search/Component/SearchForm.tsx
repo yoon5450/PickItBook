@@ -1,19 +1,18 @@
-import React, {
-  useId,
-  useRef,
-  useState,
-} from "react";
+import React, { useId, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import { BiSearch, BiFilterAlt } from "react-icons/bi";
+import type { SearchKey } from "@/@types/global";
 
 interface Props {
-  onSearch: (v: string) => void;
+  onSearch: ({ key, value }: { key: SearchKey; value: string }) => void;
   initialValue: string;
   disabled?: boolean;
 }
 
 function SearchForm({ onSearch, initialValue, disabled }: Props) {
-  const [value, setValue] = useState(initialValue)
+  const [value, setValue] = useState(initialValue);
+  const [searchKey, setSearchKey] = useState<SearchKey>("keyword");
+
   const textareaId = useId();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -50,7 +49,7 @@ function SearchForm({ onSearch, initialValue, disabled }: Props) {
       return;
     }
 
-    onSearch(v);
+    onSearch({ key: searchKey, value: v });
   }
 
   return (
@@ -59,6 +58,14 @@ function SearchForm({ onSearch, initialValue, disabled }: Props) {
         onSubmit={handleSubmit}
         className="flex justify-between items-center bg-white h-14 px-4 rounded-2xl"
       >
+        <select
+          value={searchKey}
+          onChange={(e) => setSearchKey(e.target.value as SearchKey)}
+        >
+          <option value="keyword">키워드</option>
+          <option value="title">도서명</option>
+          <option value="author">저자</option>
+        </select>
         <label className="a11y" id={textareaId}>
           검색창
         </label>
@@ -84,4 +91,3 @@ function SearchForm({ onSearch, initialValue, disabled }: Props) {
   );
 }
 export default SearchForm;
-
