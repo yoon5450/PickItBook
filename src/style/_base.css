@@ -1,5 +1,6 @@
 
 @layer base {
+
   *,
   *::before,
   *::after {
@@ -18,6 +19,7 @@
   [hidden] {
     display: none !important;
   }
+
 
   h1,
   h2,

@@ -2,6 +2,7 @@ import { useMainStore } from "@/store/mainStore";
 import { useRootUIShellStore } from "@/store/useRootUIShellStore";
 import supabase from "@/utils/supabase";
 import Swal from "sweetalert2";
+import Logout from "../Auth/Components/Logout";
 
 function Test() {
   const id = useMainStore((s) => s.id);
@@ -9,7 +10,7 @@ function Test() {
   const openModal = useRootUIShellStore(s => s.openModal)
 
   return (
-    <div className="h-screen">
+    <div className="h-screen py-40 bg-pattern">
       메인페이지입니다.
       <button
         type="button"
@@ -27,6 +28,9 @@ function Test() {
       <button type="button" className="bg-amber-300" onClick={() => openModal('imagePreview')}>
         모달 열기 테스트
       </button>
+      <div className="w-30">
+        <Logout />
+      </div>
     </div>
   );
 }
