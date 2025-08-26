@@ -45,24 +45,25 @@ function OverlayHost() {
 
   // 포탈 루트 보장
   useEffect(() => {
-    if(!document.getElementById("portal-root")){
+    if (!document.getElementById("portal-root")) {
       const el = document.createElement("div");
-        el.id = "portal-root";
-        document.body.appendChild(el)
+      el.id = "portal-root";
+      document.body.appendChild(el);
     }
-  }, [])
+  }, []);
   const portal = document.getElementById("portal-root");
-  if(!portal) return null
+  if (!portal) return null;
 
   return createPortal(
     <>
       {layerCount > 0 ? (
-        <div
-          className="fixed inset-0 z-[1000] bg-black/40 flex items-center justify-center"
-          onClick={setInitial}
-        >
-          <div className="fixed inset-0 z-[1010] flex items-center justify-center"
-          onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[1000] bg-black/40 flex items-center justify-center">
+          <div
+            className="fixed inset-0 z-[1010] flex items-center justify-center"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setInitial();
+            }}
+          >
             {Object.entries(modalMap).map(([id, state]) => {
               if (!state?.open) return null;
               const Cmp = registry[id as keyof typeof registry];

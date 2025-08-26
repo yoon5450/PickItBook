@@ -4,6 +4,12 @@
   --color-primary: #e0ab0f;
   --color-primary-black: #292929;
   --animate-arrow-rise: arrow-rise 1.2s ease-in-out infinite;
+  --color-background-white: #f5f5f5ff;
+  --color-background-gray: #c6c6c6ff;
+  --color-primary: #e0ab0fff;
+  --color-primary-black: #292927ff;
+  --color-gray-10: #f5f5f5ff;
+  --color-gray-50: #f0f0f0ff;
   --animate-arrow-up: arrow-up 2s ease-in-out infinite;
 }
 
