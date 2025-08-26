@@ -8,9 +8,11 @@ type Props = {
 };
 
 function BookList({ bookList, className }: Props) {
+
+  console.log(bookList);
   return (
     <ul className={tw("flex flex-col justify-center px-22", className)}>
-      {bookList.map((item) => (
+      {bookList && bookList.map((item) => (
         <BookItem item={item} key={item.isbn13} />
       ))}
     </ul>

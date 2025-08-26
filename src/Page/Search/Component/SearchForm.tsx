@@ -1,15 +1,21 @@
-import { fetcher } from "@/api/fetcher";
-import { makeSearchURL } from "@/constant/constant";
-import React, { useId, useRef } from "react";
+import React, {
+  useId,
+  useRef,
+  useState,
+} from "react";
 import Swal from "sweetalert2";
-import { useSearchStore } from "../Store/useSearchStore";
-import type { BookItemType } from "@/@types/global";
-import { BiSearch } from 'react-icons/bi';
+import { BiSearch, BiFilterAlt } from "react-icons/bi";
 
-function SearchForm() {
+interface Props {
+  onSearch: (v: string) => void;
+  initialValue: string;
+  disabled?: boolean;
+}
+
+function SearchForm({ onSearch, initialValue, disabled }: Props) {
+  const [value, setValue] = useState(initialValue)
   const textareaId = useId();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const setBookList = useSearchStore((s) => s.setSearchData);
 
   // 엔터 눌렀을 때 검색 동작하도록
   const handleTextKeydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -27,7 +33,9 @@ function SearchForm() {
   // 입력시 줄바꿈 동작 ( 검색어 추천 또는 추가 처리 )
   function handleInputText() {
     const cur = textareaRef.current;
+
     if (cur) {
+      setValue(cur.value);
       cur.style.height = "auto";
       cur.style.height = `${cur.scrollHeight}px`;
     }
@@ -35,18 +43,14 @@ function SearchForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const textarea = textareaRef.current;
-    const keyword = textarea ? textarea.value : "";
+    const v = value.trim();
 
-    if (!keyword) {
+    if (!v) {
       Swal.fire("검색어를 입력해주세요.");
       return;
     }
 
-    const bookRawData = await fetcher(makeSearchURL(keyword, 1).href);
-    setBookList(
-      bookRawData.response.docs.map((item: { doc: BookItemType }) => item.doc)
-    );
+    onSearch(v);
   }
 
   return (
@@ -59,18 +63,25 @@ function SearchForm() {
           검색창
         </label>
         <textarea
-          className="resize-none text-xl bg-white w-[90%] focus:outline-0"
+          className="resize-none bg-white w-[90%] focus:outline-0"
           rows={1}
           name={textareaId}
           id={textareaId}
           ref={textareaRef}
-          onInput={handleInputText}
+          onChange={handleInputText}
           onKeyDown={handleTextKeydown}
           placeholder="검색어를 입력하세요"
+          value={value}
         />
-        <button type="submit" className="cursor-pointer w-fit"><BiSearch height='80px'/></button>
+        <button type="submit" className="cursor-pointer">
+          <BiSearch size={32} />
+        </button>
+        <button type="button" disabled={disabled}>
+          <BiFilterAlt size={32} />
+        </button>
       </form>
     </div>
   );
 }
 export default SearchForm;
+

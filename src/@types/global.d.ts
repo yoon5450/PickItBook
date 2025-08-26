@@ -13,3 +13,6 @@ export type BookItemType = {
     bookDtlUrl: string;
     loan_count: string;
 };
+
+export type BookDocRaw = { doc: BookItemType };
+export type BookSearchRaw = { response?: { docs?: BookDocRaw[] } };
