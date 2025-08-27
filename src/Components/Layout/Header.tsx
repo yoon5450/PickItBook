@@ -1,4 +1,3 @@
-
 import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import tw from "@/utils/tw";
@@ -12,6 +11,7 @@ const Header = () => {
 
   const navInnerRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
   const menuItems = [
     { label: "Home", path: "/" },
@@ -42,6 +42,8 @@ const Header = () => {
     const tl = gsap.timeline({
       onComplete: () => setIsAnimating(false),
     });
+
+    timelineRef.current = tl;
 
     gsap.set(".nav", { display: "block" });
     gsap.set(".nav-inner, .menu-btn", { pointerEvents: "none" });
@@ -78,6 +80,11 @@ const Header = () => {
   };
 
   const hide = () => {
+    if (timelineRef.current) {
+      timelineRef.current.kill();
+      timelineRef.current = null;
+    }
+
     setIsAnimating(true);
     const tl = gsap.timeline({
       onComplete: () => {
@@ -85,6 +92,8 @@ const Header = () => {
         setIsOpen(false);
       },
     });
+
+    timelineRef.current = tl;
 
     gsap.set(".nav-inner, .menu-btn", { pointerEvents: "none" });
 
@@ -122,7 +131,10 @@ const Header = () => {
   };
 
   const toggleMenu = () => {
-    if (isAnimating) return;
+    if (isAnimating && timelineRef.current) {
+      timelineRef.current.kill();
+      setIsAnimating(false);
+    }
 
     if (isOpen) {
       hide();
@@ -130,6 +142,15 @@ const Header = () => {
       setIsOpen(true);
       show();
     }
+  };
+
+  const handleMenuClick = () => {
+    // 애니메이션 중이라도 즉시 메뉴 닫기
+    if (timelineRef.current) {
+      timelineRef.current.kill();
+      timelineRef.current = null;
+    }
+    hide();
   };
 
   return (
@@ -149,7 +170,7 @@ const Header = () => {
           )}
         >
           <Link to="/">
-            <img className="h-[34px]" src={logo} alt="pickitbook" />
+            <img className="h-[32px]" src={logo} alt="pickitbook" />
           </Link>
         </h1>
 
@@ -162,13 +183,16 @@ const Header = () => {
               isOpen ? "opacity-0 pointer-events-none" : "opacity-100"
             )}
           >
-            <LuUserRound size={24} aria-label="로그인/마이페이지" />
+            <LuUserRound
+              className="text-primary-black"
+              size={24}
+              aria-label="로그인/마이페이지"
+            />
           </button>
           <button
             type="button"
             ref={menuBtnRef}
             onClick={toggleMenu}
-            disabled={isAnimating}
             className={tw(
               "menu-btn relative w-6 h-[22px] flex flex-col justify-between items-end z-30"
             )}
@@ -224,10 +248,7 @@ const Header = () => {
                         isActive ? "" : ""
                       }`
                     }
-                    onClick={() => {
-                      if (isAnimating) return;
-                      hide();
-                    }}
+                    onClick={handleMenuClick}
                   >
                     <span
                       className="nav-link-text font-accent relative h-full text-5xl text-transparent md:text-[80px]"
@@ -253,4 +274,3 @@ const Header = () => {
 };
 
 export default Header;
-
