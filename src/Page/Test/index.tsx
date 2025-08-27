@@ -2,7 +2,6 @@ import { useMainStore } from "@/store/mainStore";
 import { useRootUIShellStore } from "@/store/useRootUIShellStore";
 import supabase from "@/utils/supabase";
 import Swal from "sweetalert2";
-import Logout from "../Auth/Components/Logout";
 import { useMemo, useState } from "react";
 import { KDC_CATEGORY_OPTIONS, type KdcItemType } from "@/constant/kdc";
 import Filter from "@/Components/Filter";
