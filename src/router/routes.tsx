@@ -7,6 +7,9 @@ import Search from "@/Page/Search";
 import AuthLayout from "@/Page/Auth/AuthLayout";
 import Login from "@/Page/Auth/Login";
 import { guestLoader } from "@/Page/Auth/utils/guestLoader";
+import MyPage from "@/Page/MyPage";
+
+
 
 export const routes = createBrowserRouter([
   {
@@ -34,8 +37,11 @@ export const routes = createBrowserRouter([
           { path: 'login', Component: Login, loader: guestLoader },
         ]
       },
-    ],
-  },
+      {
+        path: "mypage", 
+        Component: MyPage,  
+      },
+    ]},
+  
   { path: "*", Component: NotFound }
-
 ])
