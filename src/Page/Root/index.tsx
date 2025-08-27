@@ -17,7 +17,7 @@ function Root() {
       <ScrollTopButton isVisible={scrollTopButtonVisible} />
       <Header />
 
-      <div className="pt-15 flex justify-center w-full">
+      <div className="flex justify-center w-full">
         <Outlet />
       </div>
 

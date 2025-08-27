@@ -14,6 +14,7 @@
   --animate-form-right-lg : form-right-lg 2s forwards;
   --animate-form-right-md : form-right-md 2s forwards;
   --animate-form-right-sm : form-right-sm 2s forwards;
+  --shadow-modal: 1px 1px 5px 0 #B7B7B7;
 }
 
 
