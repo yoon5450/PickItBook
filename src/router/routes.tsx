@@ -9,7 +9,6 @@ import Login from "@/Page/Auth/Login";
 import { guestLoader } from "@/Page/Auth/utils/guestLoader";
 import MyPage from "@/Page/MyPage";
 
-
 export const routes = createBrowserRouter([
   {
     path: '/',
@@ -28,6 +27,7 @@ export const routes = createBrowserRouter([
         path: 'search',
         Component: Search
       },
+      {
         path: 'auth',
         Component: AuthLayout,
         HydrateFallback: () => <p>데이터 로딩 중...</p>,
@@ -39,8 +39,7 @@ export const routes = createBrowserRouter([
         path: "mypage", 
         Component: MyPage,  
       },
-    ],
-  },
+    ]},
+  
   { path: "*", Component: NotFound }
-
 ])

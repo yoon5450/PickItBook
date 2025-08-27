@@ -3,6 +3,7 @@ import { useRootUIShellStore } from "@/store/useRootUIShellStore";
 import supabase from "@/utils/supabase";
 import Swal from "sweetalert2";
 import Logout from "../Auth/Components/Logout";
+import Filter from "@/Components/Filter";
 
 function Test() {
   const id = useMainStore((s) => s.id);
@@ -45,6 +46,8 @@ function Test() {
       <div className="w-30">
         <Logout />
       </div>
+
+      <Filter/>
 
     </div>
   );
