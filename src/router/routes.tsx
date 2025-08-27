@@ -28,7 +28,6 @@ export const routes = createBrowserRouter([
         path: 'search',
         Component: Search
       },
-      {
         path: 'auth',
         Component: AuthLayout,
         HydrateFallback: () => <p>데이터 로딩 중...</p>,

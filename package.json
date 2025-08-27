@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint:staged": "lint-staged"
   },
   "lint-staged": {
     "**/*.{js, ts, jsx, tsx}": "eslint --fix"
@@ -21,6 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "d3-ease": "^3.0.1",
+    "fast-xml-parser": "^5.2.5",
     "gsap": "^3.13.0",
     "kind-tiger": "^1.0.1",
     "react": "^19.1.0",
