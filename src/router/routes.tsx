@@ -10,6 +10,7 @@ import { guestLoader } from "@/Page/Auth/utils/guestLoader";
 import MyPage from "@/Page/MyPage";
 
 
+
 export const routes = createBrowserRouter([
   {
     path: '/',
