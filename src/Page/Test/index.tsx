@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { KDC_CATEGORY_OPTIONS, type KdcItemType } from "@/constant/kdc";
 import Filter from "@/Components/Filter";
 
+
 function Test() {
   const id = useMainStore((s) => s.id);
   const num = useMainStore((s) => s.num);
@@ -56,9 +57,12 @@ function Test() {
         모달 전환 테스트
       </button>
 
-      <div className="w-30">
-        <Logout />
-      </div>
+
+      <button type="button" className="bg-gray-800 text-white"
+        onClick={async () => {
+          await supabase.auth.signOut()
+        }} >로그아웃</button>
+
 
       <Filter topItems={topItems} bottomItems={bottomItems} filterItem={filterItem} setFilterItem={setFilterItem} />
     </div>
