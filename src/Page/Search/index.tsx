@@ -11,17 +11,18 @@ import { scrollTop } from "@/utils/scrollFunctions";
 import PopularKeywords from "./Component/PopularKeywords";
 import { RxHamburgerMenu, RxGrid } from "react-icons/rx";
 
-
-export type listMode = "line" | "grid"
+export type listMode = "line" | "grid";
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [listMode, setListMode] = useState<listMode>("line")
+  const [listMode, setListMode] = useState<listMode>("line");
 
+  // search Params 관리
   const keyword = (searchParams.get("keyword") ?? "").trim();
   const title = (searchParams.get("title") ?? "").trim();
   const author = (searchParams.get("author") ?? "").trim();
 
+  // search callback
   const handleSearch = ({ key, value }: { key: SearchKey; value: string }) => {
     const v = value.trim();
     const sp = new URLSearchParams(searchParams);
@@ -36,6 +37,7 @@ function Search() {
     setSearchParams(sp);
   };
 
+  // 페이지 목록 렌더링
   const renderPageAnchors = (cur: number) => {
     const anchors = [];
     for (let i = -2; i <= 2; i++) {
@@ -55,11 +57,7 @@ function Search() {
     return anchors;
   };
 
-  const page = useMemo(() => {
-    const n = Number(searchParams.get("page") ?? 1);
-    return Number.isFinite(n) && n > 0 ? n : 1;
-  }, [searchParams]);
-
+  // 페이지 이동
   const movePage = (next: number) => {
     const sp = new URLSearchParams(searchParams);
     sp.set("page", String(Math.max(1, next)));
@@ -67,6 +65,12 @@ function Search() {
     scrollTop();
   };
 
+  const page = useMemo(() => {
+    const n = Number(searchParams.get("page") ?? 1);
+    return Number.isFinite(n) && n > 0 ? n : 1;
+  }, [searchParams]);
+
+  // 목록 fetching
   const { data, isFetching } = useBookFetching(
     normalizeSearchFields({ keyword, title, author }),
     page
@@ -82,39 +86,42 @@ function Search() {
       if (page > tp) {
         const sp = new URLSearchParams(searchParams);
         sp.set("page", String(tp));
-        setSearchParams(sp, { replace: true }); // 히스토리 오염 방지
+        setSearchParams(sp, { replace: true });
       }
     }
-  }, [data.total, data.pageSize, page]);
+  }, [data.total, data.pageSize, page, searchParams]);
 
   return (
-    <div className="flex flex-col  items-center min-h-screen w-[1200px] px-22 bg-background-white">
+    <div className="flex flex-col items-center min-h-screen w-[1200px] px-22 bg-background-white">
+      {/* 검색창 */}
       <SearchForm
         key={keyword}
         initialValue={keyword}
         onSearch={handleSearch}
       />
 
+      {/* 추천 검색어, 목록 모드 변경 버튼 */}
       <div className="pb-5 px-4 flex w-full border-b border-black items-center justify-between">
         <PopularKeywords onSearch={handleSearch} />
         <div className="flex gap-2 items-center justify-center">
           <button
             className="cursor-pointer hover:bg-primary transition rounded-xl active:bg-white"
             type="button"
-            onClick={() => setListMode('line')}
+            onClick={() => setListMode("line")}
           >
             <RxHamburgerMenu size={32} />
           </button>
           <button
             className="cursor-pointer hover:bg-primary transition rounded-xl active:bg-white"
             type="button"
-            onClick={() => setListMode('grid')}
+            onClick={() => setListMode("grid")}
           >
             <RxGrid size={32} />
           </button>
         </div>
       </div>
 
+      {/* 로딩중 아이콘 */}
       {isFetching ? (
         <img
           className="h-25 text-center p-1 inline"
@@ -123,6 +130,7 @@ function Search() {
         />
       ) : null}
 
+      {/* 목록 */}
       <BookList
         mode={listMode}
         bookList={data.items}
@@ -130,6 +138,7 @@ function Search() {
         onSearch={handleSearch}
       />
 
+      {/* 목록 네비게이션 */}
       <nav className="mt-4 flex items-center gap-2">
         <button onClick={() => movePage(page - 1)} disabled={prevDisabled}>
           이전
