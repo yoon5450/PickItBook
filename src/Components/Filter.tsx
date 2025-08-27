@@ -1,4 +1,3 @@
-import { KDC_CATEGORY_OPTIONS, type KdcItemType } from "@/constant/kdc";
 import tw from "@/utils/tw";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import { IoIosArrowForward } from "react-icons/io";
