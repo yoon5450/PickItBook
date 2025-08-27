@@ -9,7 +9,8 @@ type ProfileStore = {
   created_at: string | null,
   fetchUser: (id: string) => Promise<void>
   profileStatus: 'idle' | 'loading' | 'ready' | 'error'
-  resetProfile: () => void
+  resetProfile: () => void,
+  setNickname: (nickname: string) => void;
 }
 
 export const useProfileStore = create<ProfileStore>((set, _get, store) => (
@@ -35,7 +36,9 @@ export const useProfileStore = create<ProfileStore>((set, _get, store) => (
       if (data) set({ id, email, nickname, profile_image, created_at, profileStatus: 'ready' })
 
     },
-    resetProfile: () => set(store.getInitialState())
+    resetProfile: () => set(store.getInitialState()),
+
+    setNickname: (nickname: string) => set({ nickname }),
   })
 )
 
