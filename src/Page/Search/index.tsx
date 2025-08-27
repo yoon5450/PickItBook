@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router";
+import { Outlet, useSearchParams } from "react-router";
 import BookList from "./Component/BookList";
 import SearchForm from "./Component/SearchForm";
 import { useEffect, useMemo, useState } from "react";
@@ -99,6 +99,8 @@ function Search() {
         initialValue={keyword}
         onSearch={handleSearch}
       />
+
+      <Outlet/>
 
       {/* 추천 검색어, 목록 모드 변경 버튼 */}
       <div className="pb-5 px-4 flex w-full border-b border-black items-center justify-between">
