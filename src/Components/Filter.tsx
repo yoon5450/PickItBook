@@ -1,41 +1,40 @@
 import { KDC_CATEGORY_OPTIONS, type KdcItemType } from "@/constant/kdc";
 import tw from "@/utils/tw";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { AiOutlineMinusCircle } from "react-icons/ai";
 import { throttle } from "@/utils/throttle";
 import gsap from "gsap";
 
-interface Props {
-  mode?: "row" | "col";
-  className?: string;
+interface filterType {
+  code: string;
+  value: string;
 }
 
-function Filter({ mode, className }: Props) {
+interface Props {
+  topItems: filterType[];
+  bottomItems?: filterType[] | null;
+  className?: string;
+  filterItem: { top?: filterType; bottom?: filterType } | null;
+  setFilterItem: React.Dispatch<React.SetStateAction<any>>;
+}
+
+function Filter({
+  topItems,
+  bottomItems,
+  filterItem,
+  className,
+  setFilterItem,
+}: Props) {
   // 상위(두 번째 자리가 0) / 하위 분리
-  const kdc = useMemo<KdcItemType[]>(
-    () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] === "0"),
-    []
-  );
-  const dtlKdc = useMemo<KdcItemType[]>(
-    () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] !== "0"),
-    []
-  );
 
-  // 선택 상태
-  const [selectedTop, setSelectedTop] = useState<KdcItemType | null>(null);
-  const [selectedBottom, setSelectedBottom] = useState<KdcItemType | null>(
-    null
-  );
-
-  const filteredDetail = useMemo<KdcItemType[]>(
-    () =>
-      selectedTop
-        ? dtlKdc.filter((o) => o.code[0] === selectedTop.code[0])
-        : dtlKdc,
-    [selectedTop, dtlKdc]
-  );
+  const filteredDetail = useMemo<filterType[]>(() => {
+    if (!bottomItems || !filterItem?.top) return [];
+    return filterItem?.top
+      ? bottomItems.filter((o) => o.code[0] === filterItem?.top?.code[0])
+      : bottomItems;
+  }, [filterItem?.top?.code, bottomItems]);
 
   const listRef = useRef<HTMLUListElement | null>(null);
   const cursorRef = useRef<HTMLDivElement | null>(null);
@@ -61,28 +60,28 @@ function Filter({ mode, className }: Props) {
 
   useLayoutEffect(() => {
     const onResize = () => {
-      if (selectedBottom) updateCursorFor(selectedBottom.code);
+      if (filterItem?.bottom) updateCursorFor(filterItem?.bottom.code);
     };
     const throttled = throttle(onResize, 200);
     window.addEventListener("resize", throttled);
     return () => window.removeEventListener("resize", throttled);
-  }, [selectedBottom]);
+  }, [filterItem]);
 
   useLayoutEffect(() => {
-    if (selectedBottom) updateCursorFor(selectedBottom.code);
+    if (filterItem?.bottom) updateCursorFor(filterItem.bottom.code);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBottom, filteredDetail.length]);
+  }, [filterItem, filteredDetail.length]);
 
   return (
     <div
       className={tw(
-        "flex gap-10 bg-[#F5F4F1] p-10 rounded-md shadow",
+        "flex gap-10 bg-[#F5F4F1] p-10 rounded-md shadow w-fit",
         className
       )}
     >
       <div className="flex flex-col gap-6">
-        {kdc.map((item) => {
-          const selected = selectedTop?.code === item.code;
+        {topItems.map((item) => {
+          const selected = filterItem?.top?.code === item.code;
 
           return (
             <button
@@ -93,8 +92,7 @@ function Filter({ mode, className }: Props) {
               )}
               type="button"
               onClick={() => {
-                setSelectedTop(item);
-                setSelectedBottom(null);
+                setFilterItem({ top: item });
                 // 왜 height를 0으로 줘도 정상적으로 안 가는 것 같을까 ?????
                 if (cursorRef.current)
                   gsap.set(cursorRef.current, { autoAlpha: 0, height: 0 });
@@ -113,7 +111,7 @@ function Filter({ mode, className }: Props) {
         })}
       </div>
 
-      {selectedTop && (
+      {filterItem?.top && filteredDetail.length > 0 && (
         <ul ref={listRef} className="flex flex-col gap-6 relative ">
           {/* 움직이는 커서 */}
           <div
@@ -128,10 +126,10 @@ function Filter({ mode, className }: Props) {
           <label
             className={tw(
               "block text-sm font-bold mb-1 text-[16px]",
-              !selectedBottom && "text-primary"
+              !filterItem.bottom && "text-primary"
             )}
           >
-            {selectedTop?.value} 전체
+            {filterItem.top?.value} 전체
           </label>
           {filteredDetail.map((item) => (
             <li>
@@ -142,21 +140,25 @@ function Filter({ mode, className }: Props) {
                 }}
                 className={tw(
                   "flex min-w-44 justify-between items-center transition",
-                  item.code === selectedBottom?.code && "text-primary"
+                  item.code === filterItem.bottom?.code && "text-primary"
                 )}
                 onClick={() => {
-                  if (item.code !== selectedBottom?.code) {
-                    setSelectedBottom(item);
+                  if (item.code !== filterItem.bottom?.code) {
+                    setFilterItem({ ...filterItem, bottom: item });
                     requestAnimationFrame(() => updateCursorFor(item.code));
                   } else {
-                    setSelectedBottom(null);
+                    setFilterItem({ top: filterItem.top });
                     if (cursorRef.current)
-                      gsap.set(cursorRef.current, { autoAlpha: 0, height: 0, duration:0.28});
+                      gsap.set(cursorRef.current, {
+                        autoAlpha: 0,
+                        height: 0,
+                        duration: 0.28,
+                      });
                   }
                 }}
               >
                 {item.value}
-                {item.code === selectedBottom?.code ? (
+                {item.code === filterItem.bottom?.code ? (
                   <AiOutlineMinusCircle size={18} />
                 ) : (
                   <AiOutlinePlusCircle size={18} />
