@@ -1,13 +1,20 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import tw from "@/utils/tw";
 import logo from "/pickitbook_logo.svg";
 import { useMenuStore } from "../../store/useMenuStore";
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import { LuUserRound } from "react-icons/lu";
+import { useProfileStore } from "@/store/useProfileStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import supabase from "@/utils/supabase";
 
 const Header = () => {
   const { isOpen, isAnimating, setIsOpen, setIsAnimating } = useMenuStore();
+  const [openLoginModal, setOpenLoginModal] = useState(false);
+  const profileImage = useProfileStore((s) => s.profile_image);
+  const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
 
   const navInnerRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
@@ -139,6 +146,7 @@ const Header = () => {
     if (isOpen) {
       hide();
     } else {
+      setOpenLoginModal(false);
       setIsOpen(true);
       show();
     }
@@ -153,12 +161,27 @@ const Header = () => {
     hide();
   };
 
+  const handleLoginModal = () => {
+    setOpenLoginModal((prev) => !prev);
+  };
+
+  const handleLogout = async () => {
+    // alert창 띄워주기?
+    setOpenLoginModal(false);
+    await supabase.auth.signOut();
+  };
+
+  const handleLogin = () => {
+    setOpenLoginModal(false);
+    navigate("/auth/login");
+  };
+
   return (
     <>
       {/* Header */}
       <header
         className={tw(
-          "backdrop-blur-lg bg-[rgba(255,255,255,0.15)] fixed top-0 left-0 w-full z-20 px-5 md:px-[50px] h-[60px] flex items-center justify-center border-b transition-all duration-700",
+          "backdrop-blur-lg bg-[rgba(255,255,255,0.15)] fixed top-0 left-0 w-full z-40 px-5 md:px-[50px] h-[60px] flex items-center justify-center border-b transition-all duration-700",
           isOpen ? "border-transparent bg-transparent" : "border-primary-black"
         )}
       >
@@ -173,6 +196,29 @@ const Header = () => {
             <img className="h-[32px]" src={logo} alt="pickitbook" />
           </Link>
         </h1>
+        {openLoginModal ? (
+          <>
+            {user ? (
+              <button
+                type="button"
+                className="z-100 absolute top-12 right-1/28 bg-pattern w-fit px-8 py-3 border rounded-xl shadow-modal"
+                onClick={handleLogout}
+              >
+                로그아웃
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="z-100 absolute top-12 right-1/28 bg-pattern w-fit px-8 py-3 border rounded-xl shadow-modal"
+                onClick={handleLogin}
+              >
+                로그인
+              </button>
+            )}
+          </>
+        ) : (
+          ""
+        )}
 
         {/* Hamburger Menu Button */}
         <div className="flex gap-3 fixed right-5 md:right-[50px]">
@@ -182,19 +228,29 @@ const Header = () => {
               "transition-opacity duration-700",
               isOpen ? "opacity-0 pointer-events-none" : "opacity-100"
             )}
+            onClick={handleLoginModal}
           >
-            <LuUserRound
-              className="text-primary-black"
-              size={24}
-              aria-label="로그인/마이페이지"
-            />
+            {user ? (
+              <img
+                className="w-7 h-7 rounded-full"
+                src={profileImage ? profileImage : "/profile_default.png"}
+                alt="프로필"
+              />
+            ) : (
+              <LuUserRound
+                className="text-primary-black"
+                size={24}
+                aria-label="로그인/마이페이지"
+              />
+            )}
           </button>
+
           <button
             type="button"
             ref={menuBtnRef}
             onClick={toggleMenu}
             className={tw(
-              "menu-btn relative w-6 h-[22px] flex flex-col justify-between items-end z-30"
+              "menu-btn relative w-6 h-[22px] flex flex-col justify-between items-end z-40"
             )}
             aria-label="Toggle menu"
           >
@@ -225,7 +281,7 @@ const Header = () => {
       </header>
 
       {/* Navigation Overlay */}
-      <nav className="nav fixed left-0 top-0 w-full h-screen z-10 hidden">
+      <nav className="nav fixed left-0 top-0 w-full h-screen z-30 hidden">
         <div
           ref={navInnerRef}
           className="nav-inner w-full h-full pointer-events-none"

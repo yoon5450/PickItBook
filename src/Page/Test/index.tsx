@@ -2,7 +2,6 @@ import { useMainStore } from "@/store/mainStore";
 import { useRootUIShellStore } from "@/store/useRootUIShellStore";
 import supabase from "@/utils/supabase";
 import Swal from "sweetalert2";
-import Logout from "../Auth/Components/Logout";
 
 function Test() {
   const id = useMainStore((s) => s.id);
@@ -42,9 +41,12 @@ function Test() {
         모달 전환 테스트
       </button>
 
-      <div className="w-30">
-        <Logout />
-      </div>
+
+      <button type="button" className="bg-gray-800 text-white"
+        onClick={async () => {
+          await supabase.auth.signOut()
+        }} >로그아웃</button>
+
 
     </div>
   );

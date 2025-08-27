@@ -10,8 +10,3 @@
 @import "./_utilities.css";
 
 @import "./components/_index.css";
-
-
-* {
-  font-family: Pretendard;
-}
