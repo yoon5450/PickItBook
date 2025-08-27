@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import tw from "@/utils/tw";
 import logo from "/pickitbook_logo.svg";
-import { useMenuStore } from "../../store/useMenuStore";
+import { useMenuStore } from "@/store/useMenuStore";
 import { Link, NavLink, useNavigate } from "react-router";
 import { LuUserRound } from "react-icons/lu";
 import { useProfileStore } from "@/store/useProfileStore";

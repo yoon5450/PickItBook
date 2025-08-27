@@ -22,7 +22,6 @@ function ScrollTopButton({
   className,
   ...rest
 }: ExtendProps) {
-
   const [autoVisible, setAutoVisible] = useState(false);
   const [bottomPosition, setBottomPosition] = useState(30);
 
@@ -54,7 +53,6 @@ function ScrollTopButton({
     window.addEventListener("scroll", toggleVisibility);
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, [showOnScroll, scrollThreshold, footerHeight]);
-
 
   const handleClick = () => {
     if (target) target.scroll({ top: 0, behavior: "smooth" });
