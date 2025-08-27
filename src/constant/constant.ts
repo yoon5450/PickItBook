@@ -27,3 +27,5 @@ export const makeSearchURL = (searchParams:SearchFields, pageNo: number | string
 
   return url;
 };
+
+

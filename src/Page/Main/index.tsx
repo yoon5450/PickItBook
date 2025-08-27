@@ -1,7 +1,7 @@
 import PickImage from "/main/pick_img.png";
 import ItImage from "/main/it_img.png";
 import BookImage from "/main/book_img.png";
-import Hero from "./Components/hero";
+import Hero from "./Components/Hero";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LoopSlider from "./Components/LoopSlider";
