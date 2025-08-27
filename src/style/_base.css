@@ -1,5 +1,5 @@
-@layer base {
 
+@layer base {
   *,
   *::before,
   *::after {
@@ -13,12 +13,15 @@
   body {
     margin: 0;
     padding: 0;
+    background-image: url("public/background.jpg");
+    background-repeat: repeat;
+    background-size: auto;
+    background-attachment: fixed;
   }
 
   [hidden] {
     display: none !important;
   }
-
 
   h1,
   h2,
@@ -49,6 +52,7 @@
   button {
     @apply disabled:cursor-not-allowed cursor-pointer;
   }
+
 
   a {
     font-size: 100%;

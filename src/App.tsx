@@ -2,6 +2,7 @@ import { RouterProvider } from "react-router";
 import { routes } from "./router/routes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+
 function App() {
   const queryClient = new QueryClient();
 

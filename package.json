@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint:staged": "lint-staged"
   },
   "lint-staged": {
     "**/*.{js, ts, jsx, tsx}": "eslint --fix"
@@ -21,6 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "d3-ease": "^3.0.1",
+    "fast-xml-parser": "^5.2.5",
     "gsap": "^3.13.0",
     "kind-tiger": "^1.0.1",
     "react": "^19.1.0",
@@ -28,6 +30,7 @@
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-router": "^7.8.1",
+    "react-router-dom": "^7.8.2",
     "sweetalert2": "^11.22.4",
     "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",
@@ -40,11 +43,13 @@
     "@tanstack/eslint-plugin-query": "^5.83.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^8.36.0",
     "@typescript-eslint/parser": "^8.36.0",
     "@vitejs/plugin-react": "^4.6.0",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

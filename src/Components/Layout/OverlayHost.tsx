@@ -4,11 +4,13 @@ import { useEffect } from "react";
 import React from "react";
 import ImagePreview from "../ImagePreview";
 import { createPortal } from "react-dom";
+import UserModal from "../UserModal";
 
 // 추가하고 싶은 컴포넌트가 있다면 여기에 추가
 // 코드 스플리팅
 const registry = {
   imagePreview: ImagePreview,
+  userModal: UserModal
 } satisfies Record<string, React.ComponentType<HTMLElement>>;
 
 function OverlayHost() {
