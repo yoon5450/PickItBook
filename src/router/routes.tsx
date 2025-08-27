@@ -27,7 +27,10 @@ export const routes = createBrowserRouter([
       },
       {
         path: 'search',
-        Component: Search
+        Component: Search,
+        children:[
+          {path:'detail', }
+        ]
       },
       {
         path: 'auth',

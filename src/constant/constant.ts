@@ -28,4 +28,7 @@ export const makeSearchURL = (searchParams:SearchFields, pageNo: number | string
   return url;
 };
 
+export const bookInfoURL = `http://data4library.kr/api/srchDtlList?authKey=${LIBRARY_API_KEY}&isbn13=9788972757573displayInfo=age `
+
+
 

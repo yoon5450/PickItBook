@@ -23,7 +23,7 @@ const Header = () => {
   const menuItems = [
     { label: "Home", path: "/" },
     { label: "Random Roulette", path: "/roulette" },
-    { label: "Book Search", path: "/book-search" },
+    { label: "Book Search", path: "/search" },
     { label: "Bookshelf", path: "/bookshelf" },
     { label: "Mypage", path: "/mypage" },
   ];

@@ -92,7 +92,7 @@ function Search() {
   }, [data.total, data.pageSize, page, searchParams]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen w-[1200px] px-22 bg-background-white">
+    <div className="flex flex-col items-center min-h-screen w-[1200px] px-22 bg-background-white pt-15">
       {/* 검색창 */}
       <SearchForm
         key={keyword}
