@@ -59,3 +59,11 @@ export type BookDetailData = {
   loan: { total: LoanTotal | null; byAge: LoanAge[] };
   meta: { isbn13?: string; displayInfo?: string };
 };
+
+interface MissionItemType {
+  missionType: string;
+  missionTitle: string;
+  score: number;
+  userArchiveRate: number;
+  isComplete: boolean;
+}
