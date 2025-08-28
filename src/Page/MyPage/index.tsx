@@ -5,22 +5,20 @@ import supabase from "@/utils/supabase";
 import { useEffect, useRef, useState } from "react";
 import { usePageEnterAnimation } from "./usePageEnterAnimation";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useProfileStore } from "@/store/useProfileStore";
 
 
 
 
 function MyPage() {
-  const [profile, setProfile] = useState<{
-    nickname: string;
-    email: string;
-    created_at: string;
-    profile_image: string | null;
-  } | null>(null);
+
+  const { email, nickname, created_at, profile_image, fetchUser, setNickname } = useProfileStore();
 
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null >(null);
+  
 
   const hrRef = useRef<HTMLHRElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -38,24 +36,13 @@ function MyPage() {
   usePageEnterAnimation(bannerRef, hrRef, avatarRef, formRef);
 
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("user_profile")
-        .select("nickname, email, created_at,profile_image")
-        .eq("id", user.id)
-        .single();
-
-      if (!error && data) {
-        setProfile(data);
-      }
-    };
-
-    fetchProfile();
-  }, []);
+useEffect(() => {
+  const init = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) fetchUser(user.id);
+  };
+  init();
+}, [fetchUser]);
 
 
   const handleSave = async (e: React.FormEvent) => {
@@ -65,19 +52,11 @@ function MyPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    if (profile?.nickname) {
-      const { error } = await supabase
-        .from("user_profile")
-        .update({ nickname: profile.nickname })
-        .eq("id", user.id);
+if (nickname) {
+  await supabase.from("user_profile").update({ nickname }).eq("id", user.id);
+  fetchUser(user.id);
+}
 
-      if (error) {
-        alert("닉네임 업데이트 실패");
-        console.error(error);
-        return;
-      }
-    }
-    
   if (password || passwordConfirm) {
     if (password !== passwordConfirm) {
       alert("비밀번호가 일치하지 않습니다.");
@@ -167,14 +146,14 @@ async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
       return;
     }
 
-    setProfile(prev => prev ? { ...prev, profile_image: cacheBustedUrl } : prev);
+    fetchUser(user.id);
 
     alert("프로필 이미지가 변경되었습니다.");
   }
 }
   
   return (
-    <div className="flex flex-col items-center w-full min-h-screen bg-white">
+    <div className="flex flex-col items-center w-full min-h-scree">
 
        <div  ref={bannerRef}
        className="w-screen h-[474px] bg-center bg-cover bg-[url('/banner.jpg')]" 
@@ -184,7 +163,7 @@ async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
       <label 
       ref={avatarRef} 
       htmlFor="profile-upload" 
-      className="cursor-pointer relative"
+      className="cursor-pointer relative "
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         onMouseMove={(e) =>
@@ -192,9 +171,9 @@ async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
         }
       >
         <img
-          src={imagePreview || profile?.profile_image || "https://via.placeholder.com/250"}
+          src={imagePreview || profile_image || "https://via.placeholder.com/250"}
           alt="Profile"
-          className="-mt-[80px] w-[250px] h-[250px] rounded-full border-2 border-[var(--color-primary)] overflow-hidden mx-auto transition-transform duration-300 ease-in-out hover:scale-105"
+          className="-mt-[80px] w-[250px] h-[250px] rounded-full border-2 bg-white border-[var(--color-primary)] overflow-hidden mx-auto transition-transform duration-300 ease-in-out hover:scale-105"
         />
       </label>
       {showTooltip && (
@@ -234,20 +213,16 @@ async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
             <input
               type="text"
               placeholder="닉네임을 입력하세요"
-              value={profile?.nickname ?? ""}
-              onChange={(e) =>
-                setProfile((prev) =>
-                  prev ? { ...prev, nickname: e.target.value } : prev
-                )
-              }
+              value={nickname ?? ""}
+              onChange={(e) => setNickname(e.target.value)}
               className="w-full h-[50px] border border-[var(--color-primary-black)] rounded px-4"
             />
           </div>
           <div className="flex flex-col w-[400px]">
             <label className="text-base mb-1.5">가입일</label>
             <span className="h-[50px] flex items-center px-2 text-gray-700 border border-[var(--color-background-gray)] rounded bg-gray-200">
-              {profile?.created_at
-                ? new Date(profile.created_at).toLocaleDateString()
+              {created_at
+                ? new Date(created_at).toLocaleDateString()
                 : "-"}
             </span>
           </div>
@@ -255,7 +230,7 @@ async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
         <div className="flex flex-col w-full">
           <label className="text-base mb-1.5">Email</label>
           <span className="h-[50px] flex items-center px-2 text-gray-700 border border-[var(--color-background-gray)] rounded bg-gray-200">
-            {profile?.email ?? "-"}
+            {email ?? "-"}
           </span>
         </div>
         <div className="flex gap-[50px]">
