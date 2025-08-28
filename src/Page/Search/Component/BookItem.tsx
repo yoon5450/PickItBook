@@ -27,7 +27,7 @@ function BookItem({ item, onSearch, mode = "line" }: Props) {
       <li className={modeLiClass[mode]}>
         {/* 책 이미지 */}
 
-        <NavLink to={`./book_detail/${item.isbn13}`}>
+        <NavLink to={`/book_detail/?isbn13=${item.isbn13}`}>
           <img
             src={item.bookImageURL}
             alt="책 이미지"
@@ -39,7 +39,7 @@ function BookItem({ item, onSearch, mode = "line" }: Props) {
         {mode === "line" && (
           <div className="flex flex-col gap-0.75 w-70">
             <h3 className="font-semibold text-primary-black  line-clamp-2 cursor-pointer">
-              <NavLink to={`./book_detail/?isbn13=${item.isbn13}`}>
+              <NavLink to={`/book_detail/?isbn13=${item.isbn13}`}>
                 {item.bookname}
               </NavLink>
             </h3>
@@ -90,7 +90,7 @@ function BookItem({ item, onSearch, mode = "line" }: Props) {
         {mode === "grid" && (
           <div className="w-full">
             <h3 className="font-semibold text-primary-black  line-clamp-2 cursor-pointer">
-              <NavLink to={`./book_detail/?isbn13=${item.isbn13}`}>
+              <NavLink to={`/book_detail/?isbn13=${item.isbn13}`}>
                 {item.bookname}
               </NavLink>
             </h3>

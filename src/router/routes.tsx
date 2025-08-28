@@ -27,7 +27,9 @@ export const routes = createBrowserRouter([
       {
         path: "search",
         Component: Search,
-        children: [{ path: "book_detail", Component: BookDetail }],
+      },
+      { path: "book_detail", 
+        Component: BookDetail 
       },
       {
         path: "auth",

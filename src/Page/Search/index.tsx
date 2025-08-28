@@ -3,7 +3,7 @@ import BookList from "./Component/BookList";
 import SearchForm from "./Component/SearchForm";
 import { useEffect, useMemo, useState } from "react";
 import loaderIcon from "@/assets/loading.svg";
-import { useBookFetching } from "@/api/searchBook";
+import { useBookFetching } from "@/api/useBookFetching";
 import { normalizeSearchFields } from "@/utils/normalizeSearchParams";
 import type { SearchKey } from "@/@types/global";
 import tw from "@/utils/tw";
@@ -92,7 +92,7 @@ function Search() {
   }, [data.total, data.pageSize, page, searchParams]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen w-[1200px] px-22 bg-background-white pt-15">
+    <div className="flex flex-col items-center min-h-screen w-[1200px] px-8 bg-background-white pt-15">
       {/* 검색창 */}
       <SearchForm
         key={keyword}

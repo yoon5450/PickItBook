@@ -17,3 +17,45 @@ export type BookItemType = {
 export type BookDocRaw = { doc: BookItemType };
 export type BookSearchRaw = { response?: { docs?: BookDocRaw[] } };
 export type SearchKey = "keyword" | "title" | "author" | "isbn13" | "publisher";
+
+import type { BookItemType } from "@/@types/global";
+
+// 공용 유틸 타입
+type OneOrMany<T> = T | T[];
+type Maybe<T> = T | null | undefined;
+
+// 원시 필드들
+export type LoanCountRaw = { ranking?: string | number; name?: string; loanCnt?: string | number };
+export type AgeRaw = { ranking?: string | number; name?: string; loanCnt?: string | number };
+
+export type DetailNodeRaw = {
+  book?: OneOrMany<
+    BookItemType & { description?: string; publication_date?: string; isbn?: string }
+  > | null;
+};
+
+export type LoanInfoNodeRaw =
+  | { Total?: LoanCountRaw | null }
+  | { ageResult?: OneOrMany<{ age?: OneOrMany<AgeRaw> | null } | null> | null };
+
+export type BookDetailRaw = {
+  response?: {
+    request?: {
+      isbn13?: string;
+      loaninfoYN?: "Y" | "N";
+      displayInfo?: string;
+    };
+    detail?: OneOrMany<DetailNodeRaw> | null;
+    loanInfo?: OneOrMany<LoanInfoNodeRaw> | null;
+  };
+  errMsg?: string;
+};
+
+export type LoanTotal = { ranking: number; name: string; loanCnt: number };
+export type LoanAge   = { ranking: number; name: string; loanCnt: number };
+
+export type BookDetailData = {
+  book: (BookItemType & { description?: string; publication_date?: string; isbn?: string }) | null;
+  loan: { total: LoanTotal | null; byAge: LoanAge[] };
+  meta: { isbn13?: string; displayInfo?: string };
+};
