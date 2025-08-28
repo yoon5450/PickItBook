@@ -54,11 +54,10 @@ const Hero = () => {
         pin: true,
         pinSpacing: true,
         anticipatePin: 1,
-        markers: true,
+        //markers: true,
       },
     });
 
-    // 3. 순차적 애니메이션
     tl.to(leftBox, { x: "-70%", duration: 3, ease: "power2.inOut" }, 0)
       .to(rightBox, { x: "70%", duration: 3, ease: "power2.inOut" }, 0)
       .to(
