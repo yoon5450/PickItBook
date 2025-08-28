@@ -153,7 +153,7 @@ async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
 }
   
   return (
-    <div className="flex flex-col items-center w-full min-h-screen bg-white">
+    <div className="flex flex-col items-center w-full min-h-scree">
 
        <div  ref={bannerRef}
        className="w-screen h-[474px] bg-center bg-cover bg-[url('/banner.jpg')]" 
@@ -163,7 +163,7 @@ async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
       <label 
       ref={avatarRef} 
       htmlFor="profile-upload" 
-      className="cursor-pointer relative"
+      className="cursor-pointer relative "
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         onMouseMove={(e) =>
@@ -173,7 +173,7 @@ async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
         <img
           src={imagePreview || profile_image || "https://via.placeholder.com/250"}
           alt="Profile"
-          className="-mt-[80px] w-[250px] h-[250px] rounded-full border-2 border-[var(--color-primary)] overflow-hidden mx-auto transition-transform duration-300 ease-in-out hover:scale-105"
+          className="-mt-[80px] w-[250px] h-[250px] rounded-full border-2 bg-white border-[var(--color-primary)] overflow-hidden mx-auto transition-transform duration-300 ease-in-out hover:scale-105"
         />
       </label>
       {showTooltip && (
