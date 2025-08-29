@@ -98,7 +98,7 @@ function BookDataPatition({ data }: Props) {
                 <path
                   d="M1 1L8.5 8L16 1"
                   stroke="black"
-                  stroke-opacity="0.57"
+                  strokeOpacity="0.57"
                 />
               </svg>
             </button>

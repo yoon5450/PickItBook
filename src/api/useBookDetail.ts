@@ -1,6 +1,8 @@
 import { makeBookDetailURL } from "@/constant/constant";
 import { useQuery } from "@tanstack/react-query";
 import { fetcher } from "./fetcher";
+import { ensureArray } from "@/utils/ensureArray";
+
 export type BookDetailRaw = {
   response?: {
     request: {
@@ -80,13 +82,12 @@ export type BookDetailData = {
       name: string;
       loanCnt: number;
     };
-    ageResult: {
-      age: {
+    ageResult: 
+      {
         ranking: number;
         name: string;
         loanCnt: number;
-      };
-    }[];
+      }[];
   };
   meta: {
     isbn13: string;
@@ -134,9 +135,12 @@ export function useBookDetail(
       const total = loanInfo?.find(
         (x): x is { Total: LoanTotal } => "Total" in x
       )?.Total;
-      const ageResult = loanInfo?.find(
+
+      const ageData = loanInfo?.find(
         (x): x is { ageResult: { age: LoanAge }[] } => "ageResult" in x
-      )?.ageResult;
+      )?.ageResult ;
+
+      const ageResult = ensureArray(ageData).map((item) => item.age)
 
       if (!total || !ageResult) {
         throw new Error("Loan info is missing or incomplete.");

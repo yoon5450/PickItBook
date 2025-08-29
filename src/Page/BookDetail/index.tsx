@@ -69,7 +69,7 @@ const DUMMY_REVIEWS: ReviewItem[] = [
 ];
 
 function BookDetail() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const isbn13 = searchParams.get("isbn13") ?? "";
 
   // init
@@ -82,6 +82,8 @@ function BookDetail() {
     isFetching: BookDetailFetching,
     error,
   } = useBookDetail(isbn13);
+
+  console.log(BookDetailData);
 
   if (error) console.error(error);
 

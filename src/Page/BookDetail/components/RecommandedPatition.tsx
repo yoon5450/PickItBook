@@ -8,7 +8,6 @@ interface Props {
 
 // 나중에 Swiper로 대체
 function RecommandedPatition({ data, isFetching }: Props) {
-  console.log(data, isFetching);
   return (
     <>
       {isFetching && data?.[0] ? (
