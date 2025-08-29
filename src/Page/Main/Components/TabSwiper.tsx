@@ -1,5 +1,3 @@
-// components/TabSwiper.tsx
-import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode } from "swiper/modules";
 import type { SwiperClass } from "swiper/react";
@@ -10,7 +8,7 @@ interface TabSwiperProps {
   isMobile: boolean;
   onCategoryChange: (category: CategoryKey) => void;
   tabContainerRef: React.RefObject<HTMLDivElement | null>;
-  tabIndicatorRef:React.RefObject<HTMLDivElement | null>;
+  tabIndicatorRef: React.RefObject<HTMLDivElement | null>;
   onSwiper: (swiper: SwiperClass) => void;
 }
 
@@ -21,7 +19,7 @@ export const TabSwiper = ({
   tabContainerRef,
   tabIndicatorRef,
   onSwiper,
-}:TabSwiperProps) => {
+}: TabSwiperProps) => {
   return (
     <div
       ref={tabContainerRef}
@@ -50,19 +48,21 @@ export const TabSwiper = ({
         resistanceRatio={0.85}
         className={`tab-swiper ${!isMobile ? "flex w-full" : "overflow-visible"}`}
         wrapperClass={isMobile ? "!flex !items-center" : undefined}
-        style={isMobile ? { 
-          paddingLeft: '16px', 
-          paddingRight: '16px',
-          overflow: 'visible' 
-        } : undefined}
+        style={
+          isMobile
+            ? {
+                paddingLeft: "16px",
+                paddingRight: "16px",
+                overflow: "visible",
+              }
+            : undefined
+        }
       >
         {Object.entries(BOOK_CATEGORIES).map(([key, config]) => (
           <SwiperSlide
             key={key}
             className={`${
-              isMobile 
-                ? "!w-auto !flex-shrink-0 !h-auto"
-                : "flex-1 min-w-0"
+              isMobile ? "!w-auto !flex-shrink-0 !h-auto" : "flex-1 min-w-0"
             }`}
           >
             <button

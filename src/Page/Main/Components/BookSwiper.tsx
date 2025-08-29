@@ -15,7 +15,7 @@ export const BookSwiper = ({
   books,
   activeCategory,
   onSwiper,
-}:BookSwiperProps) => {
+}: BookSwiperProps) => {
   return (
     <div className="book-slider-container relative">
       <Swiper
@@ -29,7 +29,7 @@ export const BookSwiper = ({
         }}
         breakpoints={{
           0: {
-            slidesPerView: 4,
+            slidesPerView: 3,
             spaceBetween: 18,
           },
           768: {
@@ -40,9 +40,7 @@ export const BookSwiper = ({
         className="book-swiper"
       >
         {books.map((book, bookIndex) => (
-          <SwiperSlide
-            key={book.isbn13 || `${activeCategory}-${bookIndex}`}
-          >
+          <SwiperSlide key={book.isbn13 || `${activeCategory}-${bookIndex}`}>
             <div className="group cursor-pointer">
               <div className="aspect-[3/4] mb-3 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl overflow-hidden border border-gray-200 bg-gray-50">
                 {book.bookImageURL ? (
@@ -57,7 +55,7 @@ export const BookSwiper = ({
                       if (parent && !parent.querySelector(".fallback")) {
                         const fallback = document.createElement("div");
                         fallback.className =
-                          "fallback w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100";
+                          "fallback w-full h-full flex items-center justify-center bg-gray-300";
                         fallback.innerHTML = `
                           <div class="text-center p-4">
                             <div class="text-xs text-gray-600 font-medium">${book.class_nm}</div>
