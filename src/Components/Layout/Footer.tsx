@@ -3,7 +3,7 @@ import slido from "/icons/slido_logo.svg";
 
 function Footer() {
   return (
-    <div className="bg-pattern flex items-center justify-between border-t h-[80px] border-primary-black px-5 md:px-[50px] bg-">
+    <div className="bg-pattern flex items-center justify-between border-t h-[80px] border-primary-black px-5 md:px-[50px]">
       <p className="text-base text-primary-black">
         Copyright © 2025 PickItBook. All rights Reserved
       </p>
