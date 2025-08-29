@@ -9,7 +9,7 @@
 export const setFilePreview = (
   imageFile: File,
   setterCallback: (
-    value: React.SetStateAction<string | null | undefined>
+    value: React.SetStateAction<string | null>
   ) => void
 ) => {
   if (imageFile) {

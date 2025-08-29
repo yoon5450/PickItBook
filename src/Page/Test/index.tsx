@@ -2,12 +2,27 @@ import { useMainStore } from "@/store/mainStore";
 import { useRootUIShellStore } from "@/store/useRootUIShellStore";
 import supabase from "@/utils/supabase";
 import Swal from "sweetalert2";
+import { useMemo, useState } from "react";
+import { KDC_CATEGORY_OPTIONS, type KdcItemType } from "@/constant/kdc";
+import Filter from "@/Components/Filter";
+
 
 function Test() {
   const id = useMainStore((s) => s.id);
   const num = useMainStore((s) => s.num);
   const openModal = useRootUIShellStore((s) => s.openModal);
+  const [filterItem, setFilterItem] = useState<{top?:KdcItemType, bottom?:KdcItemType} | null>(null)
 
+    const topItems = useMemo<KdcItemType[]>(
+      () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] === "0"),
+      []
+    );
+    const bottomItems = useMemo<KdcItemType[]>(
+      () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] !== "0"),
+      []
+    );
+
+  console.log(filterItem);
   return (
     <div className="h-screen py-40 bg-pattern">
       메인페이지입니다.
@@ -48,6 +63,7 @@ function Test() {
         }} >로그아웃</button>
 
 
+      <Filter topItems={topItems} bottomItems={bottomItems} filterItem={filterItem} setFilterItem={setFilterItem} />
     </div>
   );
 }

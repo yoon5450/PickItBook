@@ -27,3 +27,23 @@ export const makeSearchURL = (searchParams:SearchFields, pageNo: number | string
 
   return url;
 };
+
+export const bookInfoURL = `http://data4library.kr/api/srchDtlList`
+
+export function makeBookDetailURL(
+  isbn13: string,
+  opts?: { loaninfoYN?: "Y" | "N"; displayInfo?: "age" | "sex" | "region" }
+): URL {
+  const url = new URL(bookInfoURL);
+  const sp = new URLSearchParams({
+    authKey: LIBRARY_API_KEY,
+    isbn13,
+    loaninfoYN: opts?.loaninfoYN ?? "Y",
+    displayInfo: opts?.displayInfo ?? "age",
+    format: "json",
+  });
+  url.search = sp.toString();
+  return url;
+}
+
+
