@@ -267,7 +267,25 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+  v_bookmark_books: {
+    Row: {
+      bookmark_id: number
+      bookmarked_at: string
+      user_id: string
+      book_id: number
+      book_created_at: string
+      isbn13: string
+      book_name: string
+      image_url: string
+      authors: string
+      publisher: string
+      publication_date: string
+      description: string
+      library_code: string
+      keyword: string
+    }
+  }
+      // [_ in never]: never
     }
     Functions: {
       [_ in never]: never

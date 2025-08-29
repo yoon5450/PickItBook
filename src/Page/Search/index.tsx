@@ -1,9 +1,9 @@
-import { useSearchParams } from "react-router";
+import { Outlet, useSearchParams } from "react-router";
 import BookList from "./Component/BookList";
 import SearchForm from "./Component/SearchForm";
 import { useEffect, useMemo, useState } from "react";
 import loaderIcon from "@/assets/loading.svg";
-import { useBookFetching } from "@/api/searchBook";
+import { useBookFetching } from "@/api/useBookFetching";
 import { normalizeSearchFields } from "@/utils/normalizeSearchParams";
 import type { SearchKey } from "@/@types/global";
 import tw from "@/utils/tw";
@@ -92,13 +92,15 @@ function Search() {
   }, [data.total, data.pageSize, page, searchParams]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen w-[1200px] px-22 bg-background-white">
+    <div className="flex flex-col items-center min-h-screen w-[1200px] px-8 bg-background-white pt-15">
       {/* 검색창 */}
       <SearchForm
         key={keyword}
         initialValue={keyword}
         onSearch={handleSearch}
       />
+
+      <Outlet/>
 
       {/* 추천 검색어, 목록 모드 변경 버튼 */}
       <div className="pb-5 px-4 flex w-full border-b border-black items-center justify-between">

@@ -1,6 +1,6 @@
 import Main from "@/Page/Main";
 import Root from "@/Page/Root";
-import NotFound from '@/Page/NotFound';
+import NotFound from "@/Page/NotFound";
 import { createBrowserRouter } from "react-router";
 import Test from "@/Page/Test";
 import Search from "@/Page/Search";
@@ -8,40 +8,47 @@ import AuthLayout from "@/Page/Auth/AuthLayout";
 import Login from "@/Page/Auth/Login";
 import { guestLoader } from "@/Page/Auth/utils/guestLoader";
 import MyPage from "@/Page/MyPage";
-
+import Library from "@/Page/Library";
+import BookDetail from "@/Page/BookDetail";
 
 
 export const routes = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     Component: Root,
     children: [
       {
         index: true,
         Component: Main,
-        loader: () => console.log('loader 위치')
+        loader: () => console.log("loader 위치"),
       },
       {
-        path: 'test',
+        path: "test",
         Component: Test,
       },
       {
-        path: 'search',
-        Component: Search
+        path: "search",
+        Component: Search,
+      },
+      { path: "book_detail", 
+        Component: BookDetail 
       },
       {
-        path: 'auth',
+        path: "auth",
         Component: AuthLayout,
         HydrateFallback: () => <p>데이터 로딩 중...</p>,
-        children: [
-          { path: 'login', Component: Login, loader: guestLoader },
-        ]
+        children: [{ path: "login", Component: Login, loader: guestLoader }],
       },
       {
-        path: "mypage", 
-        Component: MyPage,  
+        path: "mypage",
+        Component: MyPage,
+      },
+      {
+        path: "library",
+        Component : Library,
       },
     ]},
   
   { path: "*", Component: NotFound }
 ])
+

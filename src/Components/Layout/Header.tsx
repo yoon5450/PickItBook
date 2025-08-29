@@ -23,7 +23,7 @@ const Header = () => {
   const menuItems = [
     { label: "Home", path: "/" },
     { label: "Random Roulette", path: "/roulette" },
-    { label: "Book Search", path: "/book-search" },
+    { label: "Book Search", path: "/search" },
     { label: "Bookshelf", path: "/bookshelf" },
     { label: "Mypage", path: "/mypage" },
   ];
@@ -181,7 +181,7 @@ const Header = () => {
       {/* Header */}
       <header
         className={tw(
-          "backdrop-blur-lg bg-[rgba(255,255,255,0.15)] fixed top-0 left-0 w-full z-40 px-5 md:px-[50px] h-[60px] flex items-center justify-center border-b transition-all duration-700",
+          "backdrop-blur-lg bg-[hsla(0,0%,100%,0)] fixed top-0 left-0 w-full z-40 px-5 md:px-[50px] h-[60px] flex items-center justify-center border-b transition-all duration-700",
           isOpen ? "border-transparent bg-transparent" : "border-primary-black"
         )}
       >
