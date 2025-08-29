@@ -3,6 +3,7 @@ import { BiBookmark } from "react-icons/bi";
 import type { BookItemType, SearchKey } from "@/@types/global";
 import type { listMode } from "..";
 import tw from "@/utils/tw";
+import { NavLink } from "react-router-dom";
 
 type Props = {
   item: BookItemType;
@@ -26,19 +27,21 @@ function BookItem({ item, onSearch, mode = "line" }: Props) {
       <li className={modeLiClass[mode]}>
         {/* 책 이미지 */}
 
-        <a href={`/book_detail/${item.isbn13}`}>
+        <NavLink to={`/book_detail/?isbn13=${item.isbn13}`}>
           <img
             src={item.bookImageURL}
             alt="책 이미지"
             className={tw("h-35", modeImgClass[mode])}
           />
-        </a>
+        </NavLink>
 
         {/* 책 정보  (모드에 따라 전환)*/}
         {mode === "line" && (
           <div className="flex flex-col gap-0.75 w-70">
             <h3 className="font-semibold text-primary-black  line-clamp-2 cursor-pointer">
-              <a href={`/book_detail/${item.isbn13}`}>{item.bookname}</a>
+              <NavLink to={`/book_detail/?isbn13=${item.isbn13}`}>
+                {item.bookname}
+              </NavLink>
             </h3>
             <p className="text-gray-500">
               {/* TODO: 링크 검색 개선 */}
@@ -87,7 +90,9 @@ function BookItem({ item, onSearch, mode = "line" }: Props) {
         {mode === "grid" && (
           <div className="w-full">
             <h3 className="font-semibold text-primary-black  line-clamp-2 cursor-pointer">
-              <a href={`/book_detail/${item.isbn13}`}>{item.bookname}</a>
+              <NavLink to={`/book_detail/?isbn13=${item.isbn13}`}>
+                {item.bookname}
+              </NavLink>
             </h3>
             <div className="flex justify-between">
               <div>
