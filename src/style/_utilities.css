@@ -23,3 +23,7 @@
     white-space: initial;
   }
 }
+
+@utility bg-pattern {
+  background: url("/bg_pattern.png") repeat;
+}
