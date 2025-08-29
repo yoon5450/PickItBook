@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 export function useAuthInit() {
   // auth
+  // 명시적 selector
   const setAuth = useAuthStore((s) => s.setAuth);
   const setAuthStatus = useAuthStore((s) => s.setAuthStatus);
   const setLastProvider = useAuthStore((s) => s.setLastProvider);

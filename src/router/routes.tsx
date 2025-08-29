@@ -8,6 +8,7 @@ import AuthLayout from "@/Page/Auth/AuthLayout";
 import Login from "@/Page/Auth/Login";
 import { guestLoader } from "@/Page/Auth/utils/guestLoader";
 import MyPage from "@/Page/MyPage";
+import Roulette from "@/Page/Roulette";
 
 
 
@@ -38,10 +39,15 @@ export const routes = createBrowserRouter([
         ]
       },
       {
-        path: "mypage", 
-        Component: MyPage,  
+        path: "mypage",
+        Component: MyPage,
       },
-    ]},
-  
+      {
+        path: 'roulette',
+        Component: Roulette,
+      },
+    ]
+  },
+
   { path: "*", Component: NotFound }
 ])
