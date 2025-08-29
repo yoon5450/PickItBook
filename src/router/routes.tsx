@@ -10,6 +10,8 @@ import { guestLoader } from "@/Page/Auth/utils/guestLoader";
 import MyPage from "@/Page/MyPage";
 import Library from "@/Page/Library";
 import BookDetail from "@/Page/BookDetail";
+import Roulette from "@/Page/Roulette";
+
 
 
 export const routes = createBrowserRouter([
@@ -30,8 +32,9 @@ export const routes = createBrowserRouter([
         path: "search",
         Component: Search,
       },
-      { path: "book_detail", 
-        Component: BookDetail 
+      {
+        path: "book_detail",
+        Component: BookDetail
       },
       {
         path: "auth",
@@ -45,10 +48,15 @@ export const routes = createBrowserRouter([
       },
       {
         path: "library",
-        Component : Library,
+        Component: Library,
       },
-    ]},
-  
+      {
+        path: 'roulette',
+        Component: Roulette,
+      },
+    ]
+  },
+
   { path: "*", Component: NotFound }
 ])
 
