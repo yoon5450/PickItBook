@@ -60,28 +60,10 @@ const Hero = () => {
 
     tl.to(leftBox, { x: "-70%", duration: 3, ease: "power2.inOut" }, 0)
       .to(rightBox, { x: "70%", duration: 3, ease: "power2.inOut" }, 0)
-      .to(
-        title,
-        { opacity: 0, scale: 0.8, duration: 0.5, ease: "power2.out" },
-        "-=1.5"
-      )
-      .to(
-        ".text-effect",
-        { opacity: 1, duration: 2.5, stagger: 0.5, ease: "power2.out" },
-        2.5
-      )
+      .to(title,{ opacity: 0, scale: 0.8, duration: 0.5, ease: "power2.out" },"-=1.5")
+      .to(".text-effect", { opacity: 1, duration: 2.5, stagger: 0.5, ease: "power2.out" }, 2.5)
       .to(linePath, { strokeDashoffset: 0, duration: 5, ease: "none" }, 4)
-      .to(
-        logoPaths,
-        {
-          strokeDashoffset: 0,
-          fill: "#E0AB0F",
-          duration: 1.5,
-          stagger: 0.3,
-          ease: "none",
-        },
-        8
-      );
+      .to(logoPaths, { strokeDashoffset: 0, fill: "#E0AB0F", duration: 1.5, stagger: 0.3, ease: "none",}, 8);
 
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
