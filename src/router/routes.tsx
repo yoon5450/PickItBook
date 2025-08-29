@@ -8,7 +8,9 @@ import AuthLayout from "@/Page/Auth/AuthLayout";
 import Login from "@/Page/Auth/Login";
 import { guestLoader } from "@/Page/Auth/utils/guestLoader";
 import MyPage from "@/Page/MyPage";
+import Library from "@/Page/Library";
 import BookDetail from "@/Page/BookDetail";
+
 
 export const routes = createBrowserRouter([
   {
@@ -41,8 +43,12 @@ export const routes = createBrowserRouter([
         path: "mypage",
         Component: MyPage,
       },
-    ],
-  },
+      {
+        path: "library",
+        Component : Library,
+      },
+    ]},
+  
+  { path: "*", Component: NotFound }
+])
 
-  { path: "*", Component: NotFound },
-]);
