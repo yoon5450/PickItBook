@@ -42,21 +42,21 @@ function BookDataPatition({ data }: Props) {
         <img src={book.bookImageURL} alt="" className="h-70" />
         <div className="flex flex-col gap-1">
           <h1 className="text-black">{book.bookname}</h1>
-          <p className="flex gap-2 text-[#606060]">
+          <div className="flex gap-2 text-[#606060]">
             {book.authors.split(";").map((item) => (
               <span key={item}>{item}</span>
             ))}
             <span>{book.publisher}</span>
             <span>{book.publication_year}</span>
-          </p>
-          <p className="flex items-center gap-2">
+          </div>
+          <div className="flex items-center gap-2">
             <RatingStars value={4.5} max={5} size={32} showValue />
             <span className="text-[#606060]">4평가</span>{" "}
             <span className="text-[#606060]">2리뷰</span>
-          </p>
-          <p className="py-3">
+          </div>
+          <div className="py-3">
             <span className="line-clamp-5 text-black">{book.description}</span>
-            <p>
+            <div>
               <button type="button" className="flex items-center gap-2">
                 더보기
                 <svg
@@ -69,12 +69,12 @@ function BookDataPatition({ data }: Props) {
                   <path
                     d="M1 1L8.5 8L16 1"
                     stroke="black"
-                    stroke-opacity="0.57"
+                    strokeOpacity="0.57"
                   />
                 </svg>
               </button>
-            </p>
-          </p>
+            </div>
+          </div>
 
           <p className="flex gap-2 items-center">
             <span>장르 구분</span>

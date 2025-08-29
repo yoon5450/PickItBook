@@ -8,7 +8,7 @@ interface Props{
 function MisstionPartition({data}:Props) {
   return (
     <div className="">
-      <MissionList items={data} />
+      <MissionList items={data}  />
     </div>
   );
 }

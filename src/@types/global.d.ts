@@ -67,3 +67,14 @@ interface MissionItemType {
   userArchiveRate: number;
   isComplete: boolean;
 }
+
+export interface ReviewItem {
+  id: number;
+  create_at: string;
+  isbn: string;
+  user_id: string;
+  title: string;
+  content: string;
+  score: number;
+  imgSrc: string;
+}

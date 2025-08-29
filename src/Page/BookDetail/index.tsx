@@ -1,13 +1,15 @@
 import { useBookDetail } from "@/api/useBookDetail";
 import { useSearchParams } from "react-router-dom";
-import BookDataPartition from "./component/BookDataPartition";
-import RecommandedPatition from "./component/RecommandedPatition";
-import PartitionBase from "./component/PartitionBase";
-import RatingStars from "@/Components/RatingStar";
-import UserScorePatition from "./component/UserScorePartition";
-import MissionList from "./component/MissionList";
-import type { MissionItemType } from "@/@types/global";
-import MisstionPartition from "./component/MisstionPartition";
+import BookDataPartition from "./components/BookDataPartition";
+import RecommandedPatition from "./components/RecommandedPatition";
+import PartitionBase from "./components/PartitionBase";
+import UserScorePatition from "./components/UserScorePartition";
+import type { MissionItemType, ReviewItem } from "@/@types/global";
+import MisstionPartition from "./components/MisstionPartition";
+import ReviewWritePartition from "./components/ReviewWritePartition";
+import ReviewListPartition from "./components/ReviewListPartition";
+import { useEffect } from "react";
+import { scrollTop } from "@/utils/scrollFunctions";
 
 const DUMMY_MISSIONS: MissionItemType[] = [
   {
@@ -33,9 +35,47 @@ const DUMMY_MISSIONS: MissionItemType[] = [
   },
 ];
 
+const DUMMY_REVIEWS: ReviewItem[] = [
+  {
+    id: 1,
+    create_at: "2025-08-29",
+    isbn: "12121212",
+    user_id: "윤대웅",
+    title: "안녕",
+    content: "디지몬",
+    score: 4.5,
+    imgSrc: "http://image.aladin.co.kr/product/15848/6/cover/k622533431_1.jpg",
+  },
+  {
+    id: 2,
+    create_at: "2025-08-29",
+    isbn: "12121212",
+    user_id: "윤대웅",
+    title: "안녕",
+    content: "디지몬",
+    score: 4.0,
+    imgSrc: "http://image.aladin.co.kr/product/15848/6/cover/k622533431_1.jpg",
+  },
+  {
+    id: 3,
+    create_at: "2025-08-29",
+    isbn: "12121212",
+    user_id: "윤대웅",
+    title: "안녕",
+    content: "슛",
+    score: 3.5,
+    imgSrc: "http://image.aladin.co.kr/product/15848/6/cover/k622533431_1.jpg",
+  },
+];
+
 function BookDetail() {
   const [searchParams, setSearchParams] = useSearchParams();
   const isbn13 = searchParams.get("isbn13") ?? "";
+
+  // init
+  useEffect(() => {
+    scrollTop();
+  }, []);
 
   const {
     data: BookDetailData,
@@ -68,15 +108,19 @@ function BookDetail() {
         </PartitionBase>
 
         <PartitionBase title="관련 미션">
-          <MisstionPartition data={DUMMY_MISSIONS}/>
+          <MisstionPartition data={DUMMY_MISSIONS} />
         </PartitionBase>
 
         <PartitionBase title="유저 평점">
           <UserScorePatition />
         </PartitionBase>
 
-        <PartitionBase title="리뷰">
+        <PartitionBase title="리뷰 작성">
+          <ReviewWritePartition />
+        </PartitionBase>
 
+        <PartitionBase title="리뷰 목록">
+          <ReviewListPartition data={DUMMY_REVIEWS} />
         </PartitionBase>
       </div>
     </div>
