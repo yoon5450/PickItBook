@@ -13,11 +13,9 @@ function FilterModal({ category, isOpen }: Props) {
     const target = e.target as HTMLButtonElement;
     setSelectCategory(target.textContent)
   }
-  // active 됐을때 active 클래스를 어케 넣지? -> active대신 focus로 주면 된다
-
-  // useEffect(() => {
-  //   console.log(selectCategory)
-  // }, [selectCategory])
+  useEffect(() => {
+    console.log(selectCategory)
+  }, [selectCategory])
 
   return (
     <>
