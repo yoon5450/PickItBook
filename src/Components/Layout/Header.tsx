@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import tw from "@/utils/tw";
 import logo from "/pickitbook_logo.svg";
-import { useMenuStore } from "./store/useMenuStore";
+import { useMenuStore } from "@/store/useMenuStore";
 import { Link, NavLink, useNavigate } from "react-router";
 import { LuUserRound } from "react-icons/lu";
 import { useProfileStore } from "@/store/useProfileStore";
@@ -12,8 +12,8 @@ import supabase from "@/utils/supabase";
 const Header = () => {
   const { isOpen, isAnimating, setIsOpen, setIsAnimating } = useMenuStore();
   const [openLoginModal, setOpenLoginModal] = useState(false);
-  const profileImage = useProfileStore((s) => s.profile_image)
-  const user = useAuthStore((s) => s.user)
+  const profileImage = useProfileStore((s) => s.profile_image);
+  const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
 
   const navInnerRef = useRef<HTMLDivElement>(null);
@@ -162,19 +162,19 @@ const Header = () => {
   };
 
   const handleLoginModal = () => {
-    setOpenLoginModal(prev => !prev);
-  }
+    setOpenLoginModal((prev) => !prev);
+  };
 
   const handleLogout = async () => {
     // alert창 띄워주기?
     setOpenLoginModal(false);
     await supabase.auth.signOut();
-  }
+  };
 
   const handleLogin = () => {
     setOpenLoginModal(false);
-    navigate('/auth/login')
-  }
+    navigate("/auth/login");
+  };
 
   return (
     <>
@@ -196,27 +196,29 @@ const Header = () => {
             <img className="h-[32px]" src={logo} alt="pickitbook" />
           </Link>
         </h1>
-        {
-          openLoginModal ? (<>
-            {
-              user ?
-                <button
-                  type="button"
-                  className="z-100 absolute top-12 right-1/28 bg-pattern w-fit px-8 py-3 border rounded-xl shadow-modal"
-                  onClick={handleLogout}
-                >
-                  로그아웃</button>
-                :
-                <button
-                  type="button"
-                  className="z-100 absolute top-12 right-1/28 bg-pattern w-fit px-8 py-3 border rounded-xl shadow-modal"
-                  onClick={handleLogin}
-                >
-                  로그인</button>
-            }
+        {openLoginModal ? (
+          <>
+            {user ? (
+              <button
+                type="button"
+                className="z-100 absolute top-12 right-1/28 bg-pattern w-fit px-8 py-3 border rounded-xl shadow-modal"
+                onClick={handleLogout}
+              >
+                로그아웃
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="z-100 absolute top-12 right-1/28 bg-pattern w-fit px-8 py-3 border rounded-xl shadow-modal"
+                onClick={handleLogin}
+              >
+                로그인
+              </button>
+            )}
           </>
-          ) : ''
-        }
+        ) : (
+          ""
+        )}
 
         {/* Hamburger Menu Button */}
         <div className="flex gap-3 fixed right-5 md:right-[50px]">
@@ -228,21 +230,19 @@ const Header = () => {
             )}
             onClick={handleLoginModal}
           >
-            {
-              user ? (
-                <img
-                  className="w-7 h-7 rounded-full"
-                  src={profileImage ? profileImage : '/profile_default.png'}
-                  alt="프로필"
-                />
-              ) : (
-                <LuUserRound
-                  className="text-primary-black"
-                  size={24}
-                  aria-label="로그인/마이페이지"
-                />
-              )
-            }
+            {user ? (
+              <img
+                className="w-7 h-7 rounded-full"
+                src={profileImage ? profileImage : "/profile_default.png"}
+                alt="프로필"
+              />
+            ) : (
+              <LuUserRound
+                className="text-primary-black"
+                size={24}
+                aria-label="로그인/마이페이지"
+              />
+            )}
           </button>
 
           <button
@@ -300,7 +300,8 @@ const Header = () => {
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
-                      `nav-link block no-underline items-center translate-y-full nav-link-hover ${isActive ? "" : ""
+                      `nav-link block no-underline items-center translate-y-full nav-link-hover ${
+                        isActive ? "" : ""
                       }`
                     }
                     onClick={handleMenuClick}
