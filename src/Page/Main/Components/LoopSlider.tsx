@@ -61,7 +61,7 @@ const LoopSlider = () => {
   return (
     <div
       ref={sliderRef}
-      className="bg-white relative w-full h-15 overflow-hidden py-[14px] border-t border-b border-primary-black -z-[1]"
+      className="bg-white relative w-full h-10 md:h-15 overflow-hidden py-[5px] md:py-[14px] border-t border-b border-primary-black -z-[1]"
     >
       <div
         className="slider-items flex gap-[50px] w-max transform-gpu"
@@ -76,10 +76,10 @@ const LoopSlider = () => {
             key={`original-${index}`}
             className="flex items-center justify-center gap-[50px]"
           >
-            <span className="font-accent text-2xl whitespace-nowrap">
+            <span className="font-accent text-xl md:text-2xl whitespace-nowrap">
               {item.text}
             </span>
-            <img src={item.image} alt="바코드" />
+            <img className="w-[40px] md:w-full" src={item.image} alt="바코드" />
           </div>
         ))}
 
@@ -89,10 +89,10 @@ const LoopSlider = () => {
             key={`duplicate-${index}`}
             className="flex items-center justify-center gap-[50px]"
           >
-            <span className="font-accent text-2xl whitespace-nowrap">
+            <span className="font-accent text-xl md:text-2xl whitespace-nowrap">
               {item.text}
             </span>
-            <img src={item.image} alt="바코드" />
+            <img className="w-[40px] md:w-full" src={item.image} alt="바코드" />
           </div>
         ))}
       </div>

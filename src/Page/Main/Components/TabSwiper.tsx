@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode } from "swiper/modules";
 import type { SwiperClass } from "swiper/react";
@@ -20,6 +21,8 @@ export const TabSwiper = ({
   tabIndicatorRef,
   onSwiper,
 }: TabSwiperProps) => {
+  const [swiperRef, setSwiperRef] = useState<SwiperClass | null>(null);
+
   return (
     <div
       ref={tabContainerRef}
@@ -32,45 +35,56 @@ export const TabSwiper = ({
           style={{ transition: "all 0.3s" }}
         />
       )}
+
       <Swiper
-        onSwiper={onSwiper}
-        modules={[FreeMode]}
-        spaceBetween={isMobile ? 16 : 0}
-        slidesPerView={isMobile ? "auto" : 9}
-        freeMode={{
-          enabled: isMobile,
-          sticky: false,
+        onSwiper={(swiper) => {
+          setSwiperRef(swiper);
+          onSwiper(swiper);
         }}
+        modules={[FreeMode]}
+        spaceBetween={0}
+        slidesPerView={isMobile ? "auto" : 9}
         allowTouchMove={true}
-        grabCursor={isMobile}
-        touchRatio={1}
+        simulateTouch={true}
+        threshold={3}
+        touchAngle={30}
+        passiveListeners={false}
+        touchStartPreventDefault={true}
+        preventClicks={true}
+        preventClicksPropagation={true}
+        freeMode={{
+          enabled: true,
+          sticky: false,
+          momentum: true,
+          momentumRatio: 1,
+        }}
+        grabCursor={true}
         resistance={true}
-        resistanceRatio={0.85}
-        className={`tab-swiper ${!isMobile ? "flex w-full" : "overflow-visible"}`}
+        resistanceRatio={0.35}
+        className={`tab-swiper ${!isMobile ? "flex w-full" : ""}`}
         wrapperClass={isMobile ? "!flex !items-center" : undefined}
         style={
-          isMobile
-            ? {
-                paddingLeft: "16px",
-                paddingRight: "16px",
-                overflow: "visible",
-              }
-            : undefined
+          isMobile ? { paddingLeft: "16px", paddingRight: "16px" } : undefined
         }
+        slidesOffsetBefore={isMobile ? 0 : 0}
+        slidesOffsetAfter={isMobile ? 0 : 0}
+        speed={300}
       >
-        {Object.entries(BOOK_CATEGORIES).map(([key, config]) => (
+        {Object.entries(BOOK_CATEGORIES).map(([key, config], index) => (
           <SwiperSlide
             key={key}
-            className={`${
-              isMobile ? "!w-auto !flex-shrink-0 !h-auto" : "flex-1 min-w-0"
-            }`}
+            className={`${isMobile ? "!w-auto !flex-shrink-0" : "flex-1 min-w-0"}`}
+            style={isMobile ? { width: "auto" } : undefined}
           >
             <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onTouchStart={(e) => e.preventDefault()}
               className={`tab-button py-3 transition-all duration-300 whitespace-nowrap block
                 ${
                   !isMobile
                     ? "px-2 text-sm lg:text-base flex-1 min-w-0 text-center w-full"
-                    : "px-6 text-base font-medium min-w-max"
+                    : "px-6 text-base font-medium"
                 }
                 ${
                   activeCategory === key
@@ -78,9 +92,12 @@ export const TabSwiper = ({
                       ? "text-gray-800 font-medium"
                       : "text-gray-800 font-semibold border-b-2 border-gray-800"
                     : "text-gray-400 hover:text-gray-600"
-                }
-              `}
-              onClick={() => onCategoryChange(key as CategoryKey)}
+                }`}
+              onClick={() => {
+                onCategoryChange(key as CategoryKey);
+                swiperRef?.slideTo(index, 300);
+              }}
+              style={isMobile ? { minWidth: "fit-content" } : undefined}
             >
               {config.label}
             </button>

@@ -24,13 +24,19 @@ export const filterByKDC = (
     return books.slice(0, 12);
 
   const kdcCodes = BOOK_CATEGORIES[activeCategory].kdcCodes;
-  return books
-    .filter((book) => {
-      if (!book.class_no) return true;
-      const code2 = book.class_no.substring(0, 2);
-      return kdcCodes.includes(code2 as never);
-    })
-    .slice(0, 12);
+
+  const filteredBooks = books.filter((book) => {
+    if (!book.class_no) return true;
+
+    const code2 = book.class_no.substring(0, 2);
+
+    return kdcCodes.includes(code2 as never);
+  });
+  if (filteredBooks.length < 3) {
+    return books.slice(0, 12);
+  }
+
+  return filteredBooks.slice(0, 12);
 };
 
 export const refineChildren = (books: BookItemType[]): BookItemType[] => {

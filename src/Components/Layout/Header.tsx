@@ -307,7 +307,7 @@ const Header = () => {
                     onClick={handleMenuClick}
                   >
                     <span
-                      className="nav-link-text font-accent relative h-full text-5xl text-transparent md:text-[80px]"
+                      className="nav-link-text font-accent relative h-full text-[42px] text-transparent md:text-[80px]"
                       data-text={item.label}
                     >
                       {item.label}
