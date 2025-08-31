@@ -1,20 +1,14 @@
 import type { ReviewItemType } from "@/@types/global";
+import { useToggleLike } from "@/api/useLikeFetching";
 import RatingStars from "@/Components/RatingStar";
-import type { UseMutateFunction } from "@tanstack/react-query";
 
 interface Props {
   item: ReviewItemType;
-  handleLikeToggle: UseMutateFunction<
-    void,
-    Error,
-    {
-      review_id: number;
-    },
-    unknown
-  >;
 }
 
-function ReviewItem({ item, handleLikeToggle }: Props) {
+function ReviewItem({ item }: Props) {
+  const {mutate, isPending} = useToggleLike(item.id)
+
   return (
     <li className="flex flex-col p-4 bg-white rounded-md gap-2">
       {/* 헤더 영역 */}
@@ -55,7 +49,8 @@ function ReviewItem({ item, handleLikeToggle }: Props) {
         <div className="flex gap-4">
           <button
             type="button"
-            onClick={() => handleLikeToggle({ review_id: item.id })}
+            disabled={isPending}
+            onClick={() => mutate()}
           >
             <span className={item.liked_by_me ? "text-amber-400" : "bg-white"}>유용해요 {item.like_count}</span>
           </button>

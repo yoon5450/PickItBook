@@ -363,6 +363,14 @@ export type Database = {
       }
     }
     Functions: {
+      debug_like_state: {
+        Args: { p_review_id: number }
+        Returns: {
+          i_liked: boolean
+          me: string
+          total_likes: number
+        }[]
+      }
       get_reviews_by_isbn: {
         Args: { p_isbn13: string; p_limit?: number; p_offset?: number }
         Returns: {
@@ -381,8 +389,11 @@ export type Database = {
         }[]
       }
       toggle_like: {
-        Args: { p_review_id: number; p_user_id: string }
-        Returns: undefined
+        Args: { p_review_id: number }
+        Returns: {
+          like_count: number
+          liked: boolean
+        }[]
       }
     }
     Enums: {

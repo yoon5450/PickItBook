@@ -4,18 +4,18 @@ export interface ToggleLikeParams {
   review_id: number;
 }
 
-export const likeRepo = {
-  toggleLike: async ({ review_id }: ToggleLikeParams) => {
+export type ToggleLikeResult = { liked: boolean; like_count: number };
 
-    const { data, error, status } = await supabase.rpc("toggle_like", {
-      p_review_id: review_id,
-    });
-    console.log(
-      status,
-      error?.code,
-      error?.message,
-      error?.details,
-      error?.hint
-    );
+export const likeRepo = {
+  toggleLike: async ({
+    review_id,
+  }: {
+    review_id: number;
+  }): Promise<ToggleLikeResult> => {
+    const { data, error } = await supabase
+      .rpc("toggle_like", { p_review_id: review_id })
+      .single<ToggleLikeResult>();
+    if (error) throw error;
+    return data;
   },
 };
