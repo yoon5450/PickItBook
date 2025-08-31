@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -17,54 +16,75 @@ export type Database = {
     Tables: {
       bookmark: {
         Row: {
+          book_id: number
           created_at: string
-          isbn: number
+          id: number
           user_id: string
         }
         Insert: {
+          book_id: number
           created_at?: string
-          isbn?: number
+          id?: number
           user_id: string
         }
         Update: {
+          book_id?: number
           created_at?: string
-          isbn?: number
+          id?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bookmark_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookmark_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "v_bookmark_books"
+            referencedColumns: ["book_id"]
+          },
+        ]
       }
       books: {
         Row: {
-          author: string
+          authors: string
           book_name: string
           created_at: string
           desc: string
           id: number
           image_url: string
+          isbn13: string
           keyword: string
           library_code: string
           publication_date: string
           publisher: string
         }
         Insert: {
-          author: string
+          authors: string
           book_name: string
           created_at?: string
           desc: string
           id?: number
           image_url: string
+          isbn13: string
           keyword: string
           library_code: string
           publication_date: string
           publisher: string
         }
         Update: {
-          author?: string
+          authors?: string
           book_name?: string
           created_at?: string
           desc?: string
           id?: number
           image_url?: string
+          isbn13?: string
           keyword?: string
           library_code?: string
           publication_date?: string
@@ -122,8 +142,9 @@ export type Database = {
           content: string
           created_at: string
           id: number
-          image_url: string
-          isbn: string
+          image_url: string | null
+          isbn13: string
+          like_count: number
           score: number
           title: string | null
           user_id: string
@@ -132,8 +153,9 @@ export type Database = {
           content: string
           created_at?: string
           id?: number
-          image_url: string
-          isbn: string
+          image_url?: string | null
+          isbn13: string
+          like_count?: number
           score: number
           title?: string | null
           user_id?: string
@@ -142,13 +164,43 @@ export type Database = {
           content?: string
           created_at?: string
           id?: number
-          image_url?: string
-          isbn?: string
+          image_url?: string | null
+          isbn13?: string
+          like_count?: number
           score?: number
           title?: string | null
           user_id?: string
         }
         Relationships: []
+      }
+      review_likes: {
+        Row: {
+          created_at: string
+          id: number
+          review_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          review_id: number
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          review_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_likes_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "review"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_keyword: {
         Row: {
@@ -220,16 +272,19 @@ export type Database = {
           created_at: string
           id: number
           mission_id: number
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: number
           mission_id: number
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: number
           mission_id?: number
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -267,10 +322,68 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_bookmark_books: {
+        Row: {
+          authors: string | null
+          book_created_at: string | null
+          book_id: number | null
+          book_name: string | null
+          bookmark_id: number | null
+          bookmarked_at: string | null
+          description: string | null
+          image_url: string | null
+          isbn13: string | null
+          keyword: string | null
+          library_code: string | null
+          publication_date: string | null
+          publisher: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      v_user_mission: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: number | null
+          mission_id: number | null
+          score: number | null
+          type: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_mission_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "mission"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      get_reviews_by_isbn: {
+        Args: { p_isbn13: string; p_limit?: number; p_offset?: number }
+        Returns: {
+          content: string
+          created_at: string
+          id: number
+          image_url: string
+          isbn13: string
+          like_count: number
+          liked_by_me: boolean
+          nickname: string
+          profile_image: string
+          score: number
+          title: string
+          user_id: string
+        }[]
+      }
+      toggle_like: {
+        Args: { p_review_id: number; p_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

@@ -24,7 +24,7 @@ function BookList({ bookList, className, onSearch, mode = "line" }: Props) {
         </div>
       ) : (
         bookList.map((item) => (
-          <BookItem mode={mode} item={item} key={item.isbn13} onSearch={onSearch} />
+          <BookItem mode={mode} item={item} key={item.isbn13} onSearch={onSearch}/>
         ))
       )}
     </ul>
