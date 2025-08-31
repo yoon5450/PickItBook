@@ -5,11 +5,10 @@ import { useTabIndicator } from "../hooks/useTabIndicator";
 import { useSwiperRefs } from "../hooks/useSwiperRefs";
 import { useBookCategory } from "../hooks/useBookCategory";
 import { TabSwiper } from "./TabSwiper";
-
-import { LoadingSkeleton } from "./LoadingSkeleton";
 import BookSwiper from "./BookSwiper";
+import LoadingSkeleton from "./LoadingSkeleton";
 
-const NewBook = () => {
+const RecommendedBook = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("all");
 
   const isMobile = useMobileDetection();
@@ -77,4 +76,4 @@ const NewBook = () => {
   );
 };
 
-export default NewBook;
+export default RecommendedBook;

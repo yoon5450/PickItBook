@@ -123,7 +123,7 @@ const Hero = () => {
       <section className="h-screen relative overflow-hidden" ref={sectionRef}>
         <h2
           ref={titleRef}
-          className="font-accent absolute left-[50%] top-[50%] -translate-[50%] text-white text-[100px] z-10"
+          className="font-accent absolute left-[50%] top-[50%] -translate-[50%] text-white text-[50px] md:text-[100px] z-10"
         >
           PickItBook
         </h2>
