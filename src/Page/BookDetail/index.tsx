@@ -1,15 +1,16 @@
 import { useBookDetail } from "@/api/useBookDetail";
 import { useSearchParams } from "react-router-dom";
 import BookDataPartition from "./components/BookDataPartition";
-import RecommandedPatition from "./components/RecommandedPatition";
+import RecommandedPatition from "./components/RecommendedPatition";
 import PartitionBase from "./components/PartitionBase";
 import UserScorePatition from "./components/UserScorePartition";
-import type { MissionItemType, ReviewItem } from "@/@types/global";
-import MisstionPartition from "./components/MisstionPartition";
+import type { MissionItemType } from "@/@types/global";
+import MisstionPartition from "./components/MissionPartition";
 import ReviewWritePartition from "./components/ReviewWritePartition";
 import ReviewListPartition from "./components/ReviewListPartition";
 import { useEffect } from "react";
 import { scrollTop } from "@/utils/scrollFunctions";
+import { useGetReview } from "@/api/useReviewFetching";
 
 const DUMMY_MISSIONS: MissionItemType[] = [
   {
@@ -35,39 +36,6 @@ const DUMMY_MISSIONS: MissionItemType[] = [
   },
 ];
 
-const DUMMY_REVIEWS: ReviewItem[] = [
-  {
-    id: 1,
-    create_at: "2025-08-29",
-    isbn: "12121212",
-    user_id: "윤대웅",
-    title: "안녕",
-    content: "디지몬",
-    score: 4.5,
-    imgSrc: "http://image.aladin.co.kr/product/15848/6/cover/k622533431_1.jpg",
-  },
-  {
-    id: 2,
-    create_at: "2025-08-29",
-    isbn: "12121212",
-    user_id: "윤대웅",
-    title: "안녕",
-    content: "디지몬",
-    score: 4.0,
-    imgSrc: "http://image.aladin.co.kr/product/15848/6/cover/k622533431_1.jpg",
-  },
-  {
-    id: 3,
-    create_at: "2025-08-29",
-    isbn: "12121212",
-    user_id: "윤대웅",
-    title: "안녕",
-    content: "슛",
-    score: 3.5,
-    imgSrc: "http://image.aladin.co.kr/product/15848/6/cover/k622533431_1.jpg",
-  },
-];
-
 function BookDetail() {
   const [searchParams] = useSearchParams();
   const isbn13 = searchParams.get("isbn13") ?? "";
@@ -77,13 +45,15 @@ function BookDetail() {
     scrollTop();
   }, []);
 
+  // BookDetail 정보 불러오기
   const {
     data: BookDetailData,
     isFetching: BookDetailFetching,
     error,
   } = useBookDetail(isbn13);
 
-  console.log(BookDetailData);
+  // Review 정보 불러오기
+  const {data:reviewData} = useGetReview(isbn13)
 
   if (error) console.error(error);
 
@@ -114,15 +84,15 @@ function BookDetail() {
         </PartitionBase>
 
         <PartitionBase title="유저 평점">
-          <UserScorePatition />
+          <UserScorePatition data={reviewData}/>
         </PartitionBase>
 
         <PartitionBase title="리뷰 작성">
-          <ReviewWritePartition />
+          <ReviewWritePartition data={BookDetailData}/>
         </PartitionBase>
 
-        <PartitionBase title="리뷰 목록">
-          <ReviewListPartition data={DUMMY_REVIEWS} />
+        <PartitionBase title={`리뷰 목록 (${reviewData?.length})`}>
+          <ReviewListPartition data={reviewData} />
         </PartitionBase>
       </div>
     </div>

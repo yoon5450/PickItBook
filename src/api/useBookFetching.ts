@@ -69,7 +69,6 @@ export const useBookFetching = (
     refetchOnWindowFocus,
     select: (raw) => {
       const r = raw.response ?? {};
-      console.log(r);
       const req = r.request ?? {};
       const items = (r.docs ?? []).map((i) => i.doc);
       const total = Number(r.numFound ?? 0);

@@ -18,7 +18,7 @@ export default function RatingBars({ items, total }: Props) {
 
             {/* 바 트랙 */}
             <div
-              className="relative h-3 rounded-full bg-gray-200 overflow-hidden h-6"
+              className="relative rounded-full bg-gray-200 overflow-hidden h-6"
               role="meter"
               aria-valuemin={0}
               aria-valuemax={100}
@@ -26,7 +26,7 @@ export default function RatingBars({ items, total }: Props) {
               aria-label={`${it.label} ${pct}%`}
             >
               <div
-                className="h-full rounded-full bg-primary transition-[width] duration-500"
+                className="h-full rounded-full bg-amber-400 transition-[width] duration-500"
                 style={{ width: `${pct}%` }}
               />
             </div>
