@@ -4,6 +4,7 @@ import RatingStars from "@/Components/RatingStar";
 import { NavLink } from "react-router-dom";
 import { BiBookmark } from "react-icons/bi";
 import { useBookmark } from "@/api/useBookmark";
+import { getBookImageURLs } from "@/utils/bookImageUtils";
 
 interface Props {
   data: BookDetailData | undefined;
@@ -48,7 +49,7 @@ function BookDataPatition({ data }: Props) {
           미션 수령하기
         </button>
 
-        <img src={book.bookImageURL} alt="" className="h-70" />
+        <img src={getBookImageURLs(book.isbn13)[0] ?? undefined} alt="" className="h-70" />
         <div className="flex flex-col gap-1">
           <h1 className="text-black">{book.bookname}</h1>
           <div className="flex gap-2 text-[#606060]">
