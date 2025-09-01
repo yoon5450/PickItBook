@@ -32,6 +32,7 @@ export const filterByKDC = (
 
     return kdcCodes.includes(code2 as never);
   });
+  
   if (filteredBooks.length < 3) {
     return books.slice(0, 12);
   }
