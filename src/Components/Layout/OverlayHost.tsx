@@ -11,6 +11,7 @@ import UserModal from "../UserModal";
 const registry = {
   imagePreview: ImagePreview,
   userModal: UserModal
+  
 } satisfies Record<string, React.ComponentType<HTMLElement>>;
 
 function OverlayHost() {

@@ -17,14 +17,14 @@ const modeLiClass = {
 } as const;
 
 const modeImgClass = {
-  line: "",
+  line: null,
   grid: "h-50",
 } as const;
 
 function BookItem({ item, onSearch, mode = "line" }: Props) {
   return (
     <>
-      <li className={modeLiClass[mode]}>
+      <li className={modeLiClass[mode]} >
         {/* 책 이미지 */}
 
         <NavLink to={`/book_detail/?isbn13=${item.isbn13}`}>

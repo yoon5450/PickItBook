@@ -1,35 +1,129 @@
+import type { BookDetailData } from "@/api/useBookDetail";
+import { useSetReviewWithFiles } from "@/api/useReviewFetching";
 import RatingStars from "@/Components/RatingStar";
-import { useId } from "react";
+import { useProfileStore } from "@/store/useProfileStore";
+import { setFilePreview } from "@/utils/setFilePreview";
+import React, { useId, useState } from "react";
 import { BiImageAdd } from "react-icons/bi";
+import Swal from "sweetalert2";
 
-function ReviewWritePartition() {
+interface Props {
+  data: BookDetailData | undefined;
+}
+
+// TODO : 같은 유저 중복 입력 방어
+function ReviewWritePartition({ data }: Props) {
   const reviewId = useId();
+  const { id } = useProfileStore();
+  const [content, setContent] = useState<string>("");
+  const [rating, setRating] = useState<number>(0);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [image, setImage] = useState<File>();
+  const { mutate } = useSetReviewWithFiles();
+
+  const uploadImgId = useId();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!id) {
+      Swal.fire(
+        "로그인 필요",
+        "<div>리뷰는 로그인 후에 작성하실 수 있습니다.</div>"
+      );
+      return;
+    }
+
+    if (!content && rating === 0) {
+      Swal.fire("내용 작성 필요", "<div>내용 또는 평점을 입력해주세요</div>");
+      return;
+    }
+
+    // 아직 데이터가 없으면 리턴
+    if (!data) return;
+
+    const { isbn13, bookname: title } = data.book;
+    mutate({
+      isbn13,
+      title,
+      content,
+      score: rating,
+      uid: id,
+      image_file: image,
+    });
+
+    setImagePreview(null);
+    setImage(undefined);
+    setRating(0)
+    setContent("");
+  };
+
+  const handleUploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    if (file) {
+      setImage(file);
+      setFilePreview(file, setImagePreview);
+    } else {
+      Swal.fire("오류", "유효하지 않은 파일입니다.");
+    }
+  };
 
   return (
     <div className="p-4">
-      <form className="flex flex-col items-end gap-2" action="">
-        <div className="relative w-full">
+      <form
+        className="flex flex-col items-end gap-2"
+        action=""
+        onSubmit={handleSubmit}
+      >
+        <div className="relative w-full flex border border-gray-300 bg-background-white rounded-2xl p-6 gap-2">
+          {imagePreview && (
+            <img
+              className="max-w-20 object-cover"
+              src={imagePreview}
+              alt="업로드한 이미지"
+            />
+          )}
+
           <label htmlFor={reviewId} className="a11y">
             리뷰 작성
           </label>
           <textarea
-            className="border-gray-300 rounded-2xl w-full bg-background-white border resize-none focus:outline-0 p-6"
+            className="flex-1 border-0  resize-none focus:outline-0"
             rows={4}
             name={reviewId}
             id={reviewId}
+            onChange={(e) => setContent(e.target.value)}
+            value={content}
             placeholder="리뷰를 작성해주세요"
           ></textarea>
-          <BiImageAdd
-            size={32}
-            className="absolute right-5 bottom-5 text-gray-400 cursor-pointer hover:text-black transition"
+
+          {/* 이미지 버튼 */}
+          <label htmlFor={uploadImgId}>
+            <BiImageAdd
+              size={32}
+              className="absolute right-5 bottom-5 text-gray-400 cursor-pointer hover:text-black transition"
+            />
+          </label>
+          <input
+            className="hidden"
+            type="file"
+            id={uploadImgId}
+            onChange={handleUploadImage}
           />
         </div>
         <div className="flex items-center gap-4">
-          <RatingStars value={4} max={5} size={28} showValue inputMode/>
+          <RatingStars
+            value={rating}
+            max={5}
+            size={28}
+            showValue
+            inputMode
+            setter={setRating}
+          />
           <button
             className="bg-primary-black text-white hover:text-primary-black text-[20px] font-light
             box-border border border-primary-black px-4 py-2 rounded-md hover:bg-inherit transition "
-            type="button"
+            type="submit"
           >
             리뷰 작성하기
           </button>
