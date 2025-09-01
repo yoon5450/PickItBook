@@ -78,11 +78,19 @@ export interface Request {
 }
 
 interface MissionItemType {
-  missionType: string;
-  missionTitle: string;
-  score: number;
-  userArchiveRate: number;
-  isComplete: boolean;
+    template_id: number;
+    code: string;
+    name: string;
+    description: string;
+    reward: {
+        type: string;
+        amount: number;
+    };
+    progress: null;
+    completed: boolean;
+    completed_at: null;
+    assigned: boolean;
+    bundle_id: number;
 }
 
 export interface ReviewItemType {

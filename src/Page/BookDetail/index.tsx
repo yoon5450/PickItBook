@@ -4,37 +4,13 @@ import BookDataPartition from "./components/BookDataPartition";
 import RecommandedPatition from "./components/RecommendedPatition";
 import PartitionBase from "./components/PartitionBase";
 import UserScorePatition from "./components/UserScorePartition";
-import type { MissionItemType } from "@/@types/global";
 import MisstionPartition from "./components/MissionPartition";
 import ReviewWritePartition from "./components/ReviewWritePartition";
 import ReviewListPartition from "./components/ReviewListPartition";
 import { useEffect } from "react";
 import { scrollTop } from "@/utils/scrollFunctions";
 import { useGetReview } from "@/api/useReviewFetching";
-
-const DUMMY_MISSIONS: MissionItemType[] = [
-  {
-    isComplete: true,
-    missionTitle: "리뷰 남기기",
-    missionType: "책 미션",
-    score: 50,
-    userArchiveRate: 60,
-  },
-  {
-    isComplete: false,
-    missionTitle: "50페이지 읽고 범인 맞추기",
-    missionType: "책 미션",
-    score: 30,
-    userArchiveRate: 60,
-  },
-  {
-    isComplete: true,
-    missionTitle: "등장인물 감정 분석해보기",
-    missionType: "책 미션",
-    score: 20,
-    userArchiveRate: 60,
-  },
-];
+import { useGetMissionByISBN } from "@/api/useMissionsFetching";
 
 function BookDetail() {
   const [searchParams] = useSearchParams();
@@ -54,6 +30,9 @@ function BookDetail() {
 
   // Review 정보 불러오기
   const {data:reviewData} = useGetReview(isbn13)
+
+  const {data:missionData} = useGetMissionByISBN(isbn13);
+  console.log(missionData);
 
   if (error) console.error(error);
 
@@ -80,7 +59,7 @@ function BookDetail() {
         </PartitionBase>
 
         <PartitionBase title="관련 미션">
-          <MisstionPartition data={DUMMY_MISSIONS} />
+          <MisstionPartition data={missionData} />
         </PartitionBase>
 
         <PartitionBase title="유저 평점">

@@ -1,14 +1,25 @@
 import type { MissionItemType } from "@/@types/global";
 import MissionList from "./MissionList";
+import loaderIcon from '@/assets/loading.svg';
 
-interface Props{
-  data:MissionItemType[]
+interface Props {
+  data: MissionItemType[];
 }
 
-function MisstionPartition({data}:Props) {
+function MisstionPartition({ data }: Props) {
+  if (!data) {
+    return (
+      <img
+        className="h-25 text-center p-1 inline object-cover"
+        src={loaderIcon}
+        alt="로딩중"
+      />
+    );
+  }
+
   return (
     <div className="">
-      <MissionList items={data}  />
+      <MissionList items={data} />
     </div>
   );
 }
