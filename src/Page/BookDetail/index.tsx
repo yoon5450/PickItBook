@@ -32,7 +32,6 @@ function BookDetail() {
   const {data:reviewData} = useGetReview(isbn13)
 
   const {data:missionData} = useGetMissionByISBN(isbn13);
-  console.log(missionData);
 
   if (error) console.error(error);
 
