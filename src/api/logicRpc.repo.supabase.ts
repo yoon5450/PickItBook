@@ -3,18 +3,32 @@ import supabase from "@/utils/supabase";
 export const logicRpcRepo = {
   setBundle: async (isbn13: string) => {
     const { error } = await supabase.rpc("api_assign_book_tasks", {
-      p_user_id: null,
       p_isbn13: isbn13,
     });
+    if (error) console.error("setBundle error :", error);
     
-    console.error("setBundle error :", error);
+    logicRpcRepo.getBundleIdByISBN(isbn13)
   },
-  processEvent: async <T>(type: string, payload: T) => {
+  setProcessEvent: async <T>(type: string, payload: T) => {
     const { error } = await supabase.rpc("api_process_event", {
       p_type: type,
       p_payload: payload,
     });
 
-    console.error("processEvent error :", error);
+    if (error) console.error("processEvent error :", error);
+  },
+  getBundleIdByISBN: async (isbn13: string) => {
+    const { data, error } = await supabase
+      .rpc("fn_pick_bundle_by_isbn", {
+        p_isbn: isbn13,
+      })
+      .select("*");
+
+    if (error) {
+      console.error(error);
+      return
+    }
+
+    console.log(data);
   },
 };
