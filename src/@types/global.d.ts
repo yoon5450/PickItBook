@@ -100,6 +100,7 @@ export interface ReviewItemType {
   liked_by_me: boolean;
 }
 
+
 // 1) 이벤트 타입
 export type EventType =
   | "REVIEW_CREATED"
@@ -133,3 +134,9 @@ export type EventEnvelope<T extends EventType = EventType> = {
   payload: EventPayloadMap[T];
   idempotencyKey?: string;
 };
+
+export type TestBook = {
+  src: string;
+  alt: string;
+}
+
