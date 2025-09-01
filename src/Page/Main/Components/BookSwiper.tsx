@@ -6,6 +6,7 @@ import type { SwiperClass } from "swiper/react";
 import type { BookItemType } from "@/@types/global";
 import type { CategoryKey } from "../bookCategories";
 import { getBookImageURLs } from "../utils/bookImageUtils";
+import { NavLink } from "react-router-dom";
 import tw from "@/utils/tw";
 
 interface BookSwiperProps {
@@ -105,20 +106,22 @@ const BookSwiper = ({ books, activeCategory, onSwiper }: BookSwiperProps) => {
         {books.map((book, bookIndex) => (
           <SwiperSlide key={book.isbn13 || `${activeCategory}-${bookIndex}`}>
             <div className="group border border-gray-200 bg-gray-50 cursor-pointer overflow-hidden">
-              <div className="aspect-[3/4] transition-all duration-300 group-hover:scale-105">
-                {hasValidImage(book, bookIndex) ? (
-                  <img
-                    src={getCurrentImageURL(book, bookIndex)}
-                    alt={`${book.bookname} 표지`}
-                    className="w-full h-full object-cover"
-                    onError={() => handleImageError(book, bookIndex)}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-300">
-                    <div className="text-lg text-gray-400">표지 준비중</div>
-                  </div>
-                )}
-              </div>
+              <NavLink to={`/book_detail/?isbn13=${book.isbn13}`}>
+                <div className="aspect-[3/4] transition-all duration-300 group-hover:scale-105">
+                  {hasValidImage(book, bookIndex) ? (
+                    <img
+                      src={getCurrentImageURL(book, bookIndex)}
+                      alt={`${book.bookname} 표지`}
+                      className="w-full h-full object-cover"
+                      onError={() => handleImageError(book, bookIndex)}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                      <div className="text-lg text-gray-400">표지 준비중</div>
+                    </div>
+                  )}
+                </div>
+              </NavLink>
             </div>
           </SwiperSlide>
         ))}
