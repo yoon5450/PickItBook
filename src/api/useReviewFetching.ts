@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { reviewRepo } from "./review.repo.supabase";
 import type { ReviewItemType } from "@/@types/global";
-import { logicRpcRepo } from "./logicRPC.repo.supabase";
+import { logicRpcRepo } from "./logicRpc.repo.supabase";
 
 export type SetReviewType = {
   isbn13: string;

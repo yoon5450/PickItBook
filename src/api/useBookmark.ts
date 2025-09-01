@@ -1,6 +1,6 @@
 import supabase from "@/utils/supabase";
 import { useMutation } from "@tanstack/react-query";
-import { logicRpcRepo } from "./logicRPC.repo.supabase";
+import { logicRpcRepo } from "./logicRpc.repo.supabase";
 
 export const useBookmark = (isbn13: string | undefined) => {
   return useMutation({
