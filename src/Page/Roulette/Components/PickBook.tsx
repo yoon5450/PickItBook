@@ -146,7 +146,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                         <p className="font-semibold text-3xl text-primary-black">자몽살구클럽</p>
                         <div className="flex flex-row gap-1 pb-2">
                           {
-                            Array.from({ length: 5 }).map((i, index) => (
+                            Array.from({ length: 5 }).map((_i, index) => (
                               <img key={index} src="/star.svg" alt="별점" />
                             ))
                             // 소숫점은 어떻게 처리할지?
