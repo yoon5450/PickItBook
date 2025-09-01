@@ -112,6 +112,7 @@ export const useToggleLike = (review_id: number) => {
       qc.setQueriesData({ queryKey: ["review"] }, (old: any) =>
         toggleLikeInCache(old, review_id)
       );
+      
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       qc.setQueryData(["review", review_id], (old: any) =>
         toggleLikeInCache(old, review_id)
