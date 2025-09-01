@@ -100,3 +100,8 @@ export interface ReviewItemType {
   liked_by_me: boolean
 }
 
+export type TestBook = {
+  src: string;
+  alt: string;
+}
+

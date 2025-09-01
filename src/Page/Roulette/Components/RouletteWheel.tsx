@@ -1,19 +1,19 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { TestBook } from "@/@types/global";
 gsap.registerPlugin(useGSAP);
 
 
-type Book = {
-  src: string;
-  alt: string;
-}
+// gsap ease 종류 확인
+// https://gsap.com/resources/getting-started/Easing/#ease-types 
 
 interface Props {
   isStart: boolean, // 작동 시킬건지
-  books: Book[], // 책 데이터
-  setPickBook?: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>;
+  books: TestBook[], // 책 데이터
+  setPickBook?: React.Dispatch<React.SetStateAction<TestBook | null>>;
   setIsWorking?: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpenPickBook?: React.Dispatch<React.SetStateAction<boolean>>;
   duration?: number; // 지속 시간
   ease?: string; // 가속도
   repeat?: number; // 반복횟수
@@ -24,6 +24,7 @@ function RouletteWheel({
   books,
   setPickBook,
   setIsWorking,
+  setIsOpenPickBook,
   duration = 8,
   ease = "power3.out",
   repeat = 0
@@ -31,7 +32,8 @@ function RouletteWheel({
 
   const pinRef = useRef<HTMLImageElement>(null);
   const wheelRef = useRef<HTMLDivElement>(null);
-  const bookRefs = useRef<HTMLDivElement[]>([]);
+  const bookRefs = useRef<HTMLButtonElement[]>([]);
+  const [pickBookIndex, setPickBookIndex] = useState<number | null>(null);
 
   // === 룰렛 배치 ===
   useGSAP(() => {
@@ -115,7 +117,7 @@ function RouletteWheel({
     const k = gsap.utils.random(0, total - 1, 1);    // 멈출 카드 인덱스
     const targetCenterDeg = k * sliceDeg;            // 그 카드의 중앙 각도
     const want = normalizeAngle(pinAngle - targetCenterDeg);     // 목표 최종 각도
-    const extraSpins = gsap.utils.random(3, 5, 1);   // 자연스러운 회전수(랜덤)
+    const extraSpins = gsap.utils.random(3, 5, 1);   // 회전수(랜덤)
     const offset = (want - curNorm + 360) % 360;
     const delta = extraSpins * 360 + offset;         // 총 회전 증가량(시계방향 고정)
 
@@ -131,10 +133,14 @@ function RouletteWheel({
 
         const finalRot = Number(gsap.getProperty(wheel, "rotation")) || 0;
         const norm = normalizeAngle(pinAngle - finalRot);
-        const finalIdx = Math.round(norm / sliceDeg) % total;
+        const finalIdx = Math.abs(Math.round(norm / sliceDeg) % total);
 
-        const el = document.querySelector<HTMLDivElement>(`.img[data-index="${finalIdx}"]`);
-        setPickBook?.(el);
+        // const el = document.querySelector<HTMLButtonElement>(`.img[data-index="${finalIdx}"]`);
+        // if (!el) return;
+        // setPickBook?.(el);
+
+        // 아래 두 줄과 기능도 디버깅용이라 추후에 지우기
+        setPickBookIndex(finalIdx);
         console.log("[FINAL] index:", finalIdx);
       },
     });
@@ -167,6 +173,15 @@ function RouletteWheel({
     runRoulette();
   }, [isStart])
 
+  const handleOpenPickBook = (book: TestBook) => {
+    console.log('pickBookIndex : ', pickBookIndex)
+    setIsOpenPickBook?.(true);
+    setPickBook?.(book);
+  }
+
+  const activeStyle = "img absolute top-0 left-0 h-50 w-33 rounded-2xl transition-all ease-in duration-300 shadow-book-pick"
+  const inactiveStyle = "img absolute top-0 left-0 h-50 w-33 rounded-2xl transition-all shadow-book"
+
 
   return (
     <>
@@ -176,14 +191,18 @@ function RouletteWheel({
         <div ref={wheelRef} className="wheel absolute top-30 w-[1000px] h-[1000px] origin-[50%_50%]">
           {
             books.map((book, index) => (
-              <div
+              <button
+                inert={index === pickBookIndex ? false : true}
+                type="button"
                 key={index}
                 ref={(el) => { if (el) bookRefs.current[index] = el; }}
                 data-index={index}
-                className="img absolute top-0 left-0 h-50 w-33 rounded-2xl shadow-book transition-all"
+                onClick={() => handleOpenPickBook(book)}
+                className={
+                  index !== pickBookIndex ? inactiveStyle : isStart ? inactiveStyle : activeStyle}
               >
                 <img className="w-[100%] h-[100%] rounded-2xl object-cover" src={book.src} alt={book.alt} />
-              </div>
+              </button>
             ))}
         </div>
       </div>
