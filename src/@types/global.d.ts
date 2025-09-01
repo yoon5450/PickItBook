@@ -96,3 +96,8 @@ export interface ReviewItem {
   imgSrc: string;
 }
 
+export type TestBook = {
+  src: string;
+  alt: string;
+}
+
