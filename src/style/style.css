@@ -9,4 +9,9 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "./_utilities.css";
 
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+@import "swiper/css/free-mode";
+
 @import "./components/_index.css";

@@ -322,6 +322,7 @@ export type Database = {
       }
     }
     Views: {
+
       v_bookmark_books: {
         Row: {
           authors: string | null
@@ -361,6 +362,7 @@ export type Database = {
           },
         ]
       }
+
     }
     Functions: {
       debug_like_state: {

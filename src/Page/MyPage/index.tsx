@@ -153,7 +153,7 @@ async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
 }
   
   return (
-    <div className="flex flex-col items-center w-full min-h-scree">
+    <div className="flex flex-col items-center w-full min-h-screen">
 
        <div  ref={bannerRef}
        className="w-screen h-[474px] bg-center bg-cover bg-[url('/banner.jpg')]" 

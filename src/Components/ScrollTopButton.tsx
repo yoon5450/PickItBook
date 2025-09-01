@@ -22,7 +22,6 @@ function ScrollTopButton({
   className,
   ...rest
 }: ExtendProps) {
-
   const [autoVisible, setAutoVisible] = useState(false);
   const [bottomPosition, setBottomPosition] = useState(30);
 
@@ -55,7 +54,6 @@ function ScrollTopButton({
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, [showOnScroll, scrollThreshold, footerHeight]);
 
-
   const handleClick = () => {
     if (target) target.scroll({ top: 0, behavior: "smooth" });
     else window.scroll({ top: 0, behavior: "smooth" });
@@ -69,7 +67,7 @@ function ScrollTopButton({
         className={tw(
           "fixed right-[50px] flex bg-primary-black backdrop-blur-sm",
           "w-[50px] h-[50px] rounded-full items-center justify-center overflow-hidden",
-          "shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out",
+          "shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out z-20",
           "hover:scale-110",
           "transform transition-all duration-300 ease-in-out",
           finalIsVisible
