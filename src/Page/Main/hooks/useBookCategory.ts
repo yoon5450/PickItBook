@@ -1,6 +1,6 @@
 import type { BookItemType } from "@/@types/global";
 import { useBookFetching } from "@/api/useBookFetching";
-import { type CategoryKey } from "../bookCategories";
+import { type CategoryKey, BOOK_CATEGORIES } from "../bookCategories";
 import {
   filterByKDC,
   makeSearchParams,
@@ -21,9 +21,13 @@ export const useBookCategory = (activeCategory: CategoryKey) => {
 
   const getFilteredBooks = (): BookItemType[] => {
     if (!data?.items) return [];
-
     if (activeCategory === "children") {
-      return refineChildren(data.items);
+      const categoryConfig = BOOK_CATEGORIES[activeCategory];
+      if (categoryConfig.useKeywordSearch) {
+        return data.items;
+      } else {
+        return refineChildren(data.items);
+      }
     } else {
       return filterByKDC(data.items, activeCategory);
     }
