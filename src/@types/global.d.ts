@@ -85,15 +85,19 @@ interface MissionItemType {
   isComplete: boolean;
 }
 
-export interface ReviewItem {
+export interface ReviewItemType {
   id: number;
   create_at: string;
-  isbn: string;
+  isbn13: string;
   user_id: string;
   title: string;
   content: string;
   score: number;
-  imgSrc: string;
+  image_url?: string;
+  like_count: number,
+  nickname: string,
+  profile_image: string,
+  liked_by_me: boolean
 }
 
 export type TestBook = {

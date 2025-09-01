@@ -11,7 +11,7 @@ export const BOOK_CATEGORIES = {
     kdcCodes: ["80", "81", "82", "83", "84", "85", "86", "87", "88", "89"],
     description: "소설, 시, 수필, 문학 작품",
   },
-  humanities: {
+   humanities: {
     code: "humanities",
     label: "인문/교양",
     kdcCodes: [
@@ -51,8 +51,10 @@ export const BOOK_CATEGORIES = {
   children: {
     code: "children",
     label: "아동/청소년",
-    kdcCodes: ["37"],
+    kdcCodes: ["37", "38", "82", "83", "84"],
     description: "아동도서, 청소년도서, 교육서",
+    // 키워드 검색을 우선 사용
+    useKeywordSearch: true,
   },
   practical: {
     code: "practical",
@@ -68,8 +70,8 @@ export const KEYWORD_MAP = {
   social: "경제",
   science_tech: "과학",
   arts_culture: "예술",
-  language: "언어",
-  children: "어린이",
+  language: "토익",
+  children: "동화",
   practical: "요리",
 } as const;
 

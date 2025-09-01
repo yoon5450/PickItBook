@@ -1,7 +1,7 @@
 import type { Tables } from "@/@types/database.types";
 import supabase from "./supabase";
 
-export type BookmarkBook = Tables<"v_bookmark_books">;
+export type BookmarkBook = Tables<"v_bookmark_books">
 
 export async function getBookmarks(userId: string) {
   const { data, error } = await supabase
@@ -14,5 +14,5 @@ export async function getBookmarks(userId: string) {
     return [];
   }
 
-  return data as BookmarkBook[];
+  return data as (BookmarkBook)[];
 }

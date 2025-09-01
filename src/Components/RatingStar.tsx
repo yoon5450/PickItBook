@@ -1,5 +1,11 @@
 import tw from "@/utils/tw";
-import React, { useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
 type BaseProps = {
   size?: number; // 별 크기(px)
@@ -11,26 +17,36 @@ type BaseProps = {
   onClick?: boolean;
 };
 
-type ByValue = BaseProps & { value: number; max?: number; percent?: never };
+type ByValue = BaseProps & {
+  value: number;
+  max?: number;
+  percent?: never;
+  setter?: Dispatch<SetStateAction<number>>;
+};
 
-
-// TODO : 나중에 HOVER 이벤트 구현
 export default function RatingStars(props: ByValue) {
   const { size = 20, count = 5, gap = 2, className, showValue = false } = props;
   const init = (props.value / (props.max ?? count)) * count;
-  const [curValue, setCurValue] = useState(() => snap(init, 0.5, 0, count));
+  const [curValue, setCurValue] = useState(() => init);
   const ariaLabel = `${props.value} / ${props.max ?? count} stars`;
+  const prevValue = useRef(0);
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  useEffect(() => {
+    const newInit = (props.value / (props.max ?? count)) * count;
+    const newCurValue = newInit;
+    setCurValue(newCurValue);
+  }, [props.value, props.max, count]);
+
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     if (!target) return;
 
     const rect = target.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left;
+    const offsetX = e.clientX - rect.left + size / 2;
 
     const raw = (offsetX / target.offsetWidth) * count;
-    const v = snap(raw, 0.5, 0.5, count);
-    setCurValue(v); 
+    const v = snap(raw, 1, 1, count);
+    setCurValue(v);
   };
 
   return (
@@ -38,10 +54,31 @@ export default function RatingStars(props: ByValue) {
       className={`inline-flex items-center ${className ?? ""}`}
       aria-label={ariaLabel}
     >
-      <div className="flex" style={{ gap }} onClick={props.inputMode ? handleClick : undefined}>
+      <div
+        className="flex"
+        style={{ gap }}
+        onMouseMove={props.inputMode ? handleMove : undefined}
+        onClick={
+          props.inputMode
+            ? () => {
+                if (props.setter) {
+                  props.setter(curValue);
+                  prevValue.current = curValue;
+                }
+              }
+            : undefined
+        }
+        onMouseLeave={
+          props.inputMode
+            ? () => {
+                setCurValue(prevValue.current);
+              }
+            : undefined
+        }
+      >
         {Array.from({ length: count }).map((_, i) => {
           const fill = clamp((curValue - i) * 100);
-          return <Star key={i} size={size} fill={fill} />;
+          return <Star key={i} size={size} fill={fill} className={fill ? "text-amber-400" : ""} />;
         })}
       </div>
 
@@ -54,9 +91,9 @@ export default function RatingStars(props: ByValue) {
   );
 }
 
-function Star({ size, fill }: { size: number; fill: number }) {
+function Star({ size, fill, className }: { size: number; fill: number; className:string }) {
   return (
-    <div style={{ position: "relative", width: size, height: size }}>
+    <div style={{ position: "relative", width:"fit-content"  ,height:"fit-content" }}>
       <StarIcon size={size} className="text-gray-300" />
       <div
         style={{
@@ -67,7 +104,7 @@ function Star({ size, fill }: { size: number; fill: number }) {
           width: `${fill}%`,
         }}
       >
-        <StarIcon size={size} className="text-amber-400" />
+        <StarIcon size={size} className={tw("text-amber-200 transition", className)} />
       </div>
     </div>
   );

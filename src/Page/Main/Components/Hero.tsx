@@ -1,10 +1,13 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useMobileDetection } from "../hooks/useMobileDetection";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
+  const isMobile = useMobileDetection(768);
+
   const sectionRef = useRef<HTMLElement>(null);
   const leftBoxRef = useRef<HTMLDivElement>(null);
   const rightBoxRef = useRef<HTMLDivElement>(null);
@@ -44,12 +47,22 @@ const Hero = () => {
       });
     });
 
+    const getMoveDistance = () => {
+      if (isMobile) return "-80%";
+      return "-70%";
+    };
+
+    const getScrollDistance = () => {
+      if (isMobile) return "+=200%";
+      return "+=300%";
+    };
+
     // ScrollTrigger 애니메이션
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: "top top",
-        end: "+=300%",
+        end: getScrollDistance(),
         scrub: 1,
         pin: true,
         pinSpacing: true,
@@ -58,24 +71,59 @@ const Hero = () => {
       },
     });
 
-    tl.to(leftBox, { x: "-70%", duration: 3, ease: "power2.inOut" }, 0)
-      .to(rightBox, { x: "70%", duration: 3, ease: "power2.inOut" }, 0)
-      .to(title,{ opacity: 0, scale: 0.8, duration: 0.5, ease: "power2.out" },"-=1.5")
-      .to(".text-effect", { opacity: 1, duration: 2.5, stagger: 0.5, ease: "power2.out" }, 2.5)
-      .to(linePath, { strokeDashoffset: 0, duration: 5, ease: "none" }, 4)
-      .to(logoPaths, { strokeDashoffset: 0, fill: "#E0AB0F", duration: 1.5, stagger: 0.3, ease: "none",}, 8);
+    const moveDistance = getMoveDistance();
+    const rightMoveDistance = moveDistance.replace("-", "");
+
+    tl.to(leftBox, { x: moveDistance, duration: 3, ease: "power2.inOut" }, 0)
+      .to(
+        rightBox,
+        { x: rightMoveDistance, duration: 3, ease: "power2.inOut" },
+        0
+      )
+      .to(
+        title,
+        { opacity: 0, scale: 0.8, duration: 0.5, ease: "power2.out" },
+        "-=1.5"
+      )
+      .to(
+        ".text-effect",
+        { opacity: 1, duration: 2.5, stagger: 0.5, ease: "power2.out" },
+        2.5
+      );
+    if (!isMobile && linePath) {
+      tl.to(
+        linePath,
+        {
+          strokeDashoffset: 0,
+          duration: 5,
+          ease: "none",
+        },
+        4
+      );
+    }
+    tl.to(
+      logoPaths,
+      {
+        strokeDashoffset: 0,
+        fill: "#E0AB0F",
+        duration: 1.5,
+        stagger: 0.3,
+        ease: "none",
+      },
+      isMobile ? 5 : 8
+    );
 
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <div>
-      <section className="h-screen relative" ref={sectionRef}>
+      <section className="h-screen relative overflow-hidden" ref={sectionRef}>
         <h2
           ref={titleRef}
-          className="font-accent absolute left-[50%] top-[50%] -translate-[50%] text-white text-[100px] z-10"
+          className="font-accent absolute left-[50%] top-[50%] -translate-[50%] text-white text-[50px] md:text-[100px] z-10"
         >
           PickItBook
         </h2>
@@ -89,20 +137,20 @@ const Hero = () => {
             className="w-1/2 h-full bg-[url(/main/hero_bg.png)] bg-no-repeat bg-[center_left_-46rem] bg-cover"
           ></div>
         </div>
-        <div className="absolute top-[21%] left-[50%] -translate-x-[50%]">
-          <div className="flex flex-col gap-[15vh] min-w-[780px]">
-            <p className="text-effect text-[40px] text-primary-black text-center">
+        <div className="absolute top-[22%] left-[50%] -translate-x-[50%]">
+          <div className="flex flex-col gap-[10vh] md:gap-[15vh] max-[1200px]:min-w-[65vw] min-w-[780px]">
+            <p className="text-effect text-3xl md:text-[40px] text-primary-black text-center">
               <span className="font-bold">독서의 재미</span>를 <br />
               다시 발견할 시간
             </p>
-            <p className="text-effect text-2xl text-primary-black">
+            <p className="text-effect text-xl md:text-2xl text-primary-black text-center md:text-left break-keep">
               오늘의 책과 독서 <span className="font-bold">미션</span>
               <br />
               선택의 <span className="font-bold">즐거움</span>, 게임 같은{" "}
               <span className="font-bold">도전</span>, 성취의{" "}
               <span className="font-bold">보상</span>까지
             </p>
-            <p className="text-effect text-2xl text-primary-black text-right">
+            <p className="text-effect text-xl md:text-2xl text-primary-black text-center md:text-right break-keep">
               나만의 독서를 넘어, 우리가 <span className="font-bold">함께</span>{" "}
               만드는
               <br />더 깊고 넓은 <span className="font-bold">독서의 세계</span>
@@ -110,7 +158,7 @@ const Hero = () => {
           </div>
         </div>
 
-        <div className="absolute top-[19.3%] left-[50%] -translate-x-[50%] flex flex-col items-center">
+        <div className="absolute -bottom-[2px] left-[50%] -translate-x-[50%] flex flex-col items-center">
           <svg
             className="relative top-[5px]"
             width="935"
@@ -123,8 +171,8 @@ const Hero = () => {
               ref={linePathRef}
               d="M540.932 59.9999C538.32 61.4505 531.814 63.528 512.317 68.0459C500.271 70.8375 488.382 71.4104 484.008 72.2799C477.374 73.5988 470.345 73.7349 459.85 74.1762C457.497 74.2751 455.769 74.6088 443.486 74.7573C431.204 74.9059 408.422 74.9059 396.109 74.7617C378.499 74.5555 370.985 70.2568 366.183 67.9279C357.547 63.7396 354.958 57.4458 352.769 53.9459C350.786 50.776 349.125 47.1485 349.125 43.4593C349.125 39.4999 348.823 35.5988 349.99 32.0989C351.188 28.5031 352.302 24.6328 354.503 21.6123C357.5 17.4999 360.463 15.4995 366.864 13.1575C373.823 10.6116 385.212 9.36491 392.932 7.91427C397.985 6.96489 403.86 6.16651 408.234 5.58101C415.317 4.63286 422.194 3.54487 428.333 3.10356C429.514 3.01865 430.374 2.67099 440.336 2.37824C450.298 2.08549 469.331 1.79711 480.145 1.79274C495.934 1.78636 503.447 3.52739 509.171 4.26582C513.428 4.81498 516.888 5.57227 524.731 7.60841C531.278 9.30805 533.401 11.6934 535 12.9999C538.23 15.6382 540.451 19.0862 541.473 22.8745C542.77 27.681 542.973 31.3098 542.973 34.9999C542.973 40 540.393 46.4999 540.393 49.6973C540.393 52.9176 539.049 55.4557 540.932 59.9999ZM540.932 59.9999C543.052 65.1142 555.024 67.3206 559.856 68.2032C564.887 69.1221 577.972 74.5738 591.006 78.2485C596.966 79.9289 603.402 81.023 608.055 82.1809C618.621 84.81 626.682 88.5734 632.24 92.2262C637.237 95.5102 643.836 99.6518 649.709 108.231C654 114.5 657.303 123.231 659.627 130.795C664.431 146.424 662.266 154.988 660.374 159.511C658.427 164.165 652.846 172.927 644.959 176.979C642 178.5 638.742 181.467 628.015 186.409C617.288 191.35 599.697 198.56 586.597 203.283C573.498 208.006 565.423 210.025 560.11 211.498C554.797 212.97 552.49 213.835 526.789 217.165C501.088 220.494 452.063 226.262 380.667 229.666C309.271 233.069 216.99 233.934 162.962 234.957C108.935 235.979 95.9574 237.133 87.9745 238.016C73.2273 239.646 66.3154 240.646 49.3054 245.291C40.8243 247.606 33.3964 251.989 25.8417 257.215C17.7098 262.84 11.8291 272.927 7.60822 283.54C4.32954 291.784 1.91053 301.02 1.91052 310.207C1.91051 319.5 4.99531 330.865 7.60821 337C8.4307 338.931 10.0201 343.432 15.9581 349.09C21.8961 354.748 31.9895 363.688 39.6403 369.88C51.8142 379.731 60.7051 383.665 69.2648 387.143C74.4565 389.253 80.9966 392.928 99.2651 397.739C117.534 402.55 147.237 408.606 183.158 413.456C219.078 418.306 260.317 421.766 361.009 419.512C461.702 417.257 620.6 409.182 709.666 405.455C798.731 401.728 813.15 402.593 825.769 403.904C838.388 405.215 848.77 406.945 857.146 408.557C880.326 413.019 887.692 416.296 893.962 418.913C899.252 421.121 904.89 426.188 908.679 430.702C913.652 436.627 920.882 448.542 929.206 468.667C932.836 477.443 932.253 485.835 933 502.5C933.359 510.499 930.285 525.478 917.784 540.186C913.84 544.826 907.931 549.038 899.341 554.731C890.751 560.425 879.216 567.057 872.264 570.907C858.031 578.788 847.546 580.297 840.013 582.031C834.73 583.248 826.713 586.073 799.483 590.15C772.253 594.226 726.112 599.706 662.402 603.249C598.692 606.793 518.81 608.235 464.682 610.852C410.554 613.469 384.6 617.218 361.136 620.88C337.673 624.541 317.486 628.002 305.068 629.929C288.661 632.475 280.585 632.812 273.582 634.761C235 645.5 228 678.5 224.5 681"
               stroke="#E0AB0F"
-              stroke-width="2"
-              stroke-linecap="round"
+              strokeWidth="2"
+              strokeLinecap="round"
             />
           </svg>
           <svg
@@ -133,6 +181,7 @@ const Hero = () => {
             viewBox="0 0 521 73"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            className="relative w-[60vw] md:w-full max-[768px]:-bottom-[8px] max-[480px]:-bottom-[20px] bottom-0"
           >
             <path
               ref={(el) => {

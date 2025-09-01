@@ -5,10 +5,10 @@ import { useTabIndicator } from "../hooks/useTabIndicator";
 import { useSwiperRefs } from "../hooks/useSwiperRefs";
 import { useBookCategory } from "../hooks/useBookCategory";
 import { TabSwiper } from "./TabSwiper";
-import { BookSwiper } from "./BookSwiper";
-import { LoadingSkeleton } from "./LoadingSkeleton";
+import BookSwiper from "./BookSwiper";
+import LoadingSkeleton from "./LoadingSkeleton";
 
-const NewBook = () => {
+const RecommendedBook = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("all");
 
   const isMobile = useMobileDetection();
@@ -29,9 +29,9 @@ const NewBook = () => {
   };
 
   return (
-    <section className="py-20 border-t border-primary-black">
-      <div className="max-w-5xl mx-auto">
-        <h2 className="relative text-3xl text-center text-primary-black font-semibold pb-2 mb-16">
+    <section className="py-[50px] md:py-20 border-t border-primary-black">
+      <div className="w-[1200px] m-auto px-0 max-[1340px]:w-full max-[1340px]:px-20 max-[768px]:px-0">
+        <h2 className="relative text-2xl md:text-3xl text-center text-primary-black font-semibold pb-2 mb-[30px] md:mb-16">
           분야별 추천 도서
           <span className="absolute left-1/2 bottom-0 -translate-x-1/2 w-12 h-0.5 bg-primary"></span>
         </h2>
@@ -76,4 +76,4 @@ const NewBook = () => {
   );
 };
 
-export default NewBook;
+export default RecommendedBook;

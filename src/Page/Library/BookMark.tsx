@@ -48,8 +48,8 @@ function BookMark() {
           >
             {/* 이미지 */}
             <img
-              src={book.image_url}
-              alt={book.book_name}
+              src={book.image_url ?? undefined}
+              alt={book.book_name ?? undefined}
               className="w-full max-h-60 mt-8 aspect-[2/3] object-cover rounded-xl shadow-xl"
             />
             {/* 텍스트 */}
