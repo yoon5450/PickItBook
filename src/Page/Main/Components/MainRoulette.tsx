@@ -1,4 +1,5 @@
-import MainRouletteWheel from "./MainRouletteWheel";
+import RouletteWheel from "@/Page/Roulette/Components/RouletteWheel";
+import { useMemo } from "react";
 
 type Book = {
   src: string;
@@ -10,7 +11,25 @@ interface Props {
 }
 
 function MainRoulette({ books }: Props) {
-  return <MainRouletteWheel books={books} />;
+  const memoizedBooks = useMemo(() => books, [books]);
+  return (
+    <>
+      <RouletteWheel
+        isStart={false}
+        books={memoizedBooks}
+        duration={20}
+        pinReaction={{
+          enabled: true,
+          minKick: 5,
+          maxKick: 10,
+          duration: 1.5,
+          ease: "elastic.out",
+          elasticStrength: 2,
+          elasticPower: 0.8
+        }}
+        isMainPage={true}
+      />
+    </>
+  );
 }
-
 export default MainRoulette;

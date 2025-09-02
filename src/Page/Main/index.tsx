@@ -4,20 +4,50 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LoopSlider from "./Components/LoopSlider";
 import RecommendedBook from "./Components/RecommendedBook";
 import Attractiveness from "./Components/Attractiveness";
-//import MainRoulette from "./Components/MainRoulette";
 import { Link } from "react-router";
 import { getMockDataByCategory } from "./utils/mockData";
-import Roulette from "./Components/Roulette";
-import Loading from "@/Components/Loading";
+//import Loading from "@/Components/Loading";
+import MainRoulette from "./Components/MainRoulette";
+import { useMemo } from "react";
+import WordCloud, { type WordData } from "./Components/WordCloud";
+import Example from "./Components/Example";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Main = () => {
-  const mockBooks = getMockDataByCategory("all").slice(0, 24);
-  const books = mockBooks.map((book) => ({
-    src: book.bookImageURL,
-    alt: book.bookname,
-  }));
+  const mockBooks = useMemo(
+    () => getMockDataByCategory("all").slice(0, 24),
+    []
+  );
+
+  // 샘플 데이터
+  const sampleWords: WordData[] = [
+    { text: "React", value: 100 },
+    { text: "TypeScript", value: 95 },
+    { text: "JavaScript", value: 90 },
+    { text: "TailwindCSS", value: 85 },
+    { text: "Node.js", value: 80 },
+    { text: "Next.js", value: 75 },
+    { text: "CSS", value: 70 },
+    { text: "HTML", value: 65 },
+    { text: "Vue.js", value: 60 },
+    { text: "Angular", value: 55 },
+    { text: "Svelte", value: 50 },
+    { text: "GraphQL", value: 45 },
+    { text: "REST API", value: 40 },
+    { text: "MongoDB", value: 35 },
+    { text: "PostgreSQL", value: 30 },
+  ];
+  // const sampleWords = useMemo(() => WordData, [WordData]);
+
+  const books = useMemo(
+    () =>
+      mockBooks.map((book) => ({
+        src: book.bookImageURL,
+        alt: book.bookname,
+      })),
+    [mockBooks]
+  );
 
   return (
     <main className="w-full">
@@ -73,14 +103,17 @@ const Main = () => {
         </div>
 
         <div className="relative flex justify-center h-[600px] z-[-1]">
-          {/* <MainRoulette books={books} /> */}
-          <Roulette
-            books={books} // 버튼 숨기기
-          />
+          <MainRoulette books={books} />
         </div>
       </section>
 
-      <Loading />
+      <hr />
+      {/* WordCloud 컴포넌트 사용 */}
+      <div className="flex justify-center mb-8">
+        <Example />
+      </div>
+
+      {/* <Loading /> */}
     </main>
   );
 };
