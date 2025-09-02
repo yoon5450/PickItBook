@@ -177,7 +177,7 @@ export function makeBookDetailURL(
 /** =========================
  *  3) 추천 도서
  *  ========================= */
-export function makeRecommendURL(isbn13: string, pageNo: number = 1): string {
+export function makeRecommendURL(isbn13: string): string {
   return withQuery(endpoints.recommandList, {
     authKey: LIBRARY_API_KEY,
     isbn13,

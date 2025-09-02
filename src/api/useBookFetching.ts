@@ -122,7 +122,7 @@ export const useGetRecommend = (
   return useQuery<RecommendMain, Error, RecommendData>({
     queryKey: ["recommend", isbn13],
     queryFn: ({ signal }) =>
-      fetcher(makeRecommendURL(isbn13).href, { signal }),
+      fetcher(makeRecommendURL(isbn13), { signal }),
     select: (raw) => {
       const r = raw.response ?? {};
       const req = r.request;
