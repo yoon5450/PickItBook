@@ -31,7 +31,10 @@ function BookDetail() {
   // Review 정보 불러오기
   const {data:reviewData} = useGetReview(isbn13)
 
+  // Mission 정보 불러오기
   const {data:missionData} = useGetMissionByISBN(isbn13);
+
+  console.log(missionData);
 
   if (error) console.error(error);
 
@@ -44,6 +47,7 @@ function BookDetail() {
           <BookDataPartition
             data={BookDetailData}
             isFetching={BookDetailFetching}
+            isBookMarked={missionData?.[0].assigned}
           />
         </PartitionBase>
 
@@ -69,7 +73,7 @@ function BookDetail() {
           <ReviewWritePartition data={BookDetailData}/>
         </PartitionBase>
 
-        <PartitionBase title={`리뷰 목록 (${reviewData?.length})`}>
+        <PartitionBase title={`리뷰 목록 (${reviewData?.length})`} className="min-h-80 mb-10">
           <ReviewListPartition data={reviewData} />
         </PartitionBase>
       </div>

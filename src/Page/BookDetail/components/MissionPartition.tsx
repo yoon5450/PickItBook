@@ -3,7 +3,7 @@ import MissionList from "./MissionList";
 import loaderIcon from '@/assets/loading.svg';
 
 interface Props {
-  data: MissionItemType[];
+  data?: MissionItemType[];
 }
 
 function MisstionPartition({ data }: Props) {

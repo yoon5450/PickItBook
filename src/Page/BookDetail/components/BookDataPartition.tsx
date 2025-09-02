@@ -9,6 +9,7 @@ import { getBookImageURLs } from "@/utils/bookImageUtils";
 interface Props {
   data: BookDetailData | undefined;
   isFetching: boolean;
+  isBookMarked: boolean | undefined;
 }
 
 function BookDataPatition({ data }: Props) {

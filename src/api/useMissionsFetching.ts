@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { missionsRepo } from "./missions.repo.supabase"
+import type { MissionItemType } from "@/@types/global";
 
 
 type UseMissionsFetchingOptions = {
@@ -8,7 +9,6 @@ type UseMissionsFetchingOptions = {
   gcTime?: number;
   refetchOnWindowFocus?: boolean;
 };
-
 
 export const useGetMissionByISBN = (isbn13:string, opts: UseMissionsFetchingOptions = {}) => {
   const {
@@ -19,7 +19,7 @@ export const useGetMissionByISBN = (isbn13:string, opts: UseMissionsFetchingOpti
   } = opts;
 
 
-  return useQuery({
+  return useQuery<MissionItemType[]>({
     queryKey: ['missions', 'book', isbn13],
     queryFn: () => missionsRepo.getMissionsByISBN(isbn13),
     refetchOnWindowFocus,
