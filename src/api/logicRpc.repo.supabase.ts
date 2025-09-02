@@ -8,7 +8,7 @@ export const logicRpcRepo = {
     });
     if (error) console.error("setBundle error :", error);
 
-    logicRpcRepo.getBundleIdByISBN(isbn13)
+    return await logicRpcRepo.getBundleIdByISBN(isbn13)
   },
 
   setProcessEvent: async <T>(type: EventType, payload: T) => {
@@ -19,7 +19,6 @@ export const logicRpcRepo = {
 
     if (error) console.error("processEvent error :", error);
   },
-  
   
   getBundleIdByISBN: async (isbn13: string) => {
     const { data, error } = await supabase

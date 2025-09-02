@@ -3,7 +3,7 @@ import loaderIcon from "@/assets/loading.svg";
 import RatingStars from "@/Components/RatingStar";
 import { NavLink } from "react-router-dom";
 import { BiBookmark } from "react-icons/bi";
-import { useBookmark } from "@/api/useBookmark";
+import { useBookmarkWithMissions } from "@/api/useBookmark";
 import { getBookImageURLs } from "@/utils/bookImageUtils";
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
 
 function BookDataPatition({ data, ratingAvg, reviewSize }: Props) {
   const isbn13 = data?.book?.isbn13;
-  const { mutate } = useBookmark(isbn13);
+  const { mutate } = useBookmarkWithMissions(isbn13);
 
   if (!data) {
     return (

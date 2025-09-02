@@ -10,7 +10,7 @@ import supabase from "@/utils/supabase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useQueryClient } from "@tanstack/react-query";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import ConfettiCongrats from "@/Components/ConfettiCongrats";
+// import ConfettiCongrats from "@/Components/ConfettiCongrats";
 
 // 기본 레이아웃 구조 정의. 모달, floating Button등 Zustand를 통해 제어
 function Root() {
@@ -55,10 +55,7 @@ function Root() {
 
   return (
     <div className="min-h-screen w-full">
-    <ConfettiCongrats
-      message="🎉 미션 달성"
-      count={301}
-    />
+      {/* <ConfettiCongrats message="🎉 미션 달성" count={301} /> */}
 
       <OverlayHost />
       <ScrollTopButton isVisible={scrollTopButtonVisible} />
