@@ -113,7 +113,7 @@ export function useBookDetail(
         makeBookDetailURL(isbn13!, {
           displayInfo: opts?.displayInfo,
           loaninfoYN: opts?.loaninfoYN,
-        }).href,
+        }),
         { signal }
       ),
     enabled,
