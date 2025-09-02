@@ -1,17 +1,14 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
-import type { TestBook } from "@/@types/global";
+import type { PopularBookItem } from "@/@types/global";
+import { getBookImageURLs } from "@/Page/Main/utils/bookImageUtils";
 gsap.registerPlugin(useGSAP);
-
-
-// gsap ease 종류 확인
-// https://gsap.com/resources/getting-started/Easing/#ease-types 
 
 interface Props {
   isStart: boolean, // 작동 시킬건지
-  books: TestBook[], // 책 데이터
-  setPickBook?: React.Dispatch<React.SetStateAction<TestBook | null>>;
+  books: PopularBookItem[], // 책 데이터
+  setPickBook?: React.Dispatch<React.SetStateAction<PopularBookItem | null>>;
   setIsWorking?: React.Dispatch<React.SetStateAction<boolean>>;
   setIsOpenPickBook?: React.Dispatch<React.SetStateAction<boolean>>;
   duration?: number; // 지속 시간
@@ -34,6 +31,7 @@ function RouletteWheel({
   const wheelRef = useRef<HTMLDivElement>(null);
   const bookRefs = useRef<HTMLButtonElement[]>([]);
   const [pickBookIndex, setPickBookIndex] = useState<number | null>(null);
+  const [prevIsbn, setPrevIsbn] = useState<string | null>(null);
 
   // === 룰렛 배치 ===
   useGSAP(() => {
@@ -135,9 +133,11 @@ function RouletteWheel({
         const norm = normalizeAngle(pinAngle - finalRot);
         const finalIdx = Math.abs(Math.round(norm / sliceDeg) % total);
 
-        // const el = document.querySelector<HTMLButtonElement>(`.img[data-index="${finalIdx}"]`);
-        // if (!el) return;
-        // setPickBook?.(el);
+
+        // 책 하이라이팅 여부용
+        const el = document.querySelector<HTMLButtonElement>(`.img[data-index="${finalIdx}"]`);
+        if (!el || !el.dataset.isbn13) return;
+        setPrevIsbn(el.dataset.isbn13)
 
         // 아래 두 줄과 기능도 디버깅용이라 추후에 지우기
         setPickBookIndex(finalIdx);
@@ -173,7 +173,7 @@ function RouletteWheel({
     runRoulette();
   }, [isStart])
 
-  const handleOpenPickBook = (book: TestBook) => {
+  const handleOpenPickBook = (book: PopularBookItem) => {
     console.log('pickBookIndex : ', pickBookIndex)
     setIsOpenPickBook?.(true);
     setPickBook?.(book);
@@ -197,11 +197,13 @@ function RouletteWheel({
                 key={index}
                 ref={(el) => { if (el) bookRefs.current[index] = el; }}
                 data-index={index}
+                data-isbn13={book.isbn13}
                 onClick={() => handleOpenPickBook(book)}
                 className={
-                  index !== pickBookIndex ? inactiveStyle : isStart ? inactiveStyle : activeStyle}
+                  (index === pickBookIndex) && !isStart && (prevIsbn === book.isbn13) ? activeStyle : inactiveStyle
+                }
               >
-                <img className="w-[100%] h-[100%] rounded-2xl object-cover" src={book.src} alt={book.alt} />
+                <img className="w-[100%] h-[100%] rounded-2xl object-cover" src={getBookImageURLs(book.isbn13)[0]} alt={`${book.bookname} 표지`} />
               </button>
             ))}
         </div>

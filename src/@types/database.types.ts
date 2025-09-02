@@ -16,21 +16,24 @@ export type Database = {
     Tables: {
       bookmark: {
         Row: {
-          book_id: number
+          book_id: number | null
           created_at: string
           id: number
+          isbn13: string | null
           user_id: string
         }
         Insert: {
-          book_id: number
+          book_id?: number | null
           created_at?: string
           id?: number
-          user_id: string
+          isbn13?: string | null
+          user_id?: string
         }
         Update: {
-          book_id?: number
+          book_id?: number | null
           created_at?: string
           id?: number
+          isbn13?: string | null
           user_id?: string
         }
         Relationships: [
@@ -89,51 +92,6 @@ export type Database = {
           library_code?: string
           publication_date?: string
           publisher?: string
-        }
-        Relationships: []
-      }
-      medal: {
-        Row: {
-          condition: string
-          created_at: string
-          id: number
-          name: string
-        }
-        Insert: {
-          condition: string
-          created_at?: string
-          id?: number
-          name: string
-        }
-        Update: {
-          condition?: string
-          created_at?: string
-          id?: number
-          name?: string
-        }
-        Relationships: []
-      }
-      mission: {
-        Row: {
-          content: string
-          created_at: string
-          id: number
-          score: number
-          type: number
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          id?: number
-          score: number
-          type: number
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: number
-          score?: number
-          type?: number
         }
         Relationships: []
       }
@@ -202,6 +160,175 @@ export type Database = {
           },
         ]
       }
+      task_bundle_items: {
+        Row: {
+          bundle_id: number
+          template_id: number
+        }
+        Insert: {
+          bundle_id: number
+          template_id: number
+        }
+        Update: {
+          bundle_id?: number
+          template_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_bundle_items_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "task_bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_bundle_items_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_bundles: {
+        Row: {
+          active: boolean
+          id: number
+          name: string
+          version: number
+          weight: number
+        }
+        Insert: {
+          active?: boolean
+          id?: number
+          name: string
+          version?: number
+          weight?: number
+        }
+        Update: {
+          active?: boolean
+          id?: number
+          name?: string
+          version?: number
+          weight?: number
+        }
+        Relationships: []
+      }
+      task_rewards: {
+        Row: {
+          granted_at: string | null
+          id: number
+          reward: Json
+          scope_id: string | null
+          template_id: number
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string | null
+          id?: number
+          reward: Json
+          scope_id?: string | null
+          template_id: number
+          user_id: string
+        }
+        Update: {
+          granted_at?: string | null
+          id?: number
+          reward?: Json
+          scope_id?: string | null
+          template_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_rewards_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_templates: {
+        Row: {
+          active: boolean | null
+          code: string
+          description: string | null
+          id: number
+          kind: Database["public"]["Enums"]["task_kind"]
+          name: string
+          reward: Json
+          rule: Json
+          scope: Database["public"]["Enums"]["task_scope"]
+          valid_from: string | null
+          valid_to: string | null
+          version: number | null
+          weight: number | null
+        }
+        Insert: {
+          active?: boolean | null
+          code: string
+          description?: string | null
+          id?: number
+          kind: Database["public"]["Enums"]["task_kind"]
+          name: string
+          reward: Json
+          rule: Json
+          scope: Database["public"]["Enums"]["task_scope"]
+          valid_from?: string | null
+          valid_to?: string | null
+          version?: number | null
+          weight?: number | null
+        }
+        Update: {
+          active?: boolean | null
+          code?: string
+          description?: string | null
+          id?: number
+          kind?: Database["public"]["Enums"]["task_kind"]
+          name?: string
+          reward?: Json
+          rule?: Json
+          scope?: Database["public"]["Enums"]["task_scope"]
+          valid_from?: string | null
+          valid_to?: string | null
+          version?: number | null
+          weight?: number | null
+        }
+        Relationships: []
+      }
+      user_book_task_assignment: {
+        Row: {
+          book_id: string
+          bundle_id: number
+          created_at: string | null
+          id: number
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          bundle_id: number
+          created_at?: string | null
+          id?: number
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          bundle_id?: number
+          created_at?: string | null
+          id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_book_task_assignment_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "task_bundles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_keyword: {
         Row: {
           created_at: string
@@ -238,64 +365,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_medal: {
-        Row: {
-          created_at: string
-          id: number
-          medal_id: number
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          medal_id: number
-          user_id?: string
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          medal_id?: number
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_medal_medal_id_fkey"
-            columns: ["medal_id"]
-            isOneToOne: false
-            referencedRelation: "medal"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_mission: {
-        Row: {
-          created_at: string
-          id: number
-          mission_id: number
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          mission_id: number
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          mission_id?: number
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_mission_mission_id_fkey"
-            columns: ["mission_id"]
-            isOneToOne: false
-            referencedRelation: "mission"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_profile: {
         Row: {
           created_at: string
@@ -320,9 +389,75 @@ export type Database = {
         }
         Relationships: []
       }
+      user_task_event_log: {
+        Row: {
+          created_at: string | null
+          event_key: string
+          user_task_id: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_key: string
+          user_task_id?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          event_key?: string
+          user_task_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_task_event_log_user_task_id_fkey"
+            columns: ["user_task_id"]
+            isOneToOne: false
+            referencedRelation: "user_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_tasks: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          id: number
+          progress: Json | null
+          scope_id: string
+          scope_type: Database["public"]["Enums"]["task_scope"]
+          template_id: number
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          id?: number
+          progress?: Json | null
+          scope_id?: string
+          scope_type: Database["public"]["Enums"]["task_scope"]
+          template_id: number
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          id?: number
+          progress?: Json | null
+          scope_id?: string
+          scope_type?: Database["public"]["Enums"]["task_scope"]
+          template_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_tasks_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-
       v_bookmark_books: {
         Row: {
           authors: string | null
@@ -342,29 +477,84 @@ export type Database = {
         }
         Relationships: []
       }
-      v_user_mission: {
-        Row: {
-          content: string | null
-          created_at: string | null
-          id: number | null
-          mission_id: number | null
-          score: number | null
-          type: number | null
-          user_id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_mission_mission_id_fkey"
-            columns: ["mission_id"]
-            isOneToOne: false
-            referencedRelation: "mission"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-
     }
     Functions: {
+      api_assign_book_tasks: {
+        Args: { p_isbn13: string; p_user_id?: string }
+        Returns: {
+          assignment_id: number
+          bundle_id: number
+        }[]
+      }
+      api_list_book_missions: {
+        Args: { p_auto_assign?: boolean; p_isbn13: string; p_user_id?: string }
+        Returns: {
+          assigned: boolean
+          bundle_id: number
+          code: string
+          completed: boolean
+          completed_at: string
+          description: string
+          name: string
+          progress: Json
+          reward: Json
+          template_id: number
+        }[]
+      }
+      api_process_event: {
+        Args: {
+          p_emit_followups?: boolean
+          p_payload: Json
+          p_type: string
+          p_user_id?: string
+        }
+        Returns: undefined
+      }
+      api_rule_checklist: {
+        Args: {
+          p_emit_followups: boolean
+          p_kind: string
+          p_payload: Json
+          p_reward: Json
+          p_rule: Json
+          p_scope: string
+          p_scope_id: string
+          p_template_id: number
+          p_type: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      api_rule_count_event: {
+        Args: {
+          p_emit_followups: boolean
+          p_kind: string
+          p_payload: Json
+          p_reward: Json
+          p_rule: Json
+          p_scope: string
+          p_scope_id: string
+          p_template_id: number
+          p_type: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      api_rule_streak: {
+        Args: {
+          p_emit_followups: boolean
+          p_kind: string
+          p_payload: Json
+          p_reward: Json
+          p_rule: Json
+          p_scope: string
+          p_scope_id: string
+          p_template_id: number
+          p_type: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       debug_like_state: {
         Args: { p_review_id: number }
         Returns: {
@@ -372,6 +562,14 @@ export type Database = {
           me: string
           total_likes: number
         }[]
+      }
+      fn_isbn_hash: {
+        Args: { p_isbn: string }
+        Returns: number
+      }
+      fn_pick_bundle_by_isbn: {
+        Args: { p_isbn: string }
+        Returns: number
       }
       get_reviews_by_isbn: {
         Args: { p_isbn13: string; p_limit?: number; p_offset?: number }
@@ -399,7 +597,8 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      task_kind: "mission" | "achievement"
+      task_scope: "book" | "global"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -526,6 +725,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      task_kind: ["mission", "achievement"],
+      task_scope: ["book", "global"],
+    },
   },
 } as const

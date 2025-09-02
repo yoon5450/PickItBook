@@ -1,13 +1,15 @@
 import type { ReviewItemType } from "@/@types/global";
 import { useToggleLike } from "@/api/useLikeFetching";
 import RatingStars from "@/Components/RatingStar";
+import Swal from "sweetalert2";
 
 interface Props {
   item: ReviewItemType;
+  isAnonymous?: boolean;
 }
 
-function ReviewItem({ item }: Props) {
-  const {mutate, isPending} = useToggleLike(item.id)
+function ReviewItem({ item, isAnonymous }: Props) {
+  const { mutate, isPending } = useToggleLike(item.id);
 
   return (
     <li className="flex flex-col p-4 bg-white rounded-md gap-2">
@@ -50,9 +52,19 @@ function ReviewItem({ item }: Props) {
           <button
             type="button"
             disabled={isPending}
-            onClick={() => mutate()}
+            onClick={() => {
+              // 없으면 undefined, 있으면 isAnonymous=false네 ㅋㅋ;
+              if (isAnonymous === undefined)
+                Swal.fire(
+                  "로그인 필요",
+                  "<div>로그인 이후에 이용할 수 있습니다.</div>"
+                );
+              else mutate();
+            }}
           >
-            <span className={item.liked_by_me ? "text-amber-400" : "bg-white"}>유용해요 {item.like_count}</span>
+            <span className={item.liked_by_me ? "text-amber-400" : "bg-white"}>
+              유용해요 {item.like_count}
+            </span>
           </button>
           <button type="button">댓글</button>
         </div>

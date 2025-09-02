@@ -1,4 +1,8 @@
-import { makeSearchURL, type SearchFields } from "@/constant/constant";
+import {
+  
+  makeSearchURL,
+  type SearchFields,
+} from "@/constant/constant";
 import { fetcher } from "./fetcher";
 import type { BookItemType } from "@/@types/global";
 import { useQuery, type QueryKey } from "@tanstack/react-query";
@@ -83,3 +87,51 @@ export const useBookFetching = (
     data: query.data ?? EMPTY,
   };
 };
+
+// Recommend 타입 정의
+// export interface RecommendMain {
+//     response: Response;
+// }
+
+// export interface Response {
+//     request:   Request;
+//     resultNum: number;
+//     docs:      Doc[];
+// }
+
+// export interface Doc {
+//     book: BookItemType;
+// }
+
+// export interface RecommendData {
+//   data:BookItemType[];
+//   page:number
+// }
+
+// export const useGetRecommend = (
+//   isbn: string,
+//   pageNo: number = 1,
+//   opts: UseBookFetchingOptions = {}
+// ) => {
+//   const {
+//     enabled = !!isbn,
+//     staleTime = 60_000,
+//     gcTime = 5 * 60_000,
+//     refetchOnWindowFocus = false,
+//   } = opts;
+
+//   return useQuery<RecommendMain, Error, RecommendData>({
+//     queryKey: ["recommend", isbn, pageNo],
+//     queryFn: ({ signal }) => fetcher(makeRecommendURL(isbn, pageNo).href, { signal }),
+//     select: (raw) => {
+//       const r = raw.response
+//       const data = 
+
+//       return raw;
+//     },
+//     enabled,
+//     staleTime,
+//     gcTime,
+//     refetchOnWindowFocus,
+//   });
+// };
