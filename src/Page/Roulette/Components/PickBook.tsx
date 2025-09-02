@@ -1,5 +1,6 @@
 import type { PopularBookItem } from "@/@types/global";
 import { useBookDetail } from "@/api/useBookDetail";
+import { useGetMissionByISBN } from "@/api/useMissionsFetching";
 import RatingStars from "@/Components/RatingStar";
 import { getBookImageURLs } from "@/Page/Main/utils/bookImageUtils";
 import tw from "@/utils/tw";
@@ -19,6 +20,15 @@ interface Props {
   isOpenPickBook: boolean;
   setIsOpenPickBook: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+// type Missions = {
+//   name: string
+//   description: string
+//   completed: boolean
+//   reward: {
+//     amount: number
+//   }
+// }
 
 const openBook = cva(
   'absolute origin-left transition-transform duration-1000 ease-in-out border border-2 border-gray-500 ',
@@ -52,10 +62,17 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
   const isbn13 = pickBook?.isbn13 ?? undefined;
   const open = !!(isbn13 && isOpenPickBook);
 
-  const { status, data } = useBookDetail(isbn13, {
-    loaninfoYN: 'Y',
-    displayInfo: 'age',
-  });
+  const { status: bookStatus, data: bookData } = useBookDetail(isbn13);
+
+  const { data: missionData } = useGetMissionByISBN(isbn13!);
+  // if(!missionData) return; 이 코드는 아래 훅 호출하는데 에러를 유발
+
+  const missions = missionData ?
+    missionData
+      .map(({ name, description, completed, reward, }) => ({ name, description, completed, reward }))
+      .sort((a, b) => b.reward.amount - a.reward.amount)
+      .filter(m => !m.completed) : [];
+  // console.log(missions);
 
 
   useEffect(() => {
@@ -96,7 +113,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
       <h1 hidden>Pick Book</h1>
       {
         open &&
-        (status === 'pending' || !data?.book ? (<p>로딩중</p>)
+        (bookStatus === 'pending' || !bookData?.book ? (<p>로딩중</p>)
           : (
             <div key={isbn13} className="fixed inset-0 z-[1000]">
               <div className="absolute inset-0 bg-black/40 backdrop-blur-sm">
@@ -108,8 +125,8 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                       <div className={tw(openBook({ intent: 'coverEnd', isOpen }), "coverEnd")}>
                         <img
                           className="w-[100%] h-[100%]"
-                          src={getBookImageURLs(data.book.isbn13)[0]}
-                          alt={`${data.book.bookname} 뒷면`}
+                          src={getBookImageURLs(bookData.book.isbn13)[0]}
+                          alt={`${bookData.book.bookname} 뒷면`}
                         />
                       </div>
 
@@ -125,42 +142,47 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
 
                         <div className="flex flex-col gap-3 lg:gap-6 xl:gap-8">
                           <p className="font-semibold text-lg lg:text-2xl text-primary-black pl-1">미션</p>
+                          <p className="text-xs lg:text-sm xl:text-[16px]"><span className="text-primary">{bookData.book.bookname}</span> 미션이 도착했어요!</p>
                           {/* 미션 map으로 렌더링하기 */}
-                          <div className="w-full border border-gray-300 bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-row justify-between gap-1" >
-                            <div>
-                              <p className="text-xs lg:text-sm xl:text-[16px]"><span className="text-primary">{data.book.bookname}</span> 미션이 도착했어요!</p>
-                              <p className="text-xs lg:text-sm xl:text-[16px]">이 책을 읽고 인상 깊은 구절을 남겨주세요</p>
-                            </div>
-                            <img className="w-5 lg:w-6 xl:w-8" src="/fire_book_yellow.svg" alt="책 미션" />
-                          </div>
-                          <div className="w-full bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-col">
-                            <p className="text-xs lg:text-sm xl:text-[16px]">오늘의 미션이 도착했어요!</p>
-                            <p className="text-xs lg:text-sm xl:text-[16px]">이 책을 읽고 인상 깊은 구절을 남겨주세요</p>
-                          </div>
-                          <div className="w-full bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-col">
-                            <p className="text-xs lg:text-sm xl:text-[16px]">오늘의 미션이 도착했어요!</p>
-                            <p className="text-xs lg:text-sm xl:text-[16px]">이 책을 읽고 인상 깊은 구절을 남겨주세요</p>
-                          </div>
-                          <div className="w-full bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-col">
-                            <p className="text-xs lg:text-sm xl:text-[16px]">오늘의 미션이 도착했어요!</p>
-                            <p className="text-xs lg:text-sm xl:text-[16px]">이 책을 읽고 인상 깊은 구절을 남겨주세요</p>
-                          </div>
+                          {
+                            missions.map(({ name, description }, index) => (
+                              <>
+                                {
+                                  index === 0 ? (
+                                    <div key={index} className="w-full border border-gray-300 bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-row justify-between gap-1" >
+                                      <div>
+                                        <p className="text-xs lg:text-sm xl:text-[16px]">{name}</p>
+                                        <p className="text-xs lg:text-sm xl:text-[16px]">{description}</p>
+                                      </div>
+                                      <img className="w-5 lg:w-6 xl:w-8" src="/fire_book_yellow.svg" alt="책 미션" />
+                                    </div>
+                                  ) : (
+                                    <div key={index} className="w-full bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-col">
+                                      <p className="text-xs lg:text-sm xl:text-[16px]">{name}</p>
+                                      <p className="text-xs lg:text-sm xl:text-[16px]">{description}</p>
+                                    </div>
+                                  )
+                                }
+                              </>
+                            ))
+                          }
+
                         </div>
                       </div>
 
                       <div className={tw(openBook({ intent: 'pageLeft', isOpen }), "pt-13 pb-9 px-9", "pageLeft")}>
                         <div className="-rotate-y-180 flex flex-col gap-1">
-                          <p className="font-semibold text-lg md:text-xl lg:text-2xl text-primary-black">{data.book.bookname}</p>
+                          <p className="font-semibold text-lg md:text-xl lg:text-2xl text-primary-black">{bookData.book.bookname}</p>
                           <RatingStars value={3} size={28} gap={2} />
                           <div className="flex flex-row flex-wrap gap-2.5 lg:gap-4 xl:gap-6 pb-2">
                             <div className="flex items-center w-fit px-3 py-1.5 lg:px-5 lg:py-2.5 bg-stone-200 rounded-2xl" aria-label="작가">
-                              <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{data.book.authors}</p></div>
+                              <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{bookData.book.authors}</p></div>
                             <div className="font-semibold text-primary-black flex items-center w-fit px-3 py-1.5 lg:px-5 lg:py-2.5 bg-stone-200 rounded-2xl" aria-label="출판사">
-                              <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{data.book.publisher}</p></div>
+                              <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{bookData.book.publisher}</p></div>
                             {
-                              data.book.class_nm.length === 0 ? null : (
+                              bookData.book.class_nm.length === 0 ? null : (
                                 <div className="font-semibold text-primary-black flex items-center w-fit px-3 py-1.5 lg:px-5 lg:py-2.5 bg-stone-200 rounded-2xl" aria-label="장르">
-                                  <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{data.book.class_nm}</p></div>
+                                  <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{bookData.book.class_nm}</p></div>
                               )
                             }
                             <div className="font-semibold text-primary-black flex items-center w-fit px-3 py-1.5 lg:px-5 lg:py-2.5 bg-stone-200 rounded-2xl" aria-label="isbn13">
@@ -168,7 +190,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                           </div>
                           <div>
                             <p className="text-xs lg:text-sm xl:text-[16px] line-clamp-[9] lg:line-clamp-[12]">
-                              {data.book.description}
+                              {bookData.book.description}
                             </p>
                           </div>
                         </div>
@@ -178,8 +200,8 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                         <button type='button' onClick={handleOpenBook} className="w-full h-full">
                           <img
                             className="w-[100%] h-[100%]"
-                            src={getBookImageURLs(data.book.isbn13)[0]}
-                            alt={`${data.book.bookname} 표지`}
+                            src={getBookImageURLs(bookData.book.isbn13)[0]}
+                            alt={`${bookData.book.bookname} 표지`}
                           />
                         </button>
                       </div>
