@@ -100,8 +100,40 @@ export interface ReviewItemType {
   liked_by_me: boolean
 }
 
-export type TestBook = {
-  src: string;
-  alt: string;
+// 0:남성 1:여성 2:미상
+export type gender = 0 | 1 | 2
+
+// 0:영유아 6:유아 8:초등 14:청소년 20:20대 30:30대 40:40대 50:50대 60:60대 이상 -1:미상 
+export type age = 0 | 6 | 8 | 14 | 20 | 30 | 40 | 50 | 60 | -1
+
+export interface RawDoc {
+  no: number;
+  ranking: string;
+  bookname: string;
+  authors: string;
+  publisher: string;
+  publication_year: string;
+  isbn13: string;
+  addition_symbol: string;
+  vol: string;
+  class_no: string;
+  class_nm: string;
+  bookImageURL: string;
+  bookDtlUrl: string;
+  loan_count: string;
 }
 
+export interface PopularBooksRaw {
+  response?: {
+    request?: Record<string, unknown>;
+    resultNum?: number;
+    numFound?: number;
+    docs?: Array<{ doc: RawDoc }>;
+  };
+  errMsg?: string;
+}
+
+export interface PopularBookItem extends Omit<RawDoc, 'ranking' | 'loan_count'> {
+  ranking: number;
+  loan_count: number;
+}
