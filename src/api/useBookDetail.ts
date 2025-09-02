@@ -11,53 +11,53 @@ export type BookDetailRaw = {
       displayInfo: string;
     };
     detail:
-      | {
-          book: {
-            no: number;
-            bookname: string;
-            authors: string;
-            publisher: string;
-            publication_date: string;
-            publication_year: string;
-            isbn: string;
-            isbn13: string;
-            addition_symbol: string;
-            vol: string;
-            class_no: string;
-            class_nm: string;
-            description: string;
-            bookImageURL: string;
-          };
-        }[]
-      | null;
+    | {
+      book: {
+        no: number;
+        bookname: string;
+        authors: string;
+        publisher: string;
+        publication_date: string;
+        publication_year: string;
+        isbn: string;
+        isbn13: string;
+        addition_symbol: string;
+        vol: string;
+        class_no: string;
+        class_nm: string;
+        description: string;
+        bookImageURL: string;
+      };
+    }[]
+    | null;
     loanInfo:
-      | (
-          | {
-              Total: {
-                ranking: number;
-                name: string;
-                loanCnt: number;
-              };
-              ageResult?: undefined;
-            }
-          | {
-              ageResult: {
-                age: {
-                  ranking: number;
-                  name: string;
-                  loanCnt: number;
-                };
-              }[];
-              Total?: undefined;
-            }
-        )[]
-      | null;
+    | (
+      | {
+        Total: {
+          ranking?: number;
+          name?: string;
+          loanCnt?: number;
+        };
+        ageResult?: undefined;
+      }
+      | {
+        ageResult: {
+          age: {
+            ranking?: number;
+            name?: string;
+            loanCnt?: number;
+          };
+        }[];
+        Total?: undefined;
+      }
+    )[]
+    | null;
   };
   errMsg?: string;
 };
 
-export type LoanTotal = { ranking: number; name: string; loanCnt: number };
-export type LoanAge = { ranking: number; name: string; loanCnt: number };
+export type LoanTotal = { ranking?: number; name?: string; loanCnt?: number };
+export type LoanAge = { ranking?: number; name?: string; loanCnt?: number };
 
 export type BookDetailData = {
   book: {
@@ -78,16 +78,16 @@ export type BookDetailData = {
   };
   loan: {
     total: {
-      ranking: number;
-      name: string;
-      loanCnt: number;
+      ranking?: number;
+      name?: string;
+      loanCnt?: number;
     };
-    ageResult: 
-      {
-        ranking: number;
-        name: string;
-        loanCnt: number;
-      }[];
+    ageResult:
+    {
+      ranking?: number;
+      name?: string;
+      loanCnt?: number;
+    }[];
   };
   meta: {
     isbn13: string;
@@ -134,16 +134,17 @@ export function useBookDetail(
 
       const total = loanInfo?.find(
         (x): x is { Total: LoanTotal } => "Total" in x
-      )?.Total;
+      )?.Total ?? {};
 
       const ageData = loanInfo?.find(
         (x): x is { ageResult: { age: LoanAge }[] } => "ageResult" in x
-      )?.ageResult ;
+      )?.ageResult;
 
       const ageResult = ensureArray(ageData).map((item) => item.age)
 
+      // 안 오는 애들이 있는데? 예외사항이 있는듯?
       if (!total || !ageResult) {
-        throw new Error("Loan info is missing or incomplete.");
+        console.log("제공되지 않는 통계");
       }
 
       return {
@@ -160,4 +161,3 @@ export function useBookDetail(
     },
   });
 }
-
