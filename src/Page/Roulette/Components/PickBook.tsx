@@ -43,9 +43,6 @@ const openBook = cva(
   }
 )
 
-
-// 디테일 패치를 계속 잘 해오는데 내생각엔,,,
-// state가 안바껴서 모달 내용이 같아지는것 같다
 function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
   // setIsOpenPickBook : 모달을 띄울지 여부 설정 함수
   // isOpenPickBook : 모달을 띄우는지 값이 불린으로 저장된 상태
@@ -56,20 +53,15 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
   const open = !!(isbn13 && isOpenPickBook);
 
   const { status, data } = useBookDetail(isbn13, {
-    loaninfoYN: 'Y',           // ← 이거 꼭 줘야 loanInfo가 내려옴
-    displayInfo: 'age',        // 훅의 select가 Total + ageResult를 기대하고 있음
+    loaninfoYN: 'Y',
+    displayInfo: 'age',
   });
 
 
   useEffect(() => {
     setIsOpen(false);
     if (pickBook) console.log(pickBook)
-    // 책 애니메이션
   }, [isbn13])
-
-  // const calcRatioHeight = (width: number): number => {
-  //   return Math.round((696 * width) / 473)
-  // }
 
   const handleOpenBook = () => {
     console.log('책 열기')

@@ -78,11 +78,19 @@ export interface Request {
 }
 
 interface MissionItemType {
-  missionType: string;
-  missionTitle: string;
-  score: number;
-  userArchiveRate: number;
-  isComplete: boolean;
+  template_id: number;
+  code: string;
+  name: string;
+  description: string;
+  reward: {
+    type: string;
+    amount: number;
+  };
+  progress: null;
+  completed: boolean;
+  completed_at: null;
+  assigned: boolean;
+  bundle_id: number;
 }
 
 export interface ReviewItemType {
@@ -94,11 +102,48 @@ export interface ReviewItemType {
   content: string;
   score: number;
   image_url?: string;
-  like_count: number,
-  nickname: string,
-  profile_image: string,
-  liked_by_me: boolean
+  like_count: number;
+  nickname: string;
+  profile_image: string;
+  liked_by_me: boolean;
 }
+
+
+// 1) 이벤트 타입
+export type EventType =
+  | "REVIEW_CREATED"
+  | "SUMMARY_CREATED"
+  | "QUOTE_CREATED"
+  | "REVIEW_LIKED"
+  | "BOOKMARK_ADDED"
+  | "MISSION_COMPLETED";
+
+export type BookEventType =
+  | "REVIEW_CREATED"
+  | "SUMMARY_CREATED"
+  | "QUOTE_CREATED"
+  | "REVIEW_LIKED";
+
+export type GlobalEventType = "BOOKMARK_ADDED" | "MISSION_COMPLETED";
+
+// 2) 페이로드 맵
+export type EventPayloadMap = {
+  REVIEW_CREATED: { book_id: string; review_id: string };
+  SUMMARY_CREATED: { book_id: string; summary_id: string };
+  QUOTE_CREATED: { book_id: string; quote_id: string };
+  REVIEW_LIKED: { book_id: string; like_id: string };
+  BOOKMARK_ADDED: { bookmark_id: string };
+  MISSION_COMPLETED: { mission_id: string | number };
+};
+
+// 3)
+export type EventEnvelope<T extends EventType = EventType> = {
+  type: T;
+  payload: EventPayloadMap[T];
+  idempotencyKey?: string;
+};
+
+
 
 // 0:남성 1:여성 2:미상
 export type gender = 0 | 1 | 2

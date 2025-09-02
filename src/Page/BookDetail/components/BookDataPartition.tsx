@@ -3,13 +3,19 @@ import loaderIcon from "@/assets/loading.svg";
 import RatingStars from "@/Components/RatingStar";
 import { NavLink } from "react-router-dom";
 import { BiBookmark } from "react-icons/bi";
+import { useBookmark } from "@/api/useBookmark";
+import { getBookImageURLs } from "@/utils/bookImageUtils";
 
 interface Props {
   data: BookDetailData | undefined;
   isFetching: boolean;
+  isBookMarked: boolean | undefined;
 }
 
 function BookDataPatition({ data }: Props) {
+  const isbn13 = data?.book?.isbn13;
+  const { mutate } = useBookmark(isbn13);
+
   if (!data) {
     return (
       <img
@@ -25,21 +31,26 @@ function BookDataPatition({ data }: Props) {
     return <div className="py-8">도서 정보를 찾을 수 없습니다.</div>;
   }
 
+
   return (
     <>
       {/* 도서 정보 */}
       <div className="relative flex gap-8 p-5">
-      {/* 북마크 버튼 */}
-      <button type="button" className="absolute right-0 top-0">
-        <BiBookmark size={32} />
-      </button>
+        {/* 북마크 버튼 */}
+        <button type="button" className="absolute right-0 top-0">
+          <BiBookmark size={32} />
+        </button>
 
-      {/* 미션 수령하기 버튼 */}
-      <button type="button" className="px-4 py-2 rounded-md text-xl bg-primary text-background-white absolute right-0 bottom-0">
-        미션 수령하기
-      </button>
+        {/* 미션 수령하기 버튼 */}
+        <button
+          type="button"
+          className="px-4 py-2 rounded-md text-xl bg-primary text-background-white absolute right-0 bottom-0"
+          onClick={() => mutate(book.isbn13)}
+        >
+          미션 수령하기
+        </button>
 
-        <img src={book.bookImageURL} alt="" className="h-70" />
+        <img src={getBookImageURLs(book.isbn13)[0] ?? undefined} alt="" className="h-70" />
         <div className="flex flex-col gap-1">
           <h1 className="text-black">{book.bookname}</h1>
           <div className="flex gap-2 text-[#606060]">
@@ -95,11 +106,7 @@ function BookDataPatition({ data }: Props) {
                 viewBox="0 0 17 9"
                 fill="none"
               >
-                <path
-                  d="M1 1L8.5 8L16 1"
-                  stroke="black"
-                  strokeOpacity="0.57"
-                />
+                <path d="M1 1L8.5 8L16 1" stroke="black" strokeOpacity="0.57" />
               </svg>
             </button>
           </p>
