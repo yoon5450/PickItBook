@@ -2,13 +2,12 @@ import type { BookDetailData } from "@/api/useBookDetail";
 import loaderIcon from "@/assets/loading.svg";
 import RatingStars from "@/Components/RatingStar";
 import { NavLink } from "react-router-dom";
-import { FaBookmark } from "react-icons/fa6";
-import { FaRegBookmark } from "react-icons/fa6";
+
 import { useBookmarkWithMissions, useToggleBookmark } from "@/api/useBookmark";
 import { getBookImageURLs } from "@/utils/bookImageUtils";
 import { useEffect, useState } from "react";
 import { bookmarkRepo } from "@/api/bookmark.repo.supabase";
-import tw from "@/utils/tw";
+import BookmarkButton from "./BookmarkButton";
 
 interface Props {
   data: BookDetailData | undefined;
@@ -17,7 +16,12 @@ interface Props {
   reviewSize?: number;
 }
 
-function BookDataPatition({ data, ratingAvg, reviewSize, isMissionAssigned }: Props) {
+function BookDataPatition({
+  data,
+  ratingAvg,
+  reviewSize,
+  isMissionAssigned,
+}: Props) {
   const isbn13 = data?.book?.isbn13;
   const { mutate: bookmarkWithMission } = useBookmarkWithMissions(isbn13);
   const { mutate: toggleBookmark, isPending: togglePending } =
@@ -34,6 +38,11 @@ function BookDataPatition({ data, ratingAvg, reviewSize, isMissionAssigned }: Pr
     }
     bookmarkCheck();
   }, [isbn13]);
+
+  const handleToggleBookmark = () => {
+    toggleBookmark();
+    setIsBookmarked((prev) => !prev);
+  };
 
   if (!data) {
     return (
@@ -55,32 +64,11 @@ function BookDataPatition({ data, ratingAvg, reviewSize, isMissionAssigned }: Pr
       {/* 도서 정보 */}
       <div className="relative flex gap-8 p-5">
         {/* 북마크 버튼 */}
-        <button
-          type="button"
-          className="absolute right-10 top-0"
+        <BookmarkButton
+          onClick={handleToggleBookmark}
+          isBookmarked={isBookmarked}
           disabled={togglePending}
-          onClick={() => {
-            toggleBookmark();
-            setIsBookmarked((prev) => !prev);
-          }}
-        >
-          <div className="relative f">
-            <FaBookmark
-              size={32}
-              className={tw(
-                "text-primary transition absolute",
-                isBookmarked ? "opacity-100" : "opacity-0"
-              )}
-            />
-            <FaRegBookmark
-              size={32}
-              className={tw(
-                "text-primary transition absolute",
-                isBookmarked ? "opacity-0" : "opacity-100"
-              )}
-            />
-          </div>
-        </button>
+        />
 
         {/* 미션 수령하기 버튼 */}
         <button
