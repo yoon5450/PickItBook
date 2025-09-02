@@ -11,6 +11,8 @@ import { useEffect } from "react";
 import { scrollTop } from "@/utils/scrollFunctions";
 import { useGetReview } from "@/api/useReviewFetching";
 import { useGetMissionByISBN } from "@/api/useMissionsFetching";
+import { useGetRecommend } from "@/api/useBookFetching";
+import { makeRecommendURL } from "@/constant/constant";
 
 function BookDetail() {
   const [searchParams] = useSearchParams();
@@ -34,7 +36,12 @@ function BookDetail() {
   // Mission 정보 불러오기
   const {data:missionData} = useGetMissionByISBN(isbn13);
 
-  console.log(missionData);
+  // Recommend 정보 불러오기
+  const {data:recommendData} = useGetRecommend(isbn13);
+
+  console.log(makeRecommendURL(isbn13).href);
+
+  console.log(recommendData);
 
   if (error) console.error(error);
 
@@ -56,7 +63,7 @@ function BookDetail() {
           subtitle="이 책을 읽은 사람들이 많이 선택한 책"
         >
           <RecommandedPatition
-            data={Array(4).fill(BookDetailData)}
+            data={recommendData?.items}
             isFetching={BookDetailFetching}
           />
         </PartitionBase>

@@ -54,12 +54,12 @@ export function makeBookDetailURL(
 
 export const recommendURL = `http://data4library.kr/api/recommandList`;
 
-export function makeRecommendURL(isbn13: string, pageNo: number = 1) {
+export function makeRecommendURL(isbn13: string) {
   const url = new URL(recommendURL);
   const sp = new URLSearchParams({
     authKey: LIBRARY_API_KEY,
     isbn13,
-    pageNo: pageNo.toString(),
+    format: "json"
   });
   url.search = sp.toString();
   return url;
