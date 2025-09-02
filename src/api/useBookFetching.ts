@@ -65,7 +65,7 @@ export const useBookFetching = (
   const query = useQuery<Raw, Error, BooksData>({
     queryKey: ["books", searchParams, page],
     queryFn: ({ signal }) =>
-      fetcher(makeSearchURL(searchParams, page).href, { signal }),
+      fetcher(makeSearchURL(searchParams, page), { signal }),
     placeholderData: (prev) => prev, // v5에서 keepPreviousData 역할
     enabled,
     staleTime,
@@ -122,7 +122,7 @@ export const useGetRecommend = (
   return useQuery<RecommendMain, Error, RecommendData>({
     queryKey: ["recommend", isbn13],
     queryFn: ({ signal }) =>
-      fetcher(makeRecommendURL(isbn13).href, { signal }),
+      fetcher(makeRecommendURL(isbn13), { signal }),
     select: (raw) => {
       const r = raw.response ?? {};
       const req = r.request;

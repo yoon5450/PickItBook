@@ -61,7 +61,7 @@ function BookDetail() {
         <PartitionBase title="도서 정보">
           <BookDataPartition
             data={BookDetailData}
-            isBookMarked={missionData?.[0].assigned}
+            isMissionAssigned={missionData?.[0].assigned}
             ratingAvg={ratingAvg}
             reviewSize={reviewSize}
           />

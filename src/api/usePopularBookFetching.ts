@@ -25,7 +25,7 @@ export const usePopularBookFetching = (
   const searchParams = { startDt, ...rest }
   return useQuery({
     queryKey: ['popularBooks', searchParams],
-    queryFn: ({ signal }) => fetcher(makePopularBookSearchUrl(searchParams).href, { signal }),
+    queryFn: ({ signal }) => fetcher(makePopularBookSearchUrl(searchParams), { signal }),
     placeholderData: keepPreviousData,
     staleTime,
     enabled,
