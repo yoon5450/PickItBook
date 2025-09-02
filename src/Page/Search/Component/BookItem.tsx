@@ -4,6 +4,7 @@ import type { BookItemType, SearchKey } from "@/@types/global";
 import type { listMode } from "..";
 import tw from "@/utils/tw";
 import { NavLink } from "react-router-dom";
+import { getBookImageURLs } from "@/utils/bookImageUtils";
 
 type Props = {
   item: BookItemType;
@@ -29,7 +30,7 @@ function BookItem({ item, onSearch, mode = "line" }: Props) {
 
         <NavLink to={`/book_detail/?isbn13=${item.isbn13}`}>
           <img
-            src={item.bookImageURL}
+            src={getBookImageURLs(item.isbn13)[0] ?? undefined}
             alt="책 이미지"
             className={tw("h-35", modeImgClass[mode])}
           />

@@ -34,18 +34,18 @@ export type BookDetailRaw = {
       | (
           | {
               Total: {
-                ranking: number;
-                name: string;
-                loanCnt: number;
+                ranking?: number;
+                name?: string;
+                loanCnt?: number;
               };
               ageResult?: undefined;
             }
           | {
               ageResult: {
                 age: {
-                  ranking: number;
-                  name: string;
-                  loanCnt: number;
+                  ranking?: number;
+                  name?: string;
+                  loanCnt?: number;
                 };
               }[];
               Total?: undefined;
@@ -56,8 +56,8 @@ export type BookDetailRaw = {
   errMsg?: string;
 };
 
-export type LoanTotal = { ranking: number; name: string; loanCnt: number };
-export type LoanAge = { ranking: number; name: string; loanCnt: number };
+export type LoanTotal = { ranking?: number; name?: string; loanCnt?: number };
+export type LoanAge = { ranking?: number; name?: string; loanCnt?: number };
 
 export type BookDetailData = {
   book: {
@@ -78,15 +78,15 @@ export type BookDetailData = {
   };
   loan: {
     total: {
-      ranking: number;
-      name: string;
-      loanCnt: number;
+      ranking?: number;
+      name?: string;
+      loanCnt?: number;
     };
     ageResult: 
       {
-        ranking: number;
-        name: string;
-        loanCnt: number;
+        ranking?: number;
+        name?: string;
+        loanCnt?: number;
       }[];
   };
   meta: {
@@ -134,7 +134,7 @@ export function useBookDetail(
 
       const total = loanInfo?.find(
         (x): x is { Total: LoanTotal } => "Total" in x
-      )?.Total;
+      )?.Total ?? {};
 
       const ageData = loanInfo?.find(
         (x): x is { ageResult: { age: LoanAge }[] } => "ageResult" in x
@@ -142,8 +142,9 @@ export function useBookDetail(
 
       const ageResult = ensureArray(ageData).map((item) => item.age)
 
+      // 안 오는 애들이 있는데? 예외사항이 있는듯?
       if (!total || !ageResult) {
-        throw new Error("Loan info is missing or incomplete.");
+        console.log("제공되지 않는 통계");
       }
 
       return {
