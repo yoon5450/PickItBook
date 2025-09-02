@@ -117,7 +117,7 @@ function RandomRoulette() {
       <div className="overflow-y-scroll">
         <PickBook pickBook={pickBook} isOpenPickBook={isOpenPickBook} setIsOpenPickBook={setIsOpenPickBook} />
       </div>
-      <Roulette books={filterBooks} filterTap={filterTap} setPickBook={setPickBook} setIsOpenPickBook={setIsOpenPickBook} />
+      <Roulette books={filterBooks} setPickBook={setPickBook} setIsOpenPickBook={setIsOpenPickBook} />
 
 
 

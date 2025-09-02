@@ -16,8 +16,8 @@ export const usePopularBookFetching = (
   { startDt = '2025-01-01', ...rest }: PopularBookSearchFields,
   {
     enabled = true,
-    staleTime = 5 * 60_000, // 50분
-    gcTime = 30 * 60_000, // 5시간
+    staleTime = 5 * 60_000, // 5분
+    gcTime = 30 * 60_000, // 30분
     refetchOnWindowFocus = false,
     retry = 0,
   }: UseBookFetchingOptions = {}
