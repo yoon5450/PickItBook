@@ -1,23 +1,24 @@
 
 import tw from "@/utils/tw";
 import { useLayoutEffect, useMemo, useRef } from "react";
-import { IoIosArrowForward } from "react-icons/io";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { AiOutlineMinusCircle } from "react-icons/ai";
 import { throttle } from "@/utils/throttle";
 import gsap from "gsap";
+import type { KdcItemType } from "@/constant/kdc";
 
-interface filterType {
-  code: string;
-  value: string;
-}
+
+type filterType = KdcItemType;
 
 interface Props {
-  topItems: filterType[];
-  bottomItems?: filterType[] | null;
+  topItems: KdcItemType[];
+  bottomItems?: KdcItemType[] | null;
   className?: string;
-  filterItem: { top?: filterType; bottom?: filterType } | null;
-  setFilterItem: React.Dispatch<React.SetStateAction<any>>;
+  filterItem: { top?: KdcItemType; bottom?: KdcItemType } | null;
+  setFilterItem: React.Dispatch<React.SetStateAction<{
+    top?: KdcItemType
+    bottom?: KdcItemType
+  } | null>>
 }
 
 function Filter({
@@ -28,7 +29,6 @@ function Filter({
   setFilterItem,
 }: Props) {
   // 상위(두 번째 자리가 0) / 하위 분리
-
   const filteredDetail = useMemo<filterType[]>(() => {
     if (!bottomItems || !filterItem?.top) return [];
     return filterItem?.top
@@ -75,7 +75,7 @@ function Filter({
   return (
     <div
       className={tw(
-        "flex gap-10 bg-[#F5F4F1] p-10 rounded-md shadow w-fit",
+        "absolute flex p-10 shadow-sm py-5 gap-7 rounded-xl bg-pattern z-10",
         className
       )}
     >
@@ -87,8 +87,8 @@ function Filter({
             <button
               key={item.code}
               className={tw(
-                "flex items-center font-bold",
-                selected ? "text-primary" : "text-[#303030]"
+                "flex w-fit rounded-xl py-1 px-3 transition hover:bg-primary/50 hover:text-white",
+                selected ? "bg-primary text-white" : "text-[#303030]"
               )}
               type="button"
               onClick={() => {
@@ -99,13 +99,6 @@ function Filter({
               }}
             >
               {item.value}
-              <IoIosArrowForward
-                size={18}
-                className={tw(
-                  "opacity-0 transition",
-                  selected && "translate-x-5 opacity-100"
-                )}
-              />
             </button>
           );
         })}
@@ -117,7 +110,7 @@ function Filter({
           <div
             ref={cursorRef}
             className={tw(
-              "pointer-events-none absolute left-0 right-0 rounded-md",
+              "pointer-events-none absolute left-0 right-0 rounded-xl",
               "ring-1 ring-primary opacity-0",
               "will-change-transform"
             )}
@@ -131,15 +124,15 @@ function Filter({
           >
             {filterItem.top?.value} 전체
           </label>
-          {filteredDetail.map((item) => (
-            <li>
+          {filteredDetail.map((item, index) => (
+            <li key={index}>
               <button
                 type="button"
                 ref={(el) => {
                   btnRefs.current[item.code] = el;
                 }}
                 className={tw(
-                  "flex min-w-44 justify-between items-center transition",
+                  "flex min-w-44 justify-between items-center transition hover:text-primary",
                   item.code === filterItem.bottom?.code && "text-primary"
                 )}
                 onClick={() => {
@@ -149,7 +142,7 @@ function Filter({
                   } else {
                     setFilterItem({ top: filterItem.top });
                     if (cursorRef.current)
-                      gsap.set(cursorRef.current, {
+                      gsap.to(cursorRef.current, {
                         autoAlpha: 0,
                         height: 0,
                         duration: 0.28,
