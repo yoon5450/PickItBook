@@ -11,47 +11,47 @@ export type BookDetailRaw = {
       displayInfo: string;
     };
     detail:
-      | {
-          book: {
-            no: number;
-            bookname: string;
-            authors: string;
-            publisher: string;
-            publication_date: string;
-            publication_year: string;
-            isbn: string;
-            isbn13: string;
-            addition_symbol: string;
-            vol: string;
-            class_no: string;
-            class_nm: string;
-            description: string;
-            bookImageURL: string;
-          };
-        }[]
-      | null;
+    | {
+      book: {
+        no: number;
+        bookname: string;
+        authors: string;
+        publisher: string;
+        publication_date: string;
+        publication_year: string;
+        isbn: string;
+        isbn13: string;
+        addition_symbol: string;
+        vol: string;
+        class_no: string;
+        class_nm: string;
+        description: string;
+        bookImageURL: string;
+      };
+    }[]
+    | null;
     loanInfo:
-      | (
-          | {
-              Total: {
-                ranking?: number;
-                name?: string;
-                loanCnt?: number;
-              };
-              ageResult?: undefined;
-            }
-          | {
-              ageResult: {
-                age: {
-                  ranking?: number;
-                  name?: string;
-                  loanCnt?: number;
-                };
-              }[];
-              Total?: undefined;
-            }
-        )[]
-      | null;
+    | (
+      | {
+        Total: {
+          ranking?: number;
+          name?: string;
+          loanCnt?: number;
+        };
+        ageResult?: undefined;
+      }
+      | {
+        ageResult: {
+          age: {
+            ranking?: number;
+            name?: string;
+            loanCnt?: number;
+          };
+        }[];
+        Total?: undefined;
+      }
+    )[]
+    | null;
   };
   errMsg?: string;
 };
@@ -82,12 +82,12 @@ export type BookDetailData = {
       name?: string;
       loanCnt?: number;
     };
-    ageResult: 
-      {
-        ranking?: number;
-        name?: string;
-        loanCnt?: number;
-      }[];
+    ageResult:
+    {
+      ranking?: number;
+      name?: string;
+      loanCnt?: number;
+    }[];
   };
   meta: {
     isbn13: string;
@@ -138,7 +138,7 @@ export function useBookDetail(
 
       const ageData = loanInfo?.find(
         (x): x is { ageResult: { age: LoanAge }[] } => "ageResult" in x
-      )?.ageResult ;
+      )?.ageResult;
 
       const ageResult = ensureArray(ageData).map((item) => item.age)
 
@@ -161,4 +161,3 @@ export function useBookDetail(
     },
   });
 }
-
