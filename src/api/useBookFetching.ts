@@ -65,7 +65,7 @@ export const useBookFetching = (
   const query = useQuery<Raw, Error, BooksData>({
     queryKey: ["books", searchParams, page],
     queryFn: ({ signal }) =>
-      fetcher(makeSearchURL(searchParams, page).href, { signal }),
+      fetcher(makeSearchURL(searchParams, page), { signal }),
     placeholderData: (prev) => prev, // v5에서 keepPreviousData 역할
     enabled,
     staleTime,
