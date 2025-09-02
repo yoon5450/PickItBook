@@ -8,11 +8,12 @@ import { getBookImageURLs } from "@/utils/bookImageUtils";
 
 interface Props {
   data: BookDetailData | undefined;
-  isFetching: boolean;
   isBookMarked: boolean | undefined;
+  ratingAvg: number
+  reviewSize?: number
 }
 
-function BookDataPatition({ data }: Props) {
+function BookDataPatition({ data, ratingAvg, reviewSize }: Props) {
   const isbn13 = data?.book?.isbn13;
   const { mutate } = useBookmark(isbn13);
 
@@ -61,9 +62,8 @@ function BookDataPatition({ data }: Props) {
             <span>{book.publication_year}</span>
           </div>
           <div className="flex items-center gap-2">
-            <RatingStars value={4.5} max={5} size={32} showValue />
-            <span className="text-[#606060]">4평가</span>{" "}
-            <span className="text-[#606060]">2리뷰</span>
+            <RatingStars value={ratingAvg} max={5} size={32} showValue />
+            <span className="text-[#606060]">{reviewSize || "0"} 리뷰</span>
           </div>
           <div className="py-3">
             <span className="line-clamp-5 text-black">{book.description}</span>
