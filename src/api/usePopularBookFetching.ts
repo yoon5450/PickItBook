@@ -28,6 +28,7 @@ export const usePopularBookFetching = (
     queryFn: ({ signal }) => fetcher(makePopularBookSearchUrl(searchParams).href, { signal }),
     placeholderData: keepPreviousData,
     staleTime,
+    enabled,
     gcTime,
     refetchOnWindowFocus,
     retry,
