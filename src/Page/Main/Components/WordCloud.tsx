@@ -1,126 +1,246 @@
-import React, { useMemo } from "react";
-import { Text } from "@visx/text";
-import { scaleLog, scaleOrdinal } from "@visx/scale";
-import { Wordcloud } from "@visx/wordcloud";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { getBookmarks, type BookmarkBook } from "@/utils/getBookmarks";
+import { makeBookDetailURL } from "@/constant/constant";
+import { fetcher } from "@/api/fetcher";
+import * as am4core from "@amcharts/amcharts4/core";
+import * as am4plugins_wordCloud from "@amcharts/amcharts4/plugins/wordCloud";
+import am4themes_animated from "@amcharts/amcharts4/themes/animated";
+import { useMobileDetection } from "../hooks/useMobileDetection";
 
-// WordData 인터페이스
 export interface WordData {
   text: string;
   value: number;
 }
 
-// WordCloud Props 인터페이스
 export interface WordCloudProps {
-  words: WordData[];
-  width?: number;
-  height?: number;
   minFontSize?: number;
   maxFontSize?: number;
   fontFamily?: string;
   className?: string;
   style?: React.CSSProperties;
+  userId?: string;
 }
 
-// 단색 블루 계열 색상 스키마
-const BLUE_COLOR_SCHEME = [
-  "#1E3A8A",
-  "#1E40AF",
-  "#2563EB",
-  "#3B82F6",
-  "#60A5FA",
-  "#93C5FD",
-  "#BFDBFE",
-  "#DBEAFE",
+// 불용어 + 조사/접미사
+const stopWords = [
+  "그리고", "하지만", "그러나", "또한", "이것", "그것", "저것", "우리", "나는", "당신", "그들", "이런", "그런", "지은이",
+  "저런", "에서", "으로", "에게", "하다", "된다", "같은", "the", "and", "for", "with", "was", "are", "this", "that",
 ];
 
-const WordCloud: React.FC<WordCloudProps> = ({
-  words,
-  width = 800,
-  height = 400,
-  minFontSize = 14,
-  maxFontSize = 50,
-  fontFamily = "Inter, sans-serif",
-  className = "",
+// 키워드 추출
+const extractKeywordsFromText = (text: string): string[] => {
+  if (!text) return [];
+  const koreanWords = text.match(/[가-힣]{2,}/g) || [];
+  const englishWords = text.match(/[a-zA-Z]{3,}/g) || [];
+  return [...koreanWords, ...englishWords]
+    .map((w) => w.toLowerCase().trim())
+    .filter((w) => w.length > 1 && !stopWords.includes(w));
+};
+
+// 단일 책 내 키워드 빈도수 세기 함수
+const countKeywords = (keywords: string[]) => {
+  const counts: Record<string, number> = {};
+  keywords.forEach((k) => {
+    counts[k] = (counts[k] || 0) + 1;
+  });
+  return counts;
+};
+
+const WordCloud = ({
+  minFontSize,
+  maxFontSize,
+  fontFamily = "Pretendard Variable, sans-serif",
   style = {},
-}) => {
-  // 폰트 크기 스케일 생성
-  const fontScale = useMemo(() => {
-    if (!words.length) return () => minFontSize;
+  className = "",
+  userId,
+}: WordCloudProps) => {
+  const { user } = useAuthStore();
+  const [bookmarks, setBookmarks] = useState<BookmarkBook[]>([]);
+  const [bookmarkKeywords, setBookmarkKeywords] = useState<WordData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [processedCount, setProcessedCount] = useState(0);
+  const isMobile = useMobileDetection();
 
-    const values = words.map((w) => w.value);
-    const minValue = Math.min(...values);
-    const maxValue = Math.max(...values);
+  // 화면 크기 기반 반응형 폰트
+  const responsiveFont = useMemo(() => {
+    return {
+      min: minFontSize || (isMobile ? 12 : 16),
+      max: maxFontSize || (isMobile ? 32 : 50),
+    };
+  }, [minFontSize, maxFontSize, isMobile]);
 
-    if (minValue === maxValue) {
-      return () => (minFontSize + maxFontSize) / 2;
+  // 도서 상세 정보 API 기반 키워드 추출
+  const extractKeywordsFromBookDetail = async (
+    isbn13: string
+  ): Promise<string[]> => {
+    try {
+      const raw = await fetcher(
+        makeBookDetailURL(isbn13, { displayInfo: "age", loaninfoYN: "N" }).href
+      );
+      if (!raw.response) return [];
+      const book = raw.response.detail?.[0]?.book;
+      if (!book) return [];
+
+      const keywords: string[] = [];
+
+      if (book.class_nm)
+        keywords.push(...extractKeywordsFromText(book.class_nm)); // 분류명
+
+      if (book.description)
+        keywords.push(
+          ...extractKeywordsFromText(book.description).slice(0, 20)
+        ); // 최대 20개
+
+      if (book.publisher)
+        keywords.push(...extractKeywordsFromText(book.publisher)); // 출판사
+
+      if (book.book_name)
+        keywords.push(...extractKeywordsFromText(book.book_name)); // 제목
+
+      if (book.authors) keywords.push(...extractKeywordsFromText(book.authors)); // 저자
+
+      if (book.keyword)
+        keywords.push(
+          ...book.keyword
+            .split(/[,;]/)
+            .map((k: string) => k.trim())
+            .filter((k: string) => k.length > 0)
+        );
+
+      return keywords;
+    } catch {
+      return [];
     }
+  };
 
-    return scaleLog({
-      domain: [minValue, maxValue],
-      range: [minFontSize, maxFontSize],
-    });
-  }, [words, minFontSize, maxFontSize]);
+  // 북마크 → 키워드 변환 (빈도 반영)
+  const extractKeywordsFromBookmarks = useCallback(
+    async (bookmarks: BookmarkBook[]): Promise<WordData[]> => {
+      const keywordCount: Record<string, number> = {};
+      for (let i = 0; i < bookmarks.length; i++) {
+        const book = bookmarks[i];
+        setProcessedCount(i + 1);
+        let keywords: string[] = [];
 
-  // 색상 스케일 생성
-  const colorScale = useMemo(() => {
-    return scaleOrdinal({
-      domain: words.map((_, i) => i.toString()),
-      range: BLUE_COLOR_SCHEME,
-    });
-  }, [words]);
+        if (book.isbn13) {
+          const extracted = await extractKeywordsFromBookDetail(book.isbn13);
+          if (extracted.length > 0) keywords = extracted;
+        }
 
-  // 폰트 크기 설정 함수
-  const fontSizeSetter = (datum: WordData) => fontScale(datum.value);
+        if (keywords.length === 0) {
+          const titleKeywords = extractKeywordsFromText(book.book_name || "");
+          const authorKeywords = extractKeywordsFromText(book.authors || "");
+          keywords = [...titleKeywords, ...authorKeywords];
+        }
 
-  // 고정된 랜덤 값 생성기 (레이아웃 일관성을 위해)
-  const fixedValueGenerator = () => 0.5;
+        if (keywords.length === 0 && book.keyword) {
+          keywords = book.keyword
+            .split(/[,;]/)
+            .map((k) => k.trim())
+            .filter((k) => k.length > 0);
+        }
 
-  if (words.length === 0) {
-    return (
-      <div
-        className={`relative bg-white rounded-lg shadow-sm overflow-hidden flex items-center justify-center ${className}`}
-        style={{ width, height, ...style }}
-      >
-        <div className="text-gray-400 text-center">
-          <div className="text-2xl mb-2">📊</div>
-          <div>데이터가 없습니다</div>
-        </div>
-      </div>
+        // 키워드 빈도수 계산 후 누적 업데이트
+        if (keywords.length > 0) {
+          const counts = countKeywords(keywords);
+          Object.entries(counts).forEach(([k, c]) => {
+            keywordCount[k] = (keywordCount[k] || 0) + c;
+          });
+        }
+
+        if (i < bookmarks.length - 1)
+          await new Promise((res) => setTimeout(res, 100));
+      }
+
+      return Object.entries(keywordCount)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 100)
+        .map(([text, value]) => ({ text, value }));
+    },
+    []
+  );
+
+  // 북마크 데이터 가져오기
+  useEffect(() => {
+    const targetUserId = userId || user?.id;
+    if (!targetUserId) return;
+
+    const fetchBookmarkKeywords = async () => {
+      setLoading(true);
+      setProcessedCount(0);
+      try {
+        const bookmarkData = await getBookmarks(targetUserId);
+        setBookmarks(bookmarkData);
+        if (!bookmarkData || bookmarkData.length === 0) {
+          setBookmarkKeywords([]);
+          return;
+        }
+        const keywords = await extractKeywordsFromBookmarks(bookmarkData);
+        setBookmarkKeywords(keywords);
+      } finally {
+        setLoading(false);
+        setProcessedCount(0);
+      }
+    };
+
+    fetchBookmarkKeywords();
+  }, [userId, user?.id, extractKeywordsFromBookmarks]);
+
+  useEffect(() => {
+    if (loading || bookmarkKeywords.length === 0) return;
+
+    am4core.useTheme(am4themes_animated);
+    const chart = am4core.create(
+      "wordcloud-chart",
+      am4plugins_wordCloud.WordCloud
     );
-  }
+    chart.logo.disabled = true;
+
+    const series = chart.series.push(
+      new am4plugins_wordCloud.WordCloudSeries()
+    );
+    series.data = bookmarkKeywords.map((w) => ({
+      tag: w.text,
+      count: w.value,
+    }));
+    series.dataFields.word = "tag";
+    series.dataFields.value = "count";
+    series.minFontSize = responsiveFont.min;
+    series.maxFontSize = responsiveFont.max;
+    series.fontFamily = fontFamily;
+    series.colors = new am4core.ColorSet();
+
+    const hoverState = series.labels.template.states.create("hover");
+    hoverState.properties.scale = 1.1;
+    hoverState.transitionDuration = 300;
+
+    return () => chart.dispose();
+  }, [bookmarkKeywords, loading, responsiveFont, fontFamily]);
 
   return (
-    <div
-      className={`relative bg-white rounded-lg shadow-sm overflow-hidden ${className}`}
-      style={{ width, height, ...style }}
-    >
-      <Wordcloud
-        words={words}
-        width={width}
-        height={height}
-        fontSize={fontSizeSetter}
-        font={fontFamily}
-        padding={3}
-        spiral="archimedean"
-        rotate={0} // 회전 없음
-        random={fixedValueGenerator}
-      >
-        {(cloudWords) =>
-          cloudWords.map((w, i) => (
-            <Text
-              key={w.text}
-              fill={colorScale(i.toString())}
-              textAnchor="middle"
-              transform={`translate(${w.x}, ${w.y})`}
-              fontSize={w.size}
-              fontFamily={w.font}
-              className="select-none cursor-default transition-opacity duration-200 hover:opacity-80"
-            >
-              {w.text}
-            </Text>
-          ))
-        }
-      </Wordcloud>
+    <div className="py-12 max-[1250px]:mx-5">
+      <div className="flex items-center justify-center w-[1200px] max-[1250px]:w-full mx-auto h-[400px] rounded-2xl border bg-background-white border-gray-300 p-5">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center">
+            <div className="animate-spin rounded-full border-b-2 border-gray-400 h-8 w-8 mb-4"></div>
+            <p>
+              키워드를 분석하는 중... {processedCount}/{bookmarks.length}
+            </p>
+          </div>
+        ) : bookmarkKeywords.length === 0 ? (
+          <div className="flex items-center justify-center h-[300px] text-center text-gray-400">
+            북마크한 책이 없습니다. <br />
+            책을 북마크하면 관심사를 분석해드려요!
+          </div>
+        ) : (
+          <div
+            id="wordcloud-chart"
+            style={{ width: "100%", height: "100%", ...style }}
+            className={className}
+          />
+        )}
+      </div>
     </div>
   );
 };

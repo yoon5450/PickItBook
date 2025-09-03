@@ -9,8 +9,8 @@ import { getMockDataByCategory } from "./utils/mockData";
 //import Loading from "@/Components/Loading";
 import MainRoulette from "./Components/MainRoulette";
 import { useMemo } from "react";
-import WordCloud, { type WordData } from "./Components/WordCloud";
-import Example from "./Components/Example";
+
+import WordCloud from "./Components/WordCloud";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,26 +19,6 @@ const Main = () => {
     () => getMockDataByCategory("all").slice(0, 24),
     []
   );
-
-  // 샘플 데이터
-  const sampleWords: WordData[] = [
-    { text: "React", value: 100 },
-    { text: "TypeScript", value: 95 },
-    { text: "JavaScript", value: 90 },
-    { text: "TailwindCSS", value: 85 },
-    { text: "Node.js", value: 80 },
-    { text: "Next.js", value: 75 },
-    { text: "CSS", value: 70 },
-    { text: "HTML", value: 65 },
-    { text: "Vue.js", value: 60 },
-    { text: "Angular", value: 55 },
-    { text: "Svelte", value: 50 },
-    { text: "GraphQL", value: 45 },
-    { text: "REST API", value: 40 },
-    { text: "MongoDB", value: 35 },
-    { text: "PostgreSQL", value: 30 },
-  ];
-  // const sampleWords = useMemo(() => WordData, [WordData]);
 
   const books = useMemo(
     () =>
@@ -108,12 +88,8 @@ const Main = () => {
       </section>
 
       <hr />
-      {/* WordCloud 컴포넌트 사용 */}
-      <div className="flex justify-center mb-8">
-        <Example />
-      </div>
 
-      {/* <Loading /> */}
+      <WordCloud />
     </main>
   );
 };
