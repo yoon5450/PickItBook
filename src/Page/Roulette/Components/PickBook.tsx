@@ -1,9 +1,11 @@
 import type { PopularBookItem } from "@/@types/global";
 import { logicRpcRepo } from "@/api/logicRpc.repo.supabase";
 import { useBookDetail } from "@/api/useBookDetail";
-import { useGetMissionByISBN } from "@/api/useMissionsFetching";
+import { useToggleBookmark } from "@/api/useBookmark";
+import { useApplyMissions, useGetMissionByISBN } from "@/api/useMissionsFetching";
 import { useGetReview } from "@/api/useReviewFetching";
 import RatingStars from "@/Components/RatingStar";
+import BookmarkButton from "@/Page/BookDetail/components/BookmarkButton";
 import { getBookImageURLs } from "@/Page/Main/utils/bookImageUtils";
 import tw from "@/utils/tw";
 import { cva } from "class-variance-authority";
@@ -24,15 +26,6 @@ interface Props {
   isOpenPickBook: boolean;
   setIsOpenPickBook: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-// type Missions = {
-//   name: string
-//   description: string
-//   completed: boolean
-//   reward: {
-//     amount: number
-//   }
-// }
 
 const openBook = cva(
   'absolute origin-left transition-transform duration-1000 ease-in-out border border-2 border-gray-500 ',
@@ -62,7 +55,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
   // isOpenPickBook : 모달을 띄우는지 값이 불린으로 저장된 상태
   const [isOpen, setIsOpen] = useState<boolean>(false); // 모달이 떠 있는 상태에서 책을 펼쳤는지의 여부
   const [isBookMark, setIsBookMark] = useState<boolean>(false);
-  // const currentUser = useProfileStore((s) => s.id);
+
 
   const isbn13 = pickBook?.isbn13 ?? undefined;
   const open = !!(isbn13 && isOpenPickBook);
@@ -77,12 +70,11 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
       .map(({ name, description, completed, reward, }) => ({ name, description, completed, reward }))
       .sort((a, b) => b.reward.amount - a.reward.amount)
       .filter(m => !m.completed) : [];
-  // console.log(missions);
+
 
 
   const { data: reviewData } = useGetReview(isbn13 ?? '')
-  // const { data: reviewData } = useGetReview('9788936433598')
-  // console.log('reviewData: ', reviewData);
+
 
   const ratingAvg = useMemo(() => {
     let summary = 0;
@@ -92,13 +84,8 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
       ? summary
       : Math.ceil((summary / reviewData?.length) * 10) / 10;
   }, [reviewData]);
-  // console.log('review average : ', ratingAvg)
 
 
-
-  // 미션 insert 진행
-  // 미션 할당됐는지 여부 확인해보기
-  // 이미 이 책에 대해서 미션을 받았다면 또 안받아지도록 ->
   useEffect(() => {
     if (isOpenPickBook) {
       const insertMissionsToUser = () => {
@@ -139,8 +126,12 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen]);
 
+  // 북마크
+  const { mutate: toggleBookmark, isPending: togglePending } = useToggleBookmark(isbn13)
+
   const handleBookMark = () => {
     setIsBookMark(prev => !prev);
+    toggleBookmark()
   }
   // xl : 1280 lg : 1024 md : 768 sm : 640
 
@@ -169,9 +160,13 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                       <div className="absolute w-3 h-full origin-left bg-gray-500 pageGap"></div>
 
                       <div className={tw(openBook({ intent: 'pageRight', isOpen }), "pt-13 lg:pt-20 pb-9 px-9 flex flex-col", "pageRight")}>
-                        <button type="button" onClick={handleBookMark} className="absolute -top-2">
-                          <img className="w-8 lg:w-10" src={isBookMark ? "/bookmarkOn.svg" : "/bookmarkOff.svg"} alt="책갈피" />
-                        </button>
+                        <BookmarkButton
+                          className={'absolute -top-2 left-8'}
+                          onClick={handleBookMark}
+                          isBookmarked={isBookMark}
+                          disabled={togglePending}
+                          size={48}
+                        />
 
                         <button type="button" onClick={handleCloseBook} className="absolute top-9 right-9">
                           <img className="w-4 lg:w-6" src="/close.svg" alt="닫기" /></button>

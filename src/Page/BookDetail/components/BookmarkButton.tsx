@@ -3,14 +3,15 @@ import { FaBookmark } from "react-icons/fa6";
 import { FaRegBookmark } from "react-icons/fa6";
 
 interface Props {
-  className?:string;
-  disabled:boolean;
-  onClick:() => void
-  isBookmarked?:boolean;
+  className?: string;
+  disabled: boolean;
+  onClick: () => void
+  isBookmarked?: boolean;
+  size?: number;
 }
 
 
-function BookmarkButton({className, disabled, onClick, isBookmarked}: Props) {
+function BookmarkButton({ className, disabled, onClick, isBookmarked, size = 32 }: Props) {
   return (
     <button
       type="button"
@@ -20,14 +21,14 @@ function BookmarkButton({className, disabled, onClick, isBookmarked}: Props) {
     >
       <div className="relative f">
         <FaBookmark
-          size={32}
+          size={size}
           className={tw(
             "text-primary transition absolute",
             isBookmarked ? "opacity-100" : "opacity-0"
           )}
         />
         <FaRegBookmark
-          size={32}
+          size={size}
           className={tw(
             "text-primary transition absolute",
             isBookmarked ? "opacity-0" : "opacity-100"
