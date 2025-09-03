@@ -40,7 +40,7 @@ export default function RatingStars(props: ByValue) {
     const offsetX = e.clientX - rect.left;
 
     const raw = (offsetX / target.offsetWidth) * count;
-    const v = snap(raw, 0.5, 1, count); // step=1(정수 단위), 원하면 0.5로 바꾸세요.
+    const v = snap(raw, 0.5, 1, count);
     setCurValue(v);
   };
 
@@ -53,7 +53,6 @@ export default function RatingStars(props: ByValue) {
         onClick={
           props.inputMode
             ? () => {
-                // 커밋: 부모에게 현재값 전달 (부모가 value를 업데이트하면 base가 바뀌고 curValue도 동기화됨)
                 props.setter?.(curValue);
               }
             : undefined
@@ -61,7 +60,6 @@ export default function RatingStars(props: ByValue) {
         onMouseLeave={
           props.inputMode
             ? () => {
-                // 항상 최신 base로만 되돌림. prevValue 불필요!
                 setCurValue(base);
               }
             : undefined
