@@ -1,4 +1,3 @@
-// import { useEffect } from "react"
 import type { SearchParam } from ".."
 
 
@@ -22,27 +21,27 @@ interface Props {
   text: string
   isOpen: boolean
   setSearchParam: React.Dispatch<React.SetStateAction<SearchParam[] | null>>
+  setIsBookmarkSelect: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function FilterModal({ isOpen, text, category, setSearchParam }: Props) {
-
-  // 모달을 닫았을때는 인기작 전체에서 렌더링 되게끔 SearchParam 비우기
-  // 비우니까 pickBook 모달을 열때는 얘를 닫아야하는데 그럼 책 정보가 꼬이는 현상 발생 .. ㅎ
-  // useEffect(() => {
-  //   if (!isOpen) { setSearchParam(null) }
-  // }, [isOpen])
+function FilterModal({ isOpen, text, category, setSearchParam, setIsBookmarkSelect }: Props) {
 
   const handleSelect = (key: string) => {
-    // 여기에 서치파람을 비우는걸 넣었더니 isOpen 이 바꼈는지에 따라 작동 하는게 아니라 반영이 안됨 이전 값이 유지되게됨
-    setSearchParam([{
-      key: text,
-      value: key
-    }])
+    if (key === 'bookmark') {
+      setIsBookmarkSelect(true);
+    }
+    else {
+      setIsBookmarkSelect(false);
 
-    // key가 all일때 인기작 전체
-    if (key === 'all') setSearchParam(null)
+      if (key === 'all') setSearchParam(null)
+      else {
+        setSearchParam([{
+          key: text,
+          value: key
+        }])
+      }
 
-    // bookmark일때는 supabase에서 유저가 북마크한거 가져오기(usePopularBookFetching 실행이 안돼야함)
+    }
   }
 
   return (

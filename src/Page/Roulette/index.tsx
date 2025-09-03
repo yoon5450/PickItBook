@@ -7,7 +7,9 @@ import { usePopularBookFetching } from "@/api/usePopularBookFetching";
 import { shuffle } from "./utils/shuffle";
 import Filter from "@/Components/Filter";
 import { KDC_CATEGORY_OPTIONS, type KdcItemType } from "@/constant/kdc";
-import type { PopularBookItem } from "@/@types/global";
+import type { BookmarkItem, PopularBookItem } from "@/@types/global";
+import { useFetchBookmarkList } from "./hooks/useFetchBookmarkList";
+import { extendItem } from "./utils/extendItem";
 
 export interface SearchParam {
   key: string
@@ -17,8 +19,13 @@ export interface SearchParam {
 function RandomRoulette() {
   const [filterTap, setFilterTap] = useState<'장르' | '연령' | '추천' | null>(null);
   const [isOpenPickBook, setIsOpenPickBook] = useState<boolean>(false);
-  const [pickBook, setPickBook] = useState<PopularBookItem | null>(null);
+  const [pickBook, setPickBook] = useState<PopularBookItem | BookmarkItem | null>(null);
   const [searchParam, setSearchParam] = useState<SearchParam[] | null>(null);
+  const [isBookmarkSelect, setIsBookmarkSelect] = useState<boolean>(false);
+  const bookmarkList = useFetchBookmarkList(isBookmarkSelect);
+
+  console.log('북마크 필터링 눌렀냐 ', isBookmarkSelect)
+  console.log('북마크 리스트', bookmarkList);
 
   const [genre, setGenre] = useState<{ top?: KdcItemType, bottom?: KdcItemType } | null>(null)
   const kdc = genre?.top ? genre.top.code[0] : undefined; // 1자리 (0~9)
@@ -61,13 +68,40 @@ function RandomRoulette() {
   if (error) console.error(error, '장르별 책 불러오기 실패');
   if (isLoading) console.log('장르별 책 가져오는중');
 
+
+
+  // 북마크 추가할때마다 북마크 리스트가 최신화돼야함
+
   const filterBooks = useMemo(() => {
     const base = data?.books ?? [];
+
+    if (isBookmarkSelect) {
+      const len = bookmarkList?.length ?? 0;
+      console.log(len);
+
+      if (len === 0) {
+        // 빈 북마크 → 이후 useEffect에서 안내
+        return shuffle(base).slice(0, 17);
+      }
+      if (len >= 17) {
+        return shuffle(bookmarkList!).slice(0, 17);
+      }
+      // 1~16개: 균등 확장 후 셔플
+      const extendBookmarkList = extendItem(bookmarkList!);
+      return shuffle(extendBookmarkList).slice(0, 17);
+    }
+
     return shuffle(base).slice(0, 17);
-  }, [data?.books]);
+  }, [data?.books, isBookmarkSelect, bookmarkList]);
 
   useEffect(() => {
-    console.log('장르 필터링된 책들 : ', filterBooks);
+    if (isBookmarkSelect && (bookmarkList?.length ?? 0) === 0) {
+      alert('북마크가 존재하지 않습니다');
+    }
+  }, [isBookmarkSelect, bookmarkList]);
+
+  useEffect(() => {
+    console.log('필터링된 책들 : ', filterBooks);
   }, [filterBooks]);
 
 
@@ -82,12 +116,14 @@ function RandomRoulette() {
             <Filter topItems={topItems} bottomItems={bottomItems} filterItem={genre} setFilterItem={setGenre} />
           )}
         </div>
+
         <div className="z-10">
           <FilterButton text={'연령'} setFilterTap={setFilterTap} />
           <FilterModal
             isOpen={filterTap === '연령'}
             text='age'
             setSearchParam={setSearchParam}
+            setIsBookmarkSelect={setIsBookmarkSelect}
             category={{
               8: "초등",
               14: "청소년",
@@ -96,14 +132,17 @@ function RandomRoulette() {
               40: "40대",
               50: "50대",
               60: "60대 이상"
-            }} />
+            }}
+          />
         </div>
+
         <div className="z-10">
           <FilterButton text={'추천'} setFilterTap={setFilterTap} />
           <FilterModal
             isOpen={filterTap === '추천'}
             text='gender'
             setSearchParam={setSearchParam}
+            setIsBookmarkSelect={setIsBookmarkSelect}
             category={{
               all: "인기작",
               bookmark: "북마크",

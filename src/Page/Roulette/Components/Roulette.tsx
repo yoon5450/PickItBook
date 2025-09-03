@@ -1,12 +1,12 @@
 import { useState } from "react";
 import RouletteButton from "./RouletteButton";
 import RouletteWheel from "./RouletteWheel";
-import type { PopularBookItem } from "@/@types/global";
+import type { BookmarkItem, PopularBookItem } from "@/@types/global";
 
 
 interface Props {
-  books: PopularBookItem[],
-  setPickBook?: React.Dispatch<React.SetStateAction<PopularBookItem | null>>;
+  books: PopularBookItem[] | BookmarkItem[],
+  setPickBook?: React.Dispatch<React.SetStateAction<PopularBookItem | BookmarkItem | null>>;
   setIsOpenPickBook?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

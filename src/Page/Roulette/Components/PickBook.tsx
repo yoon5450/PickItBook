@@ -1,8 +1,9 @@
-import type { PopularBookItem } from "@/@types/global";
+import type { BookmarkItem, PopularBookItem } from "@/@types/global";
+import { bookmarkRepo } from "@/api/bookmark.repo.supabase";
 import { logicRpcRepo } from "@/api/logicRpc.repo.supabase";
 import { useBookDetail } from "@/api/useBookDetail";
 import { useToggleBookmark } from "@/api/useBookmark";
-import { useApplyMissions, useGetMissionByISBN } from "@/api/useMissionsFetching";
+import { useGetMissionByISBN } from "@/api/useMissionsFetching";
 import { useGetReview } from "@/api/useReviewFetching";
 import RatingStars from "@/Components/RatingStar";
 import BookmarkButton from "@/Page/BookDetail/components/BookmarkButton";
@@ -22,7 +23,7 @@ import { useEffect, useMemo, useState } from "react"
  */
 
 interface Props {
-  pickBook: PopularBookItem | null;
+  pickBook: PopularBookItem | BookmarkItem | null;
   isOpenPickBook: boolean;
   setIsOpenPickBook: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -54,8 +55,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
   // setIsOpenPickBook : 모달을 띄울지 여부 설정 함수
   // isOpenPickBook : 모달을 띄우는지 값이 불린으로 저장된 상태
   const [isOpen, setIsOpen] = useState<boolean>(false); // 모달이 떠 있는 상태에서 책을 펼쳤는지의 여부
-  const [isBookMark, setIsBookMark] = useState<boolean>(false);
-
+  const [isBookmark, setIsBookmark] = useState<boolean>(false);
 
   const isbn13 = pickBook?.isbn13 ?? undefined;
   const open = !!(isbn13 && isOpenPickBook);
@@ -71,6 +71,15 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
       .sort((a, b) => b.reward.amount - a.reward.amount)
       .filter(m => !m.completed) : [];
 
+  // 북마크 돼있냐 안돼있냐는 supbase에서 확인을 해야할듯
+  useEffect(() => {
+    const bookmarkCheck = async () => {
+      if (!isbn13) return;
+      const bookmarked = await bookmarkRepo.isBookmarked(isbn13);
+      setIsBookmark(bookmarked);
+    }
+    bookmarkCheck();
+  }, [isbn13]);
 
 
   const { data: reviewData } = useGetReview(isbn13 ?? '')
@@ -130,7 +139,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
   const { mutate: toggleBookmark, isPending: togglePending } = useToggleBookmark(isbn13)
 
   const handleBookMark = () => {
-    setIsBookMark(prev => !prev);
+    setIsBookmark(prev => !prev);
     toggleBookmark()
   }
   // xl : 1280 lg : 1024 md : 768 sm : 640
@@ -143,8 +152,8 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
         (bookStatus === 'pending' || !bookData?.book ? (<p>로딩중</p>)
           : (
             <div key={isbn13} className="fixed inset-0 z-[1000]">
-              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm">
-                <section className="book w-screen h-screen flex flex-col items-center justify-center">
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm w-screen h-screen flex items-center justify-center" onPointerDown={handleCloseBook}>
+                <section className="book flex items-center justify-center" onPointerDown={(e) => e.stopPropagation()} role="dialog" aria-modal='true' aria-labelledby="pickbook popup">
                   <div className="container relative z-20 perspective-distant [perspective-origin:center] flex justify-center">
                     <div className={tw("book relative w-[320px] h-[470px] lg:w-[400px] lg:h-[588px] xl:w-[473px] xl:h-[696px] left-0 transform-3d transition-left duration-700 ease-in-out",
                       isOpen ? 'left-[160px] lg:left-[200px] xl:left-[236px]' : '')}>
@@ -163,7 +172,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                         <BookmarkButton
                           className={'absolute -top-2 left-8'}
                           onClick={handleBookMark}
-                          isBookmarked={isBookMark}
+                          isBookmarked={isBookmark}
                           disabled={togglePending}
                           size={48}
                         />

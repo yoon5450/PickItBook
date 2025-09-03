@@ -1,14 +1,14 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
-import type { PopularBookItem } from "@/@types/global";
+import type { BookmarkItem, PopularBookItem } from "@/@types/global";
 import { getBookImageURLs } from "@/Page/Main/utils/bookImageUtils";
 gsap.registerPlugin(useGSAP);
 
 interface Props {
   isStart: boolean, // 작동 시킬건지
-  books: PopularBookItem[], // 책 데이터
-  setPickBook?: React.Dispatch<React.SetStateAction<PopularBookItem | null>>;
+  books: PopularBookItem[] | BookmarkItem[], // 책 데이터
+  setPickBook?: React.Dispatch<React.SetStateAction<PopularBookItem | BookmarkItem | null>>;
   setIsWorking?: React.Dispatch<React.SetStateAction<boolean>>;
   setIsOpenPickBook?: React.Dispatch<React.SetStateAction<boolean>>;
   duration?: number; // 지속 시간
@@ -173,7 +173,7 @@ function RouletteWheel({
     runRoulette();
   }, [isStart])
 
-  const handleOpenPickBook = (book: PopularBookItem) => {
+  const handleOpenPickBook = (book: PopularBookItem | BookmarkItem) => {
     console.log('pickBookIndex : ', pickBookIndex)
     setIsOpenPickBook?.(true);
     setPickBook?.(book);
@@ -192,7 +192,7 @@ function RouletteWheel({
           {
             books.map((book, index) => (
               <button
-                inert={index === pickBookIndex ? false : true}
+                inert={(index === pickBookIndex) && (prevIsbn === book.isbn13) ? false : true}
                 type="button"
                 key={index}
                 ref={(el) => { if (el) bookRefs.current[index] = el; }}
@@ -203,7 +203,7 @@ function RouletteWheel({
                   (index === pickBookIndex) && !isStart && (prevIsbn === book.isbn13) ? activeStyle : inactiveStyle
                 }
               >
-                <img className="w-[100%] h-[100%] rounded-2xl object-cover" src={getBookImageURLs(book.isbn13)[0]} alt={`${book.bookname} 표지`} />
+                <img className="w-[100%] h-[100%] rounded-2xl object-cover" src={getBookImageURLs(book.isbn13)[0]} alt='표지' />
               </button>
             ))}
         </div>
