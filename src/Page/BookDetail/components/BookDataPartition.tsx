@@ -39,10 +39,6 @@ function BookDataPatition({
   useEffect(() => {
     async function bookmarkCheck() {
       if (!isbn13) return;
-      if (!isLogIn) {
-        Swal.fire("로그인 필요", "북마크하기 위해서는 로그인해야 합니다.");
-        return;
-      }
       const bookmarked = await bookmarkRepo.isBookmarked(isbn13);
       setIsBookmarked(bookmarked);
     }
@@ -50,6 +46,10 @@ function BookDataPatition({
   }, [isbn13, isLogIn]);
 
   const handleToggleBookmark = () => {
+    if (!isLogIn) {
+      Swal.fire("로그인 필요", "북마크하기 위해서는 로그인해야 합니다.");
+      return;
+    }
     toggleBookmark();
     setIsBookmarked((prev) => !prev);
   };
