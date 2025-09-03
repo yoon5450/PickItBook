@@ -2,8 +2,18 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
 import type { PopularBookItem } from "@/@types/global";
-import { getBookImageURLs } from "@/Page/Main/utils/bookImageUtils";
+import { getBookImageURLs } from "@/utils/bookImageUtils";
 gsap.registerPlugin(useGSAP);
+
+interface PinReactionConfig {
+  enabled?: boolean; // 핀 반응 활성화 여부
+  minKick?: number; // 최소 반응 강도
+  maxKick?: number; // 최대 반응 강도
+  duration?: number; // 핀 애니메이션 지속시간
+  ease?: string; // 핀 애니메이션 이징
+  elasticStrength?: number; // 탄성 강도 (elastic.out에서 사용)
+  elasticPower?: number; // 탄성 파워 (elastic.out에서 사용)
+}
 
 interface Props {
   isStart: boolean, // 작동 시킬건지
@@ -14,6 +24,8 @@ interface Props {
   duration?: number; // 지속 시간
   ease?: string; // 가속도
   repeat?: number; // 반복횟수
+  pinReaction?: PinReactionConfig; // 핀 반응 설정
+  isMainPage?: boolean; // 메인페이지 여부
 }
 
 function RouletteWheel({
@@ -24,7 +36,17 @@ function RouletteWheel({
   setIsOpenPickBook,
   duration = 8,
   ease = "power3.out",
-  repeat = 0
+  repeat = 0,
+  pinReaction = {
+    enabled: true,
+    minKick: 4,
+    maxKick: 18,
+    duration: 0.35,
+    ease: "elastic.out(1,0.5)",
+    elasticStrength: 1,
+    elasticPower: 0.5,
+  },
+  isMainPage = false,
 }: Props) {
 
   const pinRef = useRef<HTMLImageElement>(null);
@@ -32,29 +54,42 @@ function RouletteWheel({
   const bookRefs = useRef<HTMLButtonElement[]>([]);
   const [pickBookIndex, setPickBookIndex] = useState<number | null>(null);
   const [prevIsbn, setPrevIsbn] = useState<string | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); 
+
+  // 기본값으로 병합
+  const pinConfig = {
+    enabled: true,
+    minKick: 3,
+    maxKick: 18,
+    duration: 0.35,
+    ease: "elastic.out(1,0.5)",
+    elasticStrength: 1,
+    elasticPower: 0.5,
+    ...pinReaction,
+  };
 
   // === 룰렛 배치 ===
   useGSAP(() => {
-    if (!wheelRef.current) return;
+      if (!wheelRef.current) return;
 
-    const radius = wheelRef.current.offsetWidth / 2;
-    const centerX = radius;
-    const centerY = wheelRef.current.offsetHeight / 2;
-    const total = bookRefs.current.length;
-    const slice = (2 * Math.PI) / total;
+      const radius = wheelRef.current.offsetWidth / 2;
+      const centerX = radius;
+      const centerY = wheelRef.current.offsetHeight / 2;
+      const total = bookRefs.current.length;
+      const slice = (2 * Math.PI) / total;
 
-    bookRefs.current.forEach((book, index) => {
-      const rad = index * slice;
-      const x = radius * Math.sin(rad) + centerX;
-      const y = -radius * Math.cos(rad) + centerY;
-      gsap.set(book, {
-        rotation: `${rad}rad`,
-        xPercent: -50,
-        yPercent: -50,
-        x,
-        y,
+      bookRefs.current.forEach((book, index) => {
+        const rad = index * slice;
+        const x = radius * Math.sin(rad) + centerX;
+        const y = -radius * Math.cos(rad) + centerY;
+        gsap.set(book, {
+          rotation: `${rad}rad`,
+          xPercent: -50,
+          yPercent: -50,
+          x,
+          y,
+        });
       });
-    });
   }, { scope: wheelRef, dependencies: [books.length], revertOnUpdate: true });
 
   const normalizeAngle = (deg: number) => {
@@ -99,11 +134,34 @@ function RouletteWheel({
 
     // --- 핀 튕기기 ---
     const kickPin = (speed: number) => {
-      const kick = gsap.utils.clamp(3, 18, gsap.utils.mapRange(0, 25, 4, 18, Math.abs(speed)));
+      if (!pinConfig.enabled) return;
+
+      const kick = gsap.utils.clamp(
+        pinConfig.minKick,
+        pinConfig.maxKick,
+        gsap.utils.mapRange(
+          0,
+          25,
+          pinConfig.minKick,
+          pinConfig.maxKick,
+          Math.abs(speed)
+        )
+      );
+
+      // elastic ease가 아닌 경우 일반 ease 사용
+      const easeToUse = pinConfig.ease.includes("elastic")
+        ? `elastic.out(${pinConfig.elasticStrength},${pinConfig.elasticPower})`
+        : pinConfig.ease;
+
       gsap.fromTo(
         pin,
         { rotation: -kick },
-        { rotation: 0, duration: 0.35, ease: "elastic.out(1,0.5)", overwrite: "auto" }
+        {
+          rotation: 0,
+          duration: pinConfig.duration,
+          ease: easeToUse,
+          overwrite: "auto",
+        }
       );
     };
 
@@ -165,13 +223,88 @@ function RouletteWheel({
         }
       },
     });
-  }
+  };
 
-  // === 버튼 클릭 여부에 따라 룰렛 실행 ===
+  // 메인페이지용 단순 회전 함수
+  const runMainPageRoulette = () => {
+    const wheel = wheelRef.current;
+    const pin = pinRef.current;
+    if (!wheel || !pin) return;
+
+    gsap.set(pin, { transformOrigin: "50% 0%" });
+
+    // 일정한 속도로 핀 튕기기
+    const simulatedSpeed = 15;
+
+    const kickPin = () => {
+      if (!pinConfig.enabled) return;
+
+      const kick = gsap.utils.clamp(
+        pinConfig.minKick,
+        pinConfig.maxKick,
+        gsap.utils.mapRange(
+          0,
+          25,
+          pinConfig.minKick,
+          pinConfig.maxKick,
+          simulatedSpeed
+        )
+      );
+
+      const easeToUse = pinConfig.ease.includes("elastic")
+        ? `elastic.out(${pinConfig.elasticStrength},${pinConfig.elasticPower})`
+        : pinConfig.ease;
+
+      gsap.fromTo(
+        pin,
+        { rotation: -kick },
+        {
+          rotation: 0,
+          duration: pinConfig.duration,
+          ease: easeToUse,
+          overwrite: "auto",
+        }
+      );
+    };
+
+    // 무한 회전
+    gsap.to(wheel, {
+      rotation: 360,
+      duration: duration,
+      ease: "none",
+      repeat: -1,
+    });
+
+    // 일정 간격으로 핀 튕기기
+    const interval = setInterval(kickPin, (duration * 900) / books.length);
+
+    // 클린업을 위해 ref에 저장
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    intervalRef.current = interval;
+  };
+
+   // === 버튼 클릭 여부에 따라 룰렛 실행 ===
   useEffect(() => {
+    if (isMainPage) {
+      // 메인페이지에서는 바로 단순 회전 시작
+      runMainPageRoulette();
+      return;
+    }
+
     if (!isStart) return;
-    runRoulette();
-  }, [isStart])
+    runRoulette(); // 기존 복잡한 룰렛
+  }, [isStart, isMainPage]);
+
+  // 컴포넌트 언마운트 시 클린업
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   const handleOpenPickBook = (book: PopularBookItem) => {
     console.log('pickBookIndex : ', pickBookIndex)

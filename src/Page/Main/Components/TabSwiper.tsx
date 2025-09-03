@@ -42,16 +42,10 @@ export const TabSwiper = ({
           onSwiper(swiper);
         }}
         modules={[FreeMode]}
-        spaceBetween={0}
         slidesPerView={isMobile ? "auto" : 9}
-        allowTouchMove={true}
-        simulateTouch={true}
         threshold={3}
         touchAngle={30}
         passiveListeners={false}
-        touchStartPreventDefault={true}
-        preventClicks={true}
-        preventClicksPropagation={true}
         freeMode={{
           enabled: true,
           sticky: false,
@@ -59,16 +53,12 @@ export const TabSwiper = ({
           momentumRatio: 1,
         }}
         grabCursor={true}
-        resistance={true}
         resistanceRatio={0.35}
         className={tw("tab-swiper", !isMobile ? "flex w-full" : "")}
         wrapperClass={isMobile ? "!flex !items-center" : undefined}
         style={
           isMobile ? { paddingLeft: "20px", paddingRight: "20px" } : undefined
         }
-        slidesOffsetBefore={isMobile ? 0 : 0}
-        slidesOffsetAfter={isMobile ? 0 : 0}
-        speed={300}
       >
         {Object.entries(BOOK_CATEGORIES).map(([key, config], index) => (
           <SwiperSlide
