@@ -53,6 +53,8 @@ function BookDetail() {
     return reviewData?.length
   }, [reviewData])
 
+  console.log(missionData);
+
   return (
     <div className="flex justify-center w-full bg-pattern">
       <div className="flex flex-col items-center min-h-screen w-[1200px] px-8 bg-background-white pt-15">
