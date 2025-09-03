@@ -19,6 +19,7 @@ export type UpdateReviewVars = {
   new_image_file?: File; 
 };
 
+// 파일과 함께 리뷰를 게시합니다 ( 파일 없어도 상관 없음 )
 export const useSetReviewWithFiles = () => {
   const qc = useQueryClient();
 
@@ -34,6 +35,7 @@ export const useSetReviewWithFiles = () => {
   });
 };
 
+// isbn에 기반한 리뷰 데이터를 가져옵니다.
 export const useGetReview = (isbn13: string, p_limit = 20, p_offset = 0) => {
   return useQuery<ReviewItemType[], Error>({
     queryKey: ["review", "byIsbn", isbn13, p_limit, p_offset],

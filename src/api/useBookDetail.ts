@@ -95,6 +95,7 @@ export type BookDetailData = {
   };
 };
 
+// isbn에 기반한 유저 디테일 데이터를 가져옵니다.
 export function useBookDetail(
   isbn13: string | undefined,
   opts?: { displayInfo?: "age" | "sex" | "region"; loaninfoYN: "Y" | "N" }

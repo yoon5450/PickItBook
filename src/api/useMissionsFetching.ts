@@ -3,6 +3,7 @@ import { missionsRepo } from "./missions.repo.supabase";
 import type { MissionItemType } from "@/@types/global";
 import { logicRpcRepo } from "./logicRpc.repo.supabase";
 
+
 type UseMissionsFetchingOptions = {
   enabled?: boolean;
   staleTime?: number;
@@ -10,6 +11,8 @@ type UseMissionsFetchingOptions = {
   refetchOnWindowFocus?: boolean;
 };
 
+// ISBN 기반한 미션 목록을 받아옵니다.
+// 추가 포함 데이터 : assigned - 이 미션을 수락했는지, bundle_id - 미션의 번들 id
 export const useGetMissionByISBN = (
   isbn13: string,
   opts: UseMissionsFetchingOptions = {}
@@ -31,10 +34,12 @@ export const useGetMissionByISBN = (
   });
 };
 
-export const useApplyMissions = (isbn13: string | undefined) => {
+// 해당 isbn에 대한 미션들을 로그인한 유저에게 수락 처리합니다.
+export const useAssignMissions = (isbn13: string | undefined) => {
   return useMutation({
-    mutationKey: ["bookmark", isbn13],
-    mutationFn: async (isbn13: string) => {
+    mutationKey: ["missionAssign", isbn13],
+    mutationFn: async () => {
+      if (!isbn13) throw new Error("isbn13 is required");
       return await logicRpcRepo.setBundle(isbn13);
     },
     retry: 0,
