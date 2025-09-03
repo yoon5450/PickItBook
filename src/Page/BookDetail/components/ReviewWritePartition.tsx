@@ -15,8 +15,8 @@ interface Props {
 function ReviewWritePartition({ data }: Props) {
   const reviewId = useId();
   const { id } = useProfileStore();
-  const [content, setContent] = useState<string>("");
-  const [rating, setRating] = useState<number>(0);
+  const [rating, setRating] = useState(0);
+  const [content, setContent] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [image, setImage] = useState<File>();
   const { mutate } = useSetReviewWithFiles();
@@ -34,8 +34,8 @@ function ReviewWritePartition({ data }: Props) {
       return;
     }
 
-    if (!content && rating === 0) {
-      Swal.fire("내용 작성 필요", "<div>내용 또는 평점을 입력해주세요</div>");
+    if (rating === 0) {
+      Swal.fire("평점 입력 필요", "<div>평점을 입력해주세요</div>");
       return;
     }
 
