@@ -1,6 +1,6 @@
 import { useRootUIShellStore } from "@/store/useRootUIShellStore";
 import { useLocation } from "react-router";
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import React from "react";
 import ImagePreview from "../ImagePreview";
 import { createPortal } from "react-dom";
@@ -11,8 +11,7 @@ import UserModal from "../UserModal";
 const registry = {
   imagePreview: ImagePreview,
   userModal: UserModal
-  
-} satisfies Record<string, React.ComponentType<HTMLElement>>;
+} satisfies Record<string, React.ComponentType<ReactNode>>;
 
 function OverlayHost() {
   const modalMap = useRootUIShellStore((s) => s.modalMap);

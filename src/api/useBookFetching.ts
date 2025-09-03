@@ -1,5 +1,5 @@
 import {
-  
+  makeRecommendURL,
   makeSearchURL,
   type SearchFields,
 } from "@/constant/constant";
@@ -65,7 +65,7 @@ export const useBookFetching = (
   const query = useQuery<Raw, Error, BooksData>({
     queryKey: ["books", searchParams, page],
     queryFn: ({ signal }) =>
-      fetcher(makeSearchURL(searchParams, page).href, { signal }),
+      fetcher(makeSearchURL(searchParams, page), { signal }),
     placeholderData: (prev) => prev, // v5에서 keepPreviousData 역할
     enabled,
     staleTime,
@@ -89,49 +89,51 @@ export const useBookFetching = (
 };
 
 // Recommend 타입 정의
-// export interface RecommendMain {
-//     response: Response;
-// }
+export interface RecommendMain {
+  response: Response;
+}
 
-// export interface Response {
-//     request:   Request;
-//     resultNum: number;
-//     docs:      Doc[];
-// }
+export interface Response {
+  request: { isbn: string; pageNo: string };
+  resultNum: number;
+  docs: Doc[];
+}
 
-// export interface Doc {
-//     book: BookItemType;
-// }
+export interface Doc {
+  book: BookItemType;
+}
 
-// export interface RecommendData {
-//   data:BookItemType[];
-//   page:number
-// }
+export interface RecommendData {
+  items: BookItemType[];
+  pageNo: number;
+}
 
-// export const useGetRecommend = (
-//   isbn: string,
-//   pageNo: number = 1,
-//   opts: UseBookFetchingOptions = {}
-// ) => {
-//   const {
-//     enabled = !!isbn,
-//     staleTime = 60_000,
-//     gcTime = 5 * 60_000,
-//     refetchOnWindowFocus = false,
-//   } = opts;
+export const useGetRecommend = (
+  isbn13: string,
+  opts: UseBookFetchingOptions = {}
+) => {
+  const {
+    enabled = !!isbn13,
+    staleTime = 60_000,
+    gcTime = 5 * 60_000,
+    refetchOnWindowFocus = false,
+  } = opts;
 
-//   return useQuery<RecommendMain, Error, RecommendData>({
-//     queryKey: ["recommend", isbn, pageNo],
-//     queryFn: ({ signal }) => fetcher(makeRecommendURL(isbn, pageNo).href, { signal }),
-//     select: (raw) => {
-//       const r = raw.response
-//       const data = 
+  return useQuery<RecommendMain, Error, RecommendData>({
+    queryKey: ["recommend", isbn13],
+    queryFn: ({ signal }) =>
+      fetcher(makeRecommendURL(isbn13), { signal }),
+    select: (raw) => {
+      const r = raw.response ?? {};
+      const req = r.request;
+      const items = (r.docs ?? []).map((item) => item.book);
+      const pageNo = Number(req.pageNo);
 
-//       return raw;
-//     },
-//     enabled,
-//     staleTime,
-//     gcTime,
-//     refetchOnWindowFocus,
-//   });
-// };
+      return { items, pageNo };
+    },
+    enabled,
+    staleTime,
+    gcTime,
+    refetchOnWindowFocus,
+  });
+};

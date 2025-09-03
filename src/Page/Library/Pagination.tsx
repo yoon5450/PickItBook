@@ -5,6 +5,7 @@ type PaginationProps = {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  maxVisible?: number;
 };
 
 function Pagination({ currentPage, totalPages, onPageChange, }: PaginationProps) {
@@ -29,6 +30,8 @@ function Pagination({ currentPage, totalPages, onPageChange, }: PaginationProps)
     }
     return anchors;
   };
+
+  
 
   return (
     <nav className="mt-12 mb-12 flex items-center gap-2 justify-center">

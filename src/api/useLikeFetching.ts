@@ -90,6 +90,7 @@ function patchLikeInCache<T>(
   return oldData;
 }
 
+// 좋아요 토글 처리합니다.
 export const useToggleLike = (review_id: number) => {
   // TODO: 낙관적 업데이트 적용하기 ( 왤캐 어렵냐 이거? )
   const qc = useQueryClient();

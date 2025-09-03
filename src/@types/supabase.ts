@@ -555,6 +555,13 @@ export type Database = {
         }
         Returns: undefined
       }
+      api_toggle_bookmark: {
+        Args: { p_emit_event?: boolean; p_isbn13: string; p_user_id?: string }
+        Returns: {
+          bookmark_id: number
+          bookmarked: boolean
+        }[]
+      }
       debug_like_state: {
         Args: { p_review_id: number }
         Returns: {

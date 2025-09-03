@@ -7,10 +7,11 @@ import UserScorePatition from "./components/UserScorePartition";
 import MisstionPartition from "./components/MissionPartition";
 import ReviewWritePartition from "./components/ReviewWritePartition";
 import ReviewListPartition from "./components/ReviewListPartition";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { scrollTop } from "@/utils/scrollFunctions";
 import { useGetReview } from "@/api/useReviewFetching";
 import { useGetMissionByISBN } from "@/api/useMissionsFetching";
+import { useGetRecommend } from "@/api/useBookFetching";
 
 function BookDetail() {
   const [searchParams] = useSearchParams();
@@ -24,19 +25,35 @@ function BookDetail() {
   // BookDetail 정보 불러오기
   const {
     data: BookDetailData,
-    isFetching: BookDetailFetching,
-    error,
   } = useBookDetail(isbn13);
 
   // Review 정보 불러오기
-  const {data:reviewData} = useGetReview(isbn13)
+  const { data: reviewData } = useGetReview(isbn13);
 
   // Mission 정보 불러오기
-  const {data:missionData} = useGetMissionByISBN(isbn13);
+  const { data: missionData } = useGetMissionByISBN(isbn13);
+
+  // Recommend 정보 불러오기
+  const { data: recommendData, isFetching: recommendFetching } =
+    useGetRecommend(isbn13);
+
+  const ratingAvg = useMemo(() => {
+    let summary = 0;
+
+    if (!reviewData) return 0;
+
+    reviewData.map((item) => (summary += item.score));
+
+    return summary === 0
+      ? summary
+      : Math.ceil((summary / reviewData?.length) * 10) / 10;
+  }, [reviewData]);
+
+  const reviewSize = useMemo(() => {
+    return reviewData?.length
+  }, [reviewData])
 
   console.log(missionData);
-
-  if (error) console.error(error);
 
   return (
     <div className="flex justify-center w-full bg-pattern">
@@ -46,8 +63,9 @@ function BookDetail() {
         <PartitionBase title="도서 정보">
           <BookDataPartition
             data={BookDetailData}
-            isFetching={BookDetailFetching}
-            isBookMarked={missionData?.[0].assigned}
+            isMissionAssigned={missionData?.[0].assigned}
+            ratingAvg={ratingAvg}
+            reviewSize={reviewSize}
           />
         </PartitionBase>
 
@@ -56,8 +74,8 @@ function BookDetail() {
           subtitle="이 책을 읽은 사람들이 많이 선택한 책"
         >
           <RecommandedPatition
-            data={Array(4).fill(BookDetailData)}
-            isFetching={BookDetailFetching}
+            data={recommendData?.items}
+            isFetching={recommendFetching}
           />
         </PartitionBase>
 
@@ -66,14 +84,17 @@ function BookDetail() {
         </PartitionBase>
 
         <PartitionBase title="유저 평점">
-          <UserScorePatition data={reviewData}/>
+          <UserScorePatition data={reviewData} ratingAvg={ratingAvg}/>
         </PartitionBase>
 
         <PartitionBase title="리뷰 작성">
-          <ReviewWritePartition data={BookDetailData}/>
+          <ReviewWritePartition data={BookDetailData} />
         </PartitionBase>
 
-        <PartitionBase title={`리뷰 목록 (${reviewData?.length})`} className="min-h-80 mb-10">
+        <PartitionBase
+          title={`리뷰 목록 (${reviewData?.length})`}
+          className="min-h-80 mb-10"
+        >
           <ReviewListPartition data={reviewData} />
         </PartitionBase>
       </div>

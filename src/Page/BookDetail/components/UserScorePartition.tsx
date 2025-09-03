@@ -5,9 +5,10 @@ import { useMemo } from "react";
 
 interface Props {
   data?: ReviewItemType[];
+  ratingAvg: number;
 }
 
-function UserScorePatition({ data }: Props) {
+function UserScorePatition({ data, ratingAvg }: Props) {
   const ratingItem = useMemo(() => {
     const items = [
       { label: "5점", count: 0 },
@@ -33,17 +34,7 @@ function UserScorePatition({ data }: Props) {
     return items;
   }, [data]);
 
-  const ratingAvg = useMemo(() => {
-    let summary = 0;
 
-    if (!data) return 0;
-
-    data.map((item) => (summary += item.score));
-
-    return summary === 0
-      ? summary
-      : Math.ceil((summary / data?.length) * 10) / 10;
-  }, [data]);
 
   return (
     <>

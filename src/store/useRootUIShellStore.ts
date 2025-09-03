@@ -1,14 +1,14 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-// TODO : payload로 작동, 추후 모달 기능이 커지면 각각의 스토어로 분리
+// TODO : props unknown 변경
 
 // 타입 정의
 type ModalPayload = unknown;
 
 type OverlayState = {
   layerCount: number;
-  modalMap: Record<string, { open: boolean; payload?: ModalPayload }>;
+  modalMap: Record<string, { open: boolean; props?: Record<string, unknown>; }>;
   isOpenSidebar: boolean;
 };
 
@@ -16,7 +16,7 @@ type OverlayState = {
 type UIShellState = {
   layerCount: number;
   scrollTopButtonVisible: boolean;
-  modalMap: Record<string, { open: boolean; payload?: ModalPayload }>;
+  modalMap: Record<string, { open: boolean; props?: Record<string, unknown>; }>;
   isOpenSidebar: boolean;
 
   openModal: (id: string, payload?: ModalPayload) => void;
