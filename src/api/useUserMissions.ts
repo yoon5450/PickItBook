@@ -39,12 +39,27 @@ async function fetchUserMissions(userId: string): Promise<Mission[]> {
     (item) => {
       const template = item.task_templates;
 
+    let reward: Reward = { type: "coin", amount: 0 };
+    if (template?.reward) {
+      try {
+        reward =
+          typeof template.reward === "string"
+            ? (JSON.parse(template.reward) as Reward)
+            : (template.reward as Reward);
+      } catch {
+        reward = { type: "coin", amount: 0 };
+      }
+    }      
+
+      console.log("Reward type:", typeof template?.reward, template?.reward);
+
       return {
         id: item.id,
         template_id: item.template_id,
         name: template?.name ?? "",
         description: template?.description ?? "",
-        reward: (template?.reward as Reward) ?? { type: "coin", amount: 0 },
+        // reward: (template?.reward as Reward) ?? { type: "coin", amount: 0 },
+        reward, 
         completed: item.completed ?? false,
         completed_at: item.completed_at,
         progress: (item.progress as MissionProgress) ?? null,
@@ -70,9 +85,10 @@ export function useUserMissions(userId: string) {
     select: (missions) => {
       const totalScore = missions
         .filter((m) => m.completed)
-        .reduce((sum, m) => sum + m.reward.amount, 0);
+        .reduce((sum, m) => sum + Number(m.reward?.amount ?? 0), 0);
 
       const { level, progressPercent } = calculateLevel(totalScore);
+      
 
       return {
         missions,
