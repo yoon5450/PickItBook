@@ -82,7 +82,6 @@ function Filter({
       <div className="flex flex-col gap-6">
         {topItems.map((item) => {
           const selected = filterItem?.top?.code === item.code;
-          console.log(filterItem);
           return (
             <button
               key={item.code}

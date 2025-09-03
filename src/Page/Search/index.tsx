@@ -10,6 +10,7 @@ import tw from "@/utils/tw";
 import { scrollTop } from "@/utils/scrollFunctions";
 import PopularKeywords from "./Component/PopularKeywords";
 import { RxHamburgerMenu, RxGrid } from "react-icons/rx";
+import { useGetReviewsScore } from "@/api/useReviewFetching";
 
 export type listMode = "line" | "grid";
 
@@ -76,6 +77,20 @@ function Search() {
     page
   );
 
+  const isbns = data?.items.map((item) => item.isbn13);
+
+  const { data: reviewsScoreData, isFetching: reviewsScoreFetching } =
+    useGetReviewsScore(isbns);
+
+  if (!reviewsScoreFetching) {
+    const reviewsMap = new Map(data.items.map((s) => [s.isbn13, s]));
+    const merged = data.items.map((item) => ({
+      ...item,
+      avgScore: reviewsMap.get(item.isbn13)?.avg_score ?? null,
+      ratingCount: reviewsMap.get(item.isbn13)?.rating_count ?? 0,
+    }));
+  }
+
   const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
   const prevDisabled = isFetching || page <= 1;
   const nextDisabled = isFetching || page >= totalPages;
@@ -107,7 +122,7 @@ function Search() {
           <button
             className={tw(
               "cursor-pointer hover:text-slate-400 transition rounded-xl active:bg-gray-200",
-              listMode === "line" && "text-primary hover:text-primary",
+              listMode === "line" && "text-primary hover:text-primary"
             )}
             type="button"
             onClick={() => setListMode("line")}
@@ -117,7 +132,7 @@ function Search() {
           <button
             className={tw(
               "cursor-pointer hover:text-slate-400 transition rounded-xl active:bg-gray-200",
-              listMode === "grid" && "text-primary hover:text-primary",
+              listMode === "grid" && "text-primary hover:text-primary"
             )}
             type="button"
             onClick={() => setListMode("grid")}
