@@ -6,7 +6,7 @@ import { fetcher } from "@/api/fetcher";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4plugins_wordCloud from "@amcharts/amcharts4/plugins/wordCloud";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import { useMobileDetection } from "../hooks/useMobileDetection";
+import { useMobileDetection } from "../Main/hooks/useMobileDetection";
 
 export interface WordData {
   text: string;
@@ -75,9 +75,8 @@ const WordCloud = ({
     isbn13: string
   ): Promise<string[]> => {
     try {
-      const raw = await fetcher(
-        makeBookDetailURL(isbn13, { displayInfo: "age", loaninfoYN: "N" }).href
-      );
+     const url = makeBookDetailURL(isbn13, { displayInfo: "age", loaninfoYN: "N" });
+      const raw = await fetcher(url);
       if (!raw.response) return [];
       const book = raw.response.detail?.[0]?.book;
       if (!book) return [];

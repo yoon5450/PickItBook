@@ -10,8 +10,6 @@ import { getMockDataByCategory } from "./utils/mockData";
 import MainRoulette from "./Components/MainRoulette";
 import { useMemo } from "react";
 
-import WordCloud from "./Components/WordCloud";
-
 gsap.registerPlugin(ScrollTrigger);
 
 const Main = () => {
@@ -86,10 +84,6 @@ const Main = () => {
           <MainRoulette books={books} />
         </div>
       </section>
-
-      <hr />
-
-      <WordCloud />
     </main>
   );
 };

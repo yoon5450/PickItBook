@@ -2,7 +2,7 @@ import type { PopularBookItem } from "@/@types/global";
 import { useBookDetail } from "@/api/useBookDetail";
 import { useGetMissionByISBN } from "@/api/useMissionsFetching";
 import RatingStars from "@/Components/RatingStar";
-import { getBookImageURLs } from "@/Page/Main/utils/bookImageUtils";
+import { getBookImageURLs } from "@/utils/bookImageUtils";
 import tw from "@/utils/tw";
 import { cva } from "class-variance-authority";
 import { useEffect, useState } from "react"
