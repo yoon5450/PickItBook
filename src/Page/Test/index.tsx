@@ -2,7 +2,7 @@ import { useMainStore } from "@/store/mainStore";
 import { useRootUIShellStore } from "@/store/useRootUIShellStore";
 import supabase from "@/utils/supabase";
 import Swal from "sweetalert2";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { KDC_CATEGORY_OPTIONS, type KdcItemType } from "@/constant/kdc";
 import Filter from "@/Components/Filter";
 import BookDataSkeleton from "../BookDetail/skeletons/BookDataSkeleton";
@@ -24,20 +24,6 @@ function Test() {
     () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] !== "0"),
     []
   );
-
-  useEffect(() => {
-    async function get() {
-      const { data, error } = await supabase.rpc("api_get_my_tasks", {
-        p_completed: true, // 완료된 것만
-        p_scope_id: null, // 전체
-        p_template_code: null, // 전체
-        p_limit: 20,
-        p_offset: 0,
-      });
-      console.log(data);
-    }
-    get();
-  }, []);
 
   console.log(filterItem);
   return (
