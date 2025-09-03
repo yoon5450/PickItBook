@@ -1,11 +1,13 @@
 import type { PopularBookItem } from "@/@types/global";
+import { logicRpcRepo } from "@/api/logicRpc.repo.supabase";
 import { useBookDetail } from "@/api/useBookDetail";
 import { useGetMissionByISBN } from "@/api/useMissionsFetching";
+import { useGetReview } from "@/api/useReviewFetching";
 import RatingStars from "@/Components/RatingStar";
 import { getBookImageURLs } from "@/Page/Main/utils/bookImageUtils";
 import tw from "@/utils/tw";
 import { cva } from "class-variance-authority";
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 
 /**
@@ -13,6 +15,8 @@ import { useEffect, useState } from "react"
  * 스타일 분리해보고도 코드 길면 컴포넌트 분리하기
  * 하이라이팅 스타일 수정하기
  * 책 닫힐때 스르륵 사라지게 애니메이션 넣기
+ * 
+ * 리뷰 아예 등록 안 된 경우는 5점으로
  */
 
 interface Props {
@@ -58,14 +62,15 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
   // isOpenPickBook : 모달을 띄우는지 값이 불린으로 저장된 상태
   const [isOpen, setIsOpen] = useState<boolean>(false); // 모달이 떠 있는 상태에서 책을 펼쳤는지의 여부
   const [isBookMark, setIsBookMark] = useState<boolean>(false);
+  // const currentUser = useProfileStore((s) => s.id);
 
   const isbn13 = pickBook?.isbn13 ?? undefined;
   const open = !!(isbn13 && isOpenPickBook);
 
-  const { status: bookStatus, data: bookData } = useBookDetail(isbn13);
+  // isbn13이 없을수있다는 오류 잡기 (type narrowing 해주기)
+  const { status: bookStatus, data: bookData } = useBookDetail(isbn13 ?? '');
 
-  const { data: missionData } = useGetMissionByISBN(isbn13!);
-  // if(!missionData) return; 이 코드는 아래 훅 호출하는데 에러를 유발
+  const { data: missionData } = useGetMissionByISBN(isbn13 ?? '');
 
   const missions = missionData ?
     missionData
@@ -73,6 +78,37 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
       .sort((a, b) => b.reward.amount - a.reward.amount)
       .filter(m => !m.completed) : [];
   // console.log(missions);
+
+
+  const { data: reviewData } = useGetReview(isbn13 ?? '')
+  // const { data: reviewData } = useGetReview('9788936433598')
+  // console.log('reviewData: ', reviewData);
+
+  const ratingAvg = useMemo(() => {
+    let summary = 0;
+    if (!reviewData) return 0;
+    reviewData.map((item) => (summary += item.score));
+    return summary === 0
+      ? summary
+      : Math.ceil((summary / reviewData?.length) * 10) / 10;
+  }, [reviewData]);
+  // console.log('review average : ', ratingAvg)
+
+
+
+  // 미션 insert 진행
+  // 미션 할당됐는지 여부 확인해보기
+  // 이미 이 책에 대해서 미션을 받았다면 또 안받아지도록 ->
+  useEffect(() => {
+    if (isOpenPickBook) {
+      const insertMissionsToUser = () => {
+        logicRpcRepo.setBundle(isbn13 ?? '');
+        console.log('번들 호출');
+      }
+      insertMissionsToUser();
+    }
+  }, [isbn13, isOpenPickBook])
+
 
 
   useEffect(() => {
@@ -146,24 +182,20 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                           {/* 미션 map으로 렌더링하기 */}
                           {
                             missions.map(({ name, description }, index) => (
-                              <>
-                                {
-                                  index === 0 ? (
-                                    <div key={index} className="w-full border border-gray-300 bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-row justify-between gap-1" >
-                                      <div>
-                                        <p className="text-xs lg:text-sm xl:text-[16px]">{name}</p>
-                                        <p className="text-xs lg:text-sm xl:text-[16px]">{description}</p>
-                                      </div>
-                                      <img className="w-5 lg:w-6 xl:w-8" src="/fire_book_yellow.svg" alt="책 미션" />
-                                    </div>
-                                  ) : (
-                                    <div key={index} className="w-full bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-col">
-                                      <p className="text-xs lg:text-sm xl:text-[16px]">{name}</p>
-                                      <p className="text-xs lg:text-sm xl:text-[16px]">{description}</p>
-                                    </div>
-                                  )
-                                }
-                              </>
+                              index === 0 ? (
+                                <div key={index} className="w-full border border-gray-300 bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-row justify-between gap-1" >
+                                  <div>
+                                    <p className="text-xs lg:text-sm xl:text-[16px]">{name}</p>
+                                    <p className="text-xs lg:text-sm xl:text-[16px]">{description}</p>
+                                  </div>
+                                  <img className="w-5 lg:w-6 xl:w-8" src="/fire_book_yellow.svg" alt="책 미션" />
+                                </div>
+                              ) : (
+                                <div key={index} className="w-full bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-col">
+                                  <p className="text-xs lg:text-sm xl:text-[16px]">{name}</p>
+                                  <p className="text-xs lg:text-sm xl:text-[16px]">{description}</p>
+                                </div>
+                              )
                             ))
                           }
 
@@ -173,7 +205,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                       <div className={tw(openBook({ intent: 'pageLeft', isOpen }), "pt-13 pb-9 px-9", "pageLeft")}>
                         <div className="-rotate-y-180 flex flex-col gap-1">
                           <p className="font-semibold text-lg md:text-xl lg:text-2xl text-primary-black">{bookData.book.bookname}</p>
-                          <RatingStars value={3} size={28} gap={2} />
+                          <RatingStars value={ratingAvg ? ratingAvg : 5} size={28} gap={2} />
                           <div className="flex flex-row flex-wrap gap-2.5 lg:gap-4 xl:gap-6 pb-2">
                             <div className="flex items-center w-fit px-3 py-1.5 lg:px-5 lg:py-2.5 bg-stone-200 rounded-2xl" aria-label="작가">
                               <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{bookData.book.authors}</p></div>
