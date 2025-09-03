@@ -4,8 +4,12 @@ import { BiSearch } from "react-icons/bi";
 import type { SearchKey } from "@/@types/global";
 import Filter from "@/Components/Filter";
 import type { KdcItemType } from "@/constant/kdc";
-import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import {
+  MdOutlineKeyboardArrowDown,
+  MdOutlineKeyboardArrowUp,
+} from "react-icons/md";
 import gsap from "gsap";
+import tw from "@/utils/tw";
 
 interface Props {
   onSearch: ({ key, value }: { key: SearchKey; value: string }) => void;
@@ -28,7 +32,7 @@ function SearchForm({ onSearch, initialValue, disabled }: Props) {
     bottom?: KdcItemType;
   } | null>({ top: DEFAULT_TOP });
   const [pannelOpen, setPannelOpen] = useState<boolean>(false);
-  
+
   const textareaId = useId();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -108,16 +112,23 @@ function SearchForm({ onSearch, initialValue, disabled }: Props) {
     <div className="w-full py-4">
       <form
         onSubmit={handleSubmit}
-        className="flex justify-between items-center bg-white h-14 px-4 rounded-2xl gap-2"
+        className="flex justify-between items-center bg-white h-14 px-4 rounded-2xl gap-4"
       >
         <div className="relative">
           <button
             type="button"
-            className="flex items-center gap-2 w-20 bg-primary p-2 rounded-md text-white font-semibold"
+            className={tw(
+              "flex items-center w-20 bg-primary p-2 rounded-md text-white font-semibold transition justify-between",
+              pannelOpen && "bg-slate-50 text-primary outline outline-primary"
+            )}
             onClick={() => (pannelOpen ? closePanel() : openPanel())}
           >
             <span className="text-nowrap">{searchKey?.top?.value}</span>
-            <MdOutlineKeyboardArrowDown className="text-white" />
+            {pannelOpen ? (
+              <MdOutlineKeyboardArrowUp className="text-primary h-4 w-4 shrink-0" />
+            ) : (
+              <MdOutlineKeyboardArrowDown className="text-white w-4 h-4 shrink-0" />
+            )}
           </button>
 
           {/* 필터 보여주는 영역 (접혔다가 열림) */}
@@ -158,7 +169,7 @@ function SearchForm({ onSearch, initialValue, disabled }: Props) {
           value={value}
         />
         <button type="submit" className="cursor-pointer">
-          <BiSearch size={32} />
+          <BiSearch size={32} className="text-primary"/>
         </button>
       </form>
     </div>

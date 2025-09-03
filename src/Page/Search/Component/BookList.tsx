@@ -12,7 +12,7 @@ type Props = {
 
 const modeUlClass = {
   line: "flex flex-col justify-center",
-  grid: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 justify-items-center"
+  grid: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 justify-items-center pt-6"
 }as const
 
 function BookList({ bookList, className, onSearch, mode = "line" }: Props) {

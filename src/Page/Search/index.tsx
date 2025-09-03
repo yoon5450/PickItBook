@@ -1,4 +1,4 @@
-import { Outlet, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import BookList from "./Component/BookList";
 import SearchForm from "./Component/SearchForm";
 import { useEffect, useMemo, useState } from "react";
@@ -92,7 +92,7 @@ function Search() {
   }, [data.total, data.pageSize, page, searchParams]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen w-[1200px] px-8 bg-background-white pt-15">
+    <div className="flex flex-col items-center min-h-screen w-[1200px] px-8 bg-background-white py-15">
       {/* 검색창 */}
       <SearchForm
         key={keyword}
@@ -100,21 +100,25 @@ function Search() {
         onSearch={handleSearch}
       />
 
-      <Outlet/>
-
       {/* 추천 검색어, 목록 모드 변경 버튼 */}
       <div className="pb-5 px-4 flex w-full border-b border-black items-center justify-between">
         <PopularKeywords onSearch={handleSearch} />
         <div className="flex gap-2 items-center justify-center">
           <button
-            className="cursor-pointer hover:bg-primary transition rounded-xl active:bg-white"
+            className={tw(
+              "cursor-pointer hover:text-slate-400 transition rounded-xl active:bg-gray-200",
+              listMode === "line" && "text-primary hover:text-primary",
+            )}
             type="button"
             onClick={() => setListMode("line")}
           >
             <RxHamburgerMenu size={32} />
           </button>
           <button
-            className="cursor-pointer hover:bg-primary transition rounded-xl active:bg-white"
+            className={tw(
+              "cursor-pointer hover:text-slate-400 transition rounded-xl active:bg-gray-200",
+              listMode === "grid" && "text-primary hover:text-primary",
+            )}
             type="button"
             onClick={() => setListMode("grid")}
           >
@@ -145,15 +149,15 @@ function Search() {
         <button onClick={() => movePage(page - 1)} disabled={prevDisabled}>
           이전
         </button>
-        <span key={page} className="flex gap-2 text-center">
+        <span key={page} className="flex gap-2 text-center text-xl">
           {renderPageAnchors(page)}
         </span>
         <button onClick={() => movePage(page + 1)} disabled={nextDisabled}>
           다음
         </button>
-        <span className="ml-2 text-sm text-gray-500">
+        {/* <span className="ml-2 text-sm text-gray-500">
           총 {data.total.toLocaleString()}권
-        </span>
+        </span> */}
       </nav>
     </div>
   );
