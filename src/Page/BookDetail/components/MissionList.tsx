@@ -19,6 +19,7 @@ function MissionList({ items, type = "default" }: Props) {
         </li>
       )}
 
+
       {items.map(({ completed, name, description, reward, code }) => (
         <li
           key={code}

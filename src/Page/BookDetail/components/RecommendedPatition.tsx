@@ -1,26 +1,31 @@
-import type { BookDetailData } from "@/api/useBookDetail";
-import loaderIcon from "@/assets/loading.svg";
+import type { BookItemType } from "@/@types/global";
+import BookSwiper from "@/Page/Main/Components/BookSwiper";
+import LoadingSkeleton from "@/Page/Main/Components/LoadingSkeleton";
+import { useMobileDetection } from "@/Page/Main/hooks/useMobileDetection";
+import { useSwiperRefs } from "@/Page/Main/hooks/useSwiperRefs";
 
 interface Props {
-  data: BookDetailData[] | undefined;
+  data: BookItemType[] | undefined;
   isFetching: boolean;
 }
 
 // 나중에 Swiper로 대체
 function RecommandedPatition({ data, isFetching }: Props) {
+  const isMobile = useMobileDetection();
+  const { bookSwiperRef } = useSwiperRefs(isMobile);
+  const EMPTY_BOOKS: BookItemType[] = [];
+
   return (
     <>
       {isFetching && data?.[0] ? (
-        <img
-          className="h-25 text-center p-1 inline"
-          src={loaderIcon}
-          alt="로딩중"
-        />
+        <LoadingSkeleton />
       ) : (
-        <div className="flex gap-3 w-full justify-center p-5 max-w-full">
-          {data?.map(() => (
-            <img src={loaderIcon} className="h-40"/>
-          ))}
+        <div className="relative pt-6 px-12">
+          <BookSwiper
+            books={data?.[0] ? data : EMPTY_BOOKS}
+            activeCategory="all"
+            onSwiper={(swiper) => (bookSwiperRef.current = swiper)}
+          />
         </div>
       )}
     </>
