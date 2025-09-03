@@ -24,8 +24,8 @@ const Header = () => {
     { label: "Home", path: "/" },
     { label: "Random Roulette", path: "/roulette" },
     { label: "Book Search", path: "/search" },
-    { label: "Bookshelf", path: "/bookshelf" },
-    { label: "Mypage", path: "/mypage" },
+    { label: "Bookshelf", path: "/library" },
+    { label: "Mypage", path: "/mypage", requiresAuth: true },
   ];
 
   useEffect(() => {
@@ -304,7 +304,19 @@ const Header = () => {
                         isActive ? "" : ""
                       }`
                     }
-                    onClick={handleMenuClick}
+                    onClick={
+                      item.label === "Mypage"
+                        ? (e) => {
+                            if (!user) {
+                              e.preventDefault();
+                              handleMenuClick();
+                              navigate("/auth/login");
+                            } else {
+                              handleMenuClick();
+                            }
+                          }
+                        : handleMenuClick
+                    }
                   >
                     <span
                       className="nav-link-text font-accent relative h-full text-[42px] text-transparent md:text-[80px]"
