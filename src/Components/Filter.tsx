@@ -75,19 +75,19 @@ function Filter({
   return (
     <div
       className={tw(
-        "absolute flex p-10 shadow-sm py-5 gap-7 rounded-xl bg-pattern z-10",
+        "flex p-10 shadow-sm py-5 gap-7 rounded-xl bg-pattern z-10",
         className
       )}
     >
       <div className="flex flex-col gap-6">
         {topItems.map((item) => {
           const selected = filterItem?.top?.code === item.code;
-
+          console.log(filterItem);
           return (
             <button
               key={item.code}
               className={tw(
-                "flex w-fit rounded-xl py-1 px-3 transition hover:bg-primary/50 hover:text-white",
+                "flex w-fit rounded-xl py-1 px-3 transition hover:bg-primary/50 hover:text-white text-nowrap",
                 selected ? "bg-primary text-white" : "text-[#303030]"
               )}
               type="button"
