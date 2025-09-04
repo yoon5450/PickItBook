@@ -14,7 +14,7 @@ export const reviewReplysRepo = {
 
   getReplyByParentId: async (parent_id:number) => {
     const { data, error } = await supabase
-      .from("review_replys")
+      .from("v_review_replys_with_author")
       .select("*")
       .eq("parent_id", parent_id);
 

@@ -548,6 +548,26 @@ export type Database = {
         }
         Relationships: []
       }
+      v_review_replys_with_author: {
+        Row: {
+          author_id: string | null
+          content: string | null
+          created_at: string | null
+          id: number | null
+          nickname: string | null
+          parent_id: number | null
+          profile_image: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_reply_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "review"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_review_stats: {
         Row: {
           avg_score: number | null
@@ -701,23 +721,6 @@ export type Database = {
       fn_pick_bundle_by_isbn: {
         Args: { p_isbn: string }
         Returns: number
-      }
-      get_reviews_by_isbn: {
-        Args: { p_isbn13: string; p_limit?: number; p_offset?: number }
-        Returns: {
-          content: string
-          created_at: string
-          id: number
-          image_url: string
-          isbn13: string
-          like_count: number
-          liked_by_me: boolean
-          nickname: string
-          profile_image: string
-          score: number
-          title: string
-          user_id: string
-        }[]
       }
       toggle_like: {
         Args: { p_review_id: number }

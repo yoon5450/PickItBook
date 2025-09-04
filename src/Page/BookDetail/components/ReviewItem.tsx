@@ -3,8 +3,10 @@ import { useToggleLike } from "@/api/useLikeFetching";
 import { useGetReplyByParentId } from "@/api/useReviewReplyFetching";
 import RatingStars from "@/Components/RatingStar";
 import { timeFormatter } from "@/utils/timeFormatter";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
+import profileDefault from "@/assets/profile_default.png";
+import loadingImg from "@/assets/loading.svg";
 
 type ReplyVars = { content: string; parent_id: number };
 
@@ -18,13 +20,22 @@ interface Props {
 function ReviewItem({ item, isAnonymous, uid, setReplyCallback }: Props) {
   const { mutate, isPending } = useToggleLike(item.id);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [commentCount, setCommentCountCount] = useState<number>(item.comment_count)
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [reply, setReply] = useState<string>("");
 
   // 여기서 불러올 수밖에 없군?
-  const { data: replyData } = useGetReplyByParentId(item.id, {
-    enabled: isOpen,
-  });
+  const { data: replyData, isFetching: replyFetching } = useGetReplyByParentId(
+    item.id,
+    {
+      enabled: isOpen,
+    }
+  );
+
+  // item : reviewList는 갱신되지 않으므로, reply가 갱신되면 그 값으로 갱신
+  useEffect(() => {
+    if(replyData) setCommentCountCount(replyData?.length)
+  }, [replyData])
 
   // 엔터 눌렀을 때 검색 동작하도록
   const handleTextKeydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -55,6 +66,7 @@ function ReviewItem({ item, isAnonymous, uid, setReplyCallback }: Props) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setReplyCallback({ parent_id: item.id, content: reply });
+    setReply("");
   };
 
   return (
@@ -62,7 +74,11 @@ function ReviewItem({ item, isAnonymous, uid, setReplyCallback }: Props) {
       {/* 헤더 영역 */}
       <header className="flex justify-between items-center">
         <div className="flex gap-2 items-center">
-          <img className="h-8 rounded-full" src={item.profile_image} alt="" />
+          <img
+            className="h-8 rounded-full"
+            src={item.profile_image ?? profileDefault}
+            alt="/propile_default.png"
+          />
           <span>{item.nickname}</span>
         </div>
         <div className="flex gap-4 text-gray-400">
@@ -117,7 +133,7 @@ function ReviewItem({ item, isAnonymous, uid, setReplyCallback }: Props) {
             </span>
           </button>
           <button type="button" onClick={() => setIsOpen((prev) => !prev)}>
-            댓글 {item.comment_count}
+            댓글 {commentCount}
           </button>
         </div>
       </footer>
@@ -147,10 +163,59 @@ function ReviewItem({ item, isAnonymous, uid, setReplyCallback }: Props) {
                 댓글 남기기
               </button>
             </form>
-            <ul className="flex flex-col">
-              {replyData?.map(({ id, content }) => (
-                <li key={id}>{content}</li>
-              ))}
+            {/* 얘도 분리하면 Depth가 너무 깊을 것 같다. */}
+            {replyFetching && (
+              <div className="w-full flex items-center justify-center pt-2">
+                <img src={loadingImg} alt="로딩중" />
+              </div>
+            )}
+            <ul className="flex flex-col gap-4 mt-4">
+              {replyData?.map(
+                ({
+                  id,
+                  content,
+                  profile_image,
+                  nickname,
+                  author_id,
+                  created_at,
+                }) => (
+                  <li key={id} className="flex gap-3 items-start">
+                    <img
+                      className="h-8 w-8 rounded-full self-start flex-shrink-0 mt-1"
+                      src={profile_image ?? profileDefault}
+                      alt="프로필 이미지"
+                    />
+
+                    {/* 텍스트 영역 */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-baseline gap-2 text-gray-500">
+                        <span className="font-medium text-gray-900">
+                          {nickname}
+                        </span>
+                        <span className="text-sm">
+                          {timeFormatter(created_at!).slice(0, 10)}
+                        </span>
+
+                        {author_id === uid && (
+                          <div className="ml-auto flex gap-3 text-sm">
+                            <button type="button" className="cursor-pointer">
+                              편집
+                            </button>
+                            <button type="button" className="cursor-pointer">
+                              삭제
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 본문 */}
+                      <p className="mt-1 break-words whitespace-pre-wrap">
+                        {content}
+                      </p>
+                    </div>
+                  </li>
+                )
+              )}
             </ul>
           </div>
         )}

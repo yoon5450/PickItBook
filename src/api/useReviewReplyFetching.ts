@@ -3,7 +3,7 @@ import { reviewReplysRepo } from "./reviewReplys.repo.supabase";
 import type { FetchingOptions } from "@/@types/global";
 import type { Tables } from "@/@types/database.types";
 
-export type ReplyType = Tables<"review_replys">;
+export type ReplyType = Tables<"v_review_replys_with_author">;
 
 // Define types for clarity
 type ReplyVariables = { content: string; parent_id: number };
