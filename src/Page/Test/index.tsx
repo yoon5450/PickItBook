@@ -67,13 +67,10 @@ function Test() {
         로그아웃
       </button>
       <Filter
-        isOpen={true}
         topItems={topItems}
         bottomItems={bottomItems}
         filterItem={filterItem}
-        className={''}
         setFilterItem={setFilterItem}
-        onClose={() => { }}
       />
       <BookDataSkeleton />
     </div>

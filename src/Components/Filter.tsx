@@ -9,7 +9,7 @@ import type { KdcItemType } from "@/constant/kdc";
 type filterType = KdcItemType;
 
 interface Props {
-  isOpen: boolean
+  isOpen?: boolean
   topItems: KdcItemType[] | null;
   bottomItems?: KdcItemType[] | null;
   className?: string;
@@ -18,7 +18,7 @@ interface Props {
     top?: KdcItemType
     bottom?: KdcItemType
   } | null>>
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 function Filter({
@@ -77,7 +77,7 @@ function Filter({
     const onPointerDown = (e: PointerEvent) => {
       const t = e.target as Node;
       if (panelRef.current && panelRef.current.contains(t)) return;
-      onClose();
+      onClose?.();
     };
     document.addEventListener("pointerdown", onPointerDown, true);
     return () => document.removeEventListener("pointerdown", onPointerDown, true);
