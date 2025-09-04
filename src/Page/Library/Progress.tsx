@@ -8,10 +8,8 @@ export default function Progress() {
   const { user } = useAuthStore();
   const { nickname, fetchUser } = useProfileStore();
   const { data, isLoading, error } = useUserMissions(user?.id ?? "");
-
   const [animatedPercent, setAnimatedPercent] = useState(0);
   const [showIcons, setShowIcons] = useState(false);
-
   const progressPercent = data?.progressPercent ?? 0;
   const level = data?.level ?? 0;
   const missions = data?.missions ?? [];
