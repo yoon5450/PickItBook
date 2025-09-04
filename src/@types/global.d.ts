@@ -199,3 +199,18 @@ export interface BookmarkItem {
   user_id: string;
 }
 
+export interface TemplateItem {
+  active: boolean | null;
+  code: string;
+  description: string | null;
+  id: number;
+  kind: "mission" | "achievement";
+  name: string;
+  reward: Json;
+  rule: Json;
+  scope: "book" | "global";
+  valid_from: string | null;
+  valid_to: string | null;
+  version: number | null;
+  weight: number | null;
+}
