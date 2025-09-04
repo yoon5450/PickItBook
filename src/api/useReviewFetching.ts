@@ -64,18 +64,15 @@ export const useGetMyReviews = (uid: string, limit = 20, offset = 0) =>
     staleTime: 60_000,
   });
 
-export const useUpdateReview = (opts?: {
-  invalidate?: { byUser?: string; byIsbn?: string };
-}) => {
+export const useUpdateReview = (opts?: { invalidate?: { byUser?: string; byIsbn?: string } }) => {
   const qc = useQueryClient();
   return useMutation({
     mutationKey: ["review", "update"],
     mutationFn: (vars: UpdateReviewVars) => reviewRepo.updateReview(vars),
     onSuccess: () => {
       if (opts?.invalidate?.byUser) {
-        qc.invalidateQueries({
-          queryKey: ["review", "byUser", opts.invalidate.byUser],
-        });
+        qc.invalidateQueries({ queryKey: ["review", "byUser", opts.invalidate.byUser] });
+        qc.invalidateQueries({ queryKey: ["myReviewsWithCount", opts.invalidate.byUser] }); 
       }
       if (opts?.invalidate?.byIsbn) {
         qc.invalidateQueries({
@@ -86,19 +83,15 @@ export const useUpdateReview = (opts?: {
   });
 };
 
-/* ---------- 삭제(Delete) ---------- */
-export const useDeleteReview = (opts?: {
-  invalidate?: { byUser?: string; byIsbn?: string };
-}) => {
+export const useDeleteReview = (opts?: { invalidate?: { byUser?: string; byIsbn?: string } }) => {
   const qc = useQueryClient();
   return useMutation({
     mutationKey: ["review", "delete"],
     mutationFn: (id: number) => reviewRepo.deleteReview(id),
     onSuccess: () => {
       if (opts?.invalidate?.byUser) {
-        qc.invalidateQueries({
-          queryKey: ["review", "byUser", opts.invalidate.byUser],
-        });
+        qc.invalidateQueries({ queryKey: ["review", "byUser", opts.invalidate.byUser] });
+        qc.invalidateQueries({ queryKey: ["myReviewsWithCount", opts.invalidate.byUser] }); 
       }
       if (opts?.invalidate?.byIsbn) {
         qc.invalidateQueries({
