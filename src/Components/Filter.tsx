@@ -102,7 +102,7 @@ function Filter({
     <div
       ref={panelRef}
       className={tw(
-        "absolute flex p-10 shadow-sm py-5 gap-6 rounded-xl bg-pattern z-10",
+        "flex p-10 shadow-sm py-5 gap-6 rounded-xl bg-pattern z-10",
         className
       )}
     >

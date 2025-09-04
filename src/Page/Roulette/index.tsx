@@ -136,6 +136,7 @@ function RandomRoulette() {
             onClose={() => {
               setFilterTap(null);
             }}
+            className={"absolute"}
           />
         </div>
 
