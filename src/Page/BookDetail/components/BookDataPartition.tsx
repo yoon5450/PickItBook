@@ -145,8 +145,8 @@ function BookDataPatition({
           <p className="flex gap-2 items-center">
             <span>장르 구분</span>
 
-            {book.class_nm.split(" > ").map((item) => (
-              <NavLink to={"#"} className={"hover:underline"} key={item}>
+            {book.class_nm.split(" > ").map((item, index) => (
+              <NavLink to={"#"} className={"hover:underline"} key={`${item}${index}`}>
                 {item}
               </NavLink>
             ))}

@@ -8,6 +8,7 @@ import { useGetReview } from "@/api/useReviewFetching";
 import RatingStars from "@/Components/RatingStar";
 import BookmarkButton from "@/Page/BookDetail/components/BookmarkButton";
 import LoadingSkeleton from "@/Page/Main/Components/LoadingSkeleton";
+import { useAuthStore } from "@/store/useAuthStore";
 import { getBookImageURLs } from "@/utils/bookImageUtils";
 import tw from "@/utils/tw";
 import { cva } from "class-variance-authority";
@@ -46,6 +47,8 @@ const openBook = cva(
 function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isBookmark, setIsBookmark] = useState<boolean>(false);
+  const user = useAuthStore((s) => s.user);
+  const userId = user?.id
 
   const isbn13 = pickBook?.isbn13 ?? undefined;
   const open = !!(isbn13 && isOpenPickBook);
@@ -73,7 +76,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
   }, [isbn13]);
 
   // 3-1. 북마크 처리중인지 확인
-  const { mutate: toggleBookmark, isPending: togglePending } = useToggleBookmark(isbn13)
+  const { mutate: toggleBookmark, isPending: togglePending } = useToggleBookmark(isbn13, userId)
 
   // 3-2. 북마크 이벤트 핸들러
   const handleBookMark = () => {

@@ -120,7 +120,7 @@ function RandomRoulette() {
 
 
   return (
-    <div className="relative w-full max-w-[1200px] h-screen mx-auto justify-items-center pt-17 py-2">
+    <div className="relative w-full max-w-[1200px] h-[calc(100vh-80px)] mx-auto justify-items-center pt-17 py-2">
 
       <h1 hidden>Filter header</h1>
       <section className="absolute left-2 flex flex-row gap-6 w-[370px]">

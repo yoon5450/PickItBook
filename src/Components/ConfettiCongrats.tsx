@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import styles from "./ConfettiCongrat.module.css";
+import tw from "@/utils/tw";
 
 type Piece = {
   left: number;      // 0 ~ 100 (vw%)
@@ -20,6 +21,7 @@ type Props = {
   maxDuration?: number; // s
   maxDriftVW?: number;  // vw
   className?: string;
+  onPointerDown?: (e: React.MouseEvent) => void;
 };
 
 const DEFAULT_COLORS = ["#d13447", "#ffbf00", "#263672"];
@@ -31,7 +33,6 @@ export default function ConfettiCongrats({
   minDuration = 4,
   maxDuration = 5,
   maxDriftVW = 15,
-  className,
 }: Props) {
   const pieces = useMemo<Piece[]>(() => {
     const rand = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -53,7 +54,8 @@ export default function ConfettiCongrats({
   }, [count, colors, minDuration, maxDuration, maxDriftVW]);
 
   return (
-    <div className={`${styles.wrapper} ${className ?? ""}`}>
+    // <div className={tw(styles.wrapper, className ?? "absolute")}>
+    <div className={tw(styles.wrapper, "absolute z-10")}>
       <div className={styles.wohoo}>
         <span className={styles.txt}>{message}</span>
       </div>

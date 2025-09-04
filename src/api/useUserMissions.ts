@@ -42,24 +42,24 @@ async function fetchUserMissions(userId: string): Promise<Mission[]> {
   // );
 
   // 2) books 테이블에서 책 이름 매핑 가져오기
-//   let bookMap = new Map<string, { book_name: string; isbn13: string }>();
-//   if (bookIsbns.length > 0) {
-//     const { data: books, error: bookErr } = await supabase
-//       .from("books")
-//       .select("isbn13, book_name")
-//       .in("isbn13", bookIsbns);
+  //   let bookMap = new Map<string, { book_name: string; isbn13: string }>();
+  //   if (bookIsbns.length > 0) {
+  //     const { data: books, error: bookErr } = await supabase
+  //       .from("books")
+  //       .select("isbn13, book_name")
+  //       .in("isbn13", bookIsbns);
 
-//     if (bookErr) throw bookErr;
-//     if (books) {
-//       bookMap = new Map(
-//         books.map((b) => [b.isbn13, { isbn13: b.isbn13, book_name: b.book_name }])
-//       );
-//       console.log("bookIsbns from user_tasks:", bookIsbns);
-//     if (books) {
-//       console.log("books fetched from table:", books);
-//     }
-//   }
-// }
+  //     if (bookErr) throw bookErr;
+  //     if (books) {
+  //       bookMap = new Map(
+  //         books.map((b) => [b.isbn13, { isbn13: b.isbn13, book_name: b.book_name }])
+  //       );
+  //       console.log("bookIsbns from user_tasks:", bookIsbns);
+  //     if (books) {
+  //       console.log("books fetched from table:", books);
+  //     }
+  //   }
+  // }
 
   // 3) 최종 매핑
   return (data as (Tables<"user_tasks"> & { task_templates: Tables<"task_templates"> | null })[])
@@ -74,21 +74,21 @@ async function fetchUserMissions(userId: string): Promise<Mission[]> {
             typeof template.reward === "string"
               ? (JSON.parse(template.reward) as Reward)
               : (template.reward as Reward);
-        } catch {/* noop */}
+        } catch {/* noop */ }
       }
 
-      
+
 
       // scope_type이 book이면 책 정보 붙이기
       // const book =
       //   item.scope_type === "book" && item.scope_id
       //     ? bookMap.get(item.scope_id)
       //     : null;
-const book =
-  item.scope_type === "book" && item.scope_id
-    ? { isbn13: item.scope_id as string, book_name: "" } // 책 이름은 "" 처리
-    : null;
-          
+      const book =
+        item.scope_type === "book" && item.scope_id
+          ? { isbn13: item.scope_id as string, book_name: "" } // 책 이름은 "" 처리
+          : null;
+
 
       return {
         id: item.id,
