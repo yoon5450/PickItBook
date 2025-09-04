@@ -32,33 +32,33 @@ async function fetchUserMissions(userId: string): Promise<Mission[]> {
   if (!data) return [];
 
   // 1) 책 미션인 항목들의 isbn13 모으기 (scope_id가 isbn13로 저장됨)
-  const bookIsbns = Array.from(
-    new Set(
-      (data as Tables<"user_tasks">[] )
-        .filter((row) => row.scope_type === "book" && !!row.scope_id)
-        .map((row) => row.scope_id as string)
-    )
-  );
+  // const bookIsbns = Array.from(
+  //   new Set(
+  //     (data as Tables<"user_tasks">[] )
+  //       .filter((row) => row.scope_type === "book" && !!row.scope_id)
+  //       .map((row) => row.scope_id as string)
+  //   )
+  // );
 
   // 2) books 테이블에서 책 이름 매핑 가져오기
-  let bookMap = new Map<string, { book_name: string; isbn13: string }>();
-  if (bookIsbns.length > 0) {
-    const { data: books, error: bookErr } = await supabase
-      .from("books")
-      .select("isbn13, book_name")
-      .in("isbn13", bookIsbns);
+//   let bookMap = new Map<string, { book_name: string; isbn13: string }>();
+//   if (bookIsbns.length > 0) {
+//     const { data: books, error: bookErr } = await supabase
+//       .from("books")
+//       .select("isbn13, book_name")
+//       .in("isbn13", bookIsbns);
 
-    if (bookErr) throw bookErr;
-    if (books) {
-      bookMap = new Map(
-        books.map((b) => [b.isbn13, { isbn13: b.isbn13, book_name: b.book_name }])
-      );
-      console.log("bookIsbns from user_tasks:", bookIsbns);
-    if (books) {
-      console.log("books fetched from table:", books);
-    }
-  }
-}
+//     if (bookErr) throw bookErr;
+//     if (books) {
+//       bookMap = new Map(
+//         books.map((b) => [b.isbn13, { isbn13: b.isbn13, book_name: b.book_name }])
+//       );
+//       console.log("bookIsbns from user_tasks:", bookIsbns);
+//     if (books) {
+//       console.log("books fetched from table:", books);
+//     }
+//   }
+// }
 
   // 3) 최종 매핑
   return (data as (Tables<"user_tasks"> & { task_templates: Tables<"task_templates"> | null })[])

@@ -44,13 +44,13 @@ function MissionList() {
             tabIndex={clickable ? 0 : -1}
             onClick={() => {
               if (m.book?.isbn13) {
-                navigate(`/book_detail?isbn13=${m.book.isbn13}`);
+                navigate(`/book_detail?isbn13=${m.book?.isbn13}`);
               }
             }}
             onKeyDown={(e) => {
               if (clickable && (e.key === "Enter" || e.key === " ")) {
                 e.preventDefault();
-                navigate(`/book_detail?isbn13=${m.book.isbn13}`);
+                navigate(`/book_detail?isbn13=${m.book?.isbn13}`);
               }
             }}
             className={`flex items-center justify-between px-4 py-5 shadow-md rounded-lg border transition
