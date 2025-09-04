@@ -7,6 +7,7 @@ interface Props {
 }
 
 function MissionList({ items, type = "default" }: Props) {
+
   return (
     <ul className="flex flex-col w-full gap-2 pt-4">
       {type !== "sm" && (

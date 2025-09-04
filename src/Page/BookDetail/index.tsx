@@ -95,7 +95,7 @@ function BookDetail() {
           title={`리뷰 목록 (${reviewData?.length})`}
           className="min-h-80 mb-10"
         >
-          <ReviewListPartition data={reviewData} />
+          <ReviewListPartition data={reviewData} isbn13={isbn13} />
         </PartitionBase>
       </div>
     </div>
