@@ -38,6 +38,8 @@ function Root() {
         (payload) => {
           queryClient.invalidateQueries({ queryKey: ["rewards", user.id] });
           queryClient.invalidateQueries({ queryKey: ["missions", user.id] });
+
+          // 커스텀
           console.log(payload.new.template_id, "완료");
         }
       )
