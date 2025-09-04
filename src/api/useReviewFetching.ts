@@ -78,6 +78,7 @@ export const useUpdateReview = (opts?: { invalidate?: { byUser?: string; byIsbn?
   });
 };
 
+// 리뷰를 삭제합니다.
 export const useDeleteReview = (opts?: { invalidate?: { byUser?: string; byIsbn?: string } }) => {
   const qc = useQueryClient();
   return useMutation({

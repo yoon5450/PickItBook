@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import profileDefault from "@/assets/profile_default.png";
 import loadingImg from "@/assets/loading.svg";
+import { type UseMutateFunction } from "@tanstack/react-query";
 
 type ReplyVars = { content: string; parent_id: number };
 
@@ -15,12 +16,21 @@ interface Props {
   isAnonymous?: boolean;
   uid?: string;
   setReplyCallback: (vars: ReplyVars) => void;
+  deleteReviewCallback: UseMutateFunction<boolean, Error, number, unknown>;
 }
 
-function ReviewItem({ item, isAnonymous, uid, setReplyCallback }: Props) {
+function ReviewItem({
+  item,
+  isAnonymous,
+  uid,
+  setReplyCallback,
+  deleteReviewCallback,
+}: Props) {
   const { mutate, isPending } = useToggleLike(item.id);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [commentCount, setCommentCountCount] = useState<number>(item.comment_count)
+  const [commentCount, setCommentCountCount] = useState<number>(
+    item.comment_count
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [reply, setReply] = useState<string>("");
 
@@ -34,8 +44,8 @@ function ReviewItem({ item, isAnonymous, uid, setReplyCallback }: Props) {
 
   // item : reviewList는 갱신되지 않으므로, reply가 갱신되면 그 값으로 갱신
   useEffect(() => {
-    if(replyData) setCommentCountCount(replyData?.length)
-  }, [replyData])
+    if (replyData) setCommentCountCount(replyData?.length);
+  }, [replyData]);
 
   // 엔터 눌렀을 때 검색 동작하도록
   const handleTextKeydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -69,6 +79,21 @@ function ReviewItem({ item, isAnonymous, uid, setReplyCallback }: Props) {
     setReply("");
   };
 
+  const handleDelete = () => {
+    Swal.fire({
+      title: "정말 삭제하시겠습니까?",
+      text: "리뷰 기록은 복구되지 않습니다.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "네, 삭제합니다",
+      cancelButtonText: "취소",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteReviewCallback(item.id);
+      }
+    });
+  };
+
   return (
     <li className="flex flex-col p-4 bg-white rounded-md gap-2">
       {/* 헤더 영역 */}
@@ -85,7 +110,11 @@ function ReviewItem({ item, isAnonymous, uid, setReplyCallback }: Props) {
           <span>{kst!.slice(0, 10) + " " + kst!.slice(11, 16)}</span>
           {item.user_id === uid && (
             <>
-              <button type="button" className="cursor-pointer">
+              <button
+                type="button"
+                className="cursor-pointer"
+                onClick={handleDelete}
+              >
                 삭제
               </button>
               <button type="button" className="cursor-pointer">
@@ -152,7 +181,7 @@ function ReviewItem({ item, isAnonymous, uid, setReplyCallback }: Props) {
                 ref={textareaRef}
                 onChange={handleInputText}
                 onKeyDown={handleTextKeydown}
-                placeholder="보낼 메세지를 입력하세요"
+                placeholder="댓글을 입력하세요"
                 value={reply}
               />
               <button
