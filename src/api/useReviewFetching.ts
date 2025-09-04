@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { reviewRepo } from "./review.repo.supabase";
 import type { ReviewItemType } from "@/@types/global";
 import { logicRpcRepo } from "./logicRpc.repo.supabase";
+import type { Tables } from "@/@types/database.types";
 
 export type SetReviewType = {
   isbn13: string;
@@ -16,7 +17,14 @@ export type UpdateReviewVars = {
   id: number;
   content?: string;
   score?: number;
-  new_image_file?: File; 
+  new_image_file?: File;
+};
+
+type FetchingOptions = {
+  enabled?: boolean;
+  staleTime?: number;
+  gcTime?: number;
+  refetchOnWindowFocus?: boolean;
 };
 
 // 파일과 함께 리뷰를 게시합니다 ( 파일 없어도 상관 없음 )
@@ -28,7 +36,10 @@ export const useSetReviewWithFiles = () => {
     mutationFn: (vars: SetReviewType) => reviewRepo.setReviewWithFile(vars),
     retry: 0,
     onSuccess: (_newReview, vars) => {
-      logicRpcRepo.setProcessEvent("REVIEW_CREATED", { book_id: vars.isbn13, review_id:_newReview.id });
+      logicRpcRepo.setProcessEvent("REVIEW_CREATED", {
+        book_id: vars.isbn13,
+        review_id: _newReview.id,
+      });
       qc.invalidateQueries({ queryKey: ["review", "byIsbn", vars.isbn13] });
       qc.invalidateQueries({ queryKey: ["review", "byUser", vars.uid] });
     },
@@ -44,7 +55,6 @@ export const useGetReview = (isbn13: string, p_limit = 50, p_offset = 0) => {
     staleTime: 60_000,
   });
 };
-
 
 export const useGetMyReviews = (uid: string, limit = 20, offset = 0) =>
   useQuery<ReviewItemType[], Error>({
@@ -65,7 +75,9 @@ export const useUpdateReview = (opts?: { invalidate?: { byUser?: string; byIsbn?
         qc.invalidateQueries({ queryKey: ["myReviewsWithCount", opts.invalidate.byUser] }); 
       }
       if (opts?.invalidate?.byIsbn) {
-        qc.invalidateQueries({ queryKey: ["review", "byIsbn", opts.invalidate.byIsbn] });
+        qc.invalidateQueries({
+          queryKey: ["review", "byIsbn", opts.invalidate.byIsbn],
+        });
       }
     },
   });
@@ -82,8 +94,31 @@ export const useDeleteReview = (opts?: { invalidate?: { byUser?: string; byIsbn?
         qc.invalidateQueries({ queryKey: ["myReviewsWithCount", opts.invalidate.byUser] }); 
       }
       if (opts?.invalidate?.byIsbn) {
-        qc.invalidateQueries({ queryKey: ["review", "byIsbn", opts.invalidate.byIsbn] });
+        qc.invalidateQueries({
+          queryKey: ["review", "byIsbn", opts.invalidate.byIsbn],
+        });
       }
     },
+  });
+};
+
+type ReviewsScoreType = Tables<"v_review_stats">
+
+// isbn 목록에 기반한 리뷰 점수 목록을 가져옵니다.
+export const useGetReviewsScore = (isbns: string[], opts:FetchingOptions = {}) => {
+  const {
+    enabled = !!isbns,
+    staleTime = 60_000,
+    gcTime = 5 * 60_000,
+    refetchOnWindowFocus = false,
+  } = opts;
+
+  return useQuery<ReviewsScoreType[], Error>({
+    queryKey:['reviewsScore', isbns],
+    queryFn:() => reviewRepo.getReviewsScore(isbns),
+    enabled,
+    staleTime,
+    gcTime,
+    refetchOnWindowFocus
   });
 };

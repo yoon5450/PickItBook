@@ -173,7 +173,7 @@ const Header = () => {
 
   const handleLogin = () => {
     setOpenLoginModal(false);
-    navigate("/auth/login");
+    navigate("/login");
   };
 
   return (
@@ -201,7 +201,7 @@ const Header = () => {
             {user ? (
               <button
                 type="button"
-                className="z-100 absolute top-12 right-1/28 bg-pattern w-fit px-8 py-3 border rounded-xl shadow-modal"
+                className="z-100 absolute top-12 right-1/10 md:right-1/15 lg:right-1/20 bg-pattern w-fit px-8 py-3 border rounded-xl shadow-modal"
                 onClick={handleLogout}
               >
                 로그아웃
@@ -209,7 +209,7 @@ const Header = () => {
             ) : (
               <button
                 type="button"
-                className="z-100 absolute top-12 right-1/28 bg-pattern w-fit px-8 py-3 border rounded-xl shadow-modal"
+                className="z-100 absolute top-12 right-1/10 md:right-1/15 lg:right-1/20 bg-pattern w-fit px-8 py-3 border rounded-xl shadow-modal"
                 onClick={handleLogin}
               >
                 로그인
@@ -300,8 +300,7 @@ const Header = () => {
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
-                      `nav-link block no-underline items-center translate-y-full nav-link-hover ${
-                        isActive ? "" : ""
+                      `nav-link block no-underline items-center translate-y-full nav-link-hover ${isActive ? "" : ""
                       }`
                     }
                     onClick={

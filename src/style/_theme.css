@@ -14,6 +14,7 @@
   --animate-form-right-lg: form-right-lg 2s forwards;
   --animate-form-right-md: form-right-md 2s forwards;
   --animate-form-right-sm: form-right-sm 2s forwards;
+  --animate-shimmer: shimmer 1.2s linear infinite;
   --shadow-sm: 1px 1px 5px 0 #b7b7b7;
   --shadow-md: 3px 3px 3px 0 #b7b7b7;
   --shadow-book: 4px 10px 10px 0 rgba(85, 85, 85, 0.9);
@@ -91,3 +92,8 @@
     transform: translateX(-520px);
   }
 }
+
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
