@@ -132,11 +132,11 @@ const Hero = () => {
         <div className="flex h-full overflow-hidden">
           <div
             ref={leftBoxRef}
-            className="w-1/2 h-full bg-[url(/main/hero_bg.png)] bg-no-repeat bg-[center_right_-28rem] bg-cover"
+            className="w-1/2 h-full bg-[url(/main/hero_bg_left.png)] bg-no-repeat bg-[center_right] bg-cover"
           ></div>
           <div
             ref={rightBoxRef}
-            className="w-1/2 h-full bg-[url(/main/hero_bg.png)] bg-no-repeat bg-[center_left_-46rem] bg-cover"
+            className="w-1/2 h-full bg-[url(/main/hero_bg_right.png)] bg-no-repeat bg-[center_left] bg-cover"
           ></div>
         </div>
         <div className="absolute top-[21%] left-[50%] -translate-x-[50%]">

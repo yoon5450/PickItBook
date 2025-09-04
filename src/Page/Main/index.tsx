@@ -6,7 +6,6 @@ import RecommendedBook from "./Components/RecommendedBook";
 import Attractiveness from "./Components/Attractiveness";
 import { Link } from "react-router";
 import { getMockDataByCategory } from "./utils/mockData";
-//import Loading from "@/Components/Loading";
 import MainRoulette from "./Components/MainRoulette";
 import { useMemo } from "react";
 
