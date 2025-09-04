@@ -2,7 +2,6 @@ import { useAuthStore } from "@/store/useAuthStore"
 import supabase from "@/utils/supabase"
 import tw from "@/utils/tw";
 import type { Provider } from "@supabase/supabase-js"
-// import { useState } from "react"
 type Social = Extract<Provider, "github" | "google">
 
 interface Props {
@@ -13,13 +12,11 @@ interface Props {
 function SocialButton({ social, className }: Props) {
 
   const lastProvider = useAuthStore((s) => s.lastProvider)
-  // const [redirecting, setRedirecting] = useState(false);
   const isLastProvider = lastProvider === social ? true : false
   const redirectURL = import.meta.env.DEV ? 'http://localhost:3000' : 'https://fes-5-project-team-6.vercel.app'
 
   const handleSignInWithOAuth = async () => {
     localStorage.setItem('pending_provider', social);
-    // setRedirecting(true);
     await supabase.auth.signInWithOAuth({
       provider: social,
       options: { redirectTo: redirectURL },
