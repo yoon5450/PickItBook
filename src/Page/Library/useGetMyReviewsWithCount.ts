@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMyReviews } from "@/api/getMyReview";
-import type { Tables } from "@/@types/supabase";
+import type { Tables } from "@/@types/database.types";
+
 
 type ReviewRow = Tables<"review">;
 
