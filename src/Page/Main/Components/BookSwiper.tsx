@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { SwiperClass } from "swiper/react";
 import type { BookItemType } from "@/@types/global";
 import type { CategoryKey } from "../bookCategories";
-import { getBookImageURLs } from "../utils/bookImageUtils";
+import { getBookImageURLs } from "@/utils/bookImageUtils";
 import { NavLink } from "react-router-dom";
 import tw from "@/utils/tw";
 

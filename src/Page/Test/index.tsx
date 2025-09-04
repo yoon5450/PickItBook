@@ -5,22 +5,25 @@ import Swal from "sweetalert2";
 import { useMemo, useState } from "react";
 import { KDC_CATEGORY_OPTIONS, type KdcItemType } from "@/constant/kdc";
 import Filter from "@/Components/Filter";
-
+import BookDataSkeleton from "../BookDetail/skeletons/BookDataSkeleton";
 
 function Test() {
   const id = useMainStore((s) => s.id);
   const num = useMainStore((s) => s.num);
   const openModal = useRootUIShellStore((s) => s.openModal);
-  const [filterItem, setFilterItem] = useState<{top?:KdcItemType, bottom?:KdcItemType} | null>(null)
+  const [filterItem, setFilterItem] = useState<{
+    top?: KdcItemType;
+    bottom?: KdcItemType;
+  } | null>(null);
 
-    const topItems = useMemo<KdcItemType[]>(
-      () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] === "0"),
-      []
-    );
-    const bottomItems = useMemo<KdcItemType[]>(
-      () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] !== "0"),
-      []
-    );
+  const topItems = useMemo<KdcItemType[]>(
+    () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] === "0"),
+    []
+  );
+  const bottomItems = useMemo<KdcItemType[]>(
+    () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] !== "0"),
+    []
+  );
 
   console.log(filterItem);
   return (
@@ -47,7 +50,6 @@ function Test() {
       >
         모달 열기 테스트
       </button>
-
       <button
         type="button"
         className="bg-amber-300 block"
@@ -55,15 +57,22 @@ function Test() {
       >
         모달 전환 테스트
       </button>
-
-
-      <button type="button" className="bg-gray-800 text-white"
+      <button
+        type="button"
+        className="bg-gray-800 text-white"
         onClick={async () => {
-          await supabase.auth.signOut()
-        }} >로그아웃</button>
-
-
-      <Filter topItems={topItems} bottomItems={bottomItems} filterItem={filterItem} setFilterItem={setFilterItem} />
+          await supabase.auth.signOut();
+        }}
+      >
+        로그아웃
+      </button>
+      <Filter
+        topItems={topItems}
+        bottomItems={bottomItems}
+        filterItem={filterItem}
+        setFilterItem={setFilterItem}
+      />
+      <BookDataSkeleton />
     </div>
   );
 }

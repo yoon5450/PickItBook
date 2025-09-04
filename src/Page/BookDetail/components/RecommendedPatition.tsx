@@ -14,12 +14,15 @@ function RecommandedPatition({ data, isFetching }: Props) {
   const isMobile = useMobileDetection();
   const { bookSwiperRef } = useSwiperRefs(isMobile);
   const EMPTY_BOOKS: BookItemType[] = [];
+  const hasBooks = (data?.length ?? 0) > 0;
+
+  if (!hasBooks && isFetching) {
+    return <LoadingSkeleton />;
+  }
 
   return (
     <>
-      {isFetching && data?.[0] ? (
-        <LoadingSkeleton />
-      ) : (
+      {hasBooks ? (
         <div className="relative pt-6 px-12">
           <BookSwiper
             books={data?.[0] ? data : EMPTY_BOOKS}
@@ -27,7 +30,7 @@ function RecommandedPatition({ data, isFetching }: Props) {
             onSwiper={(swiper) => (bookSwiperRef.current = swiper)}
           />
         </div>
-      )}
+      ): null}
     </>
   );
 }

@@ -8,7 +8,7 @@ import { useGetReview } from "@/api/useReviewFetching";
 import RatingStars from "@/Components/RatingStar";
 import BookmarkButton from "@/Page/BookDetail/components/BookmarkButton";
 import LoadingSkeleton from "@/Page/Main/Components/LoadingSkeleton";
-import { getBookImageURLs } from "@/Page/Main/utils/bookImageUtils";
+import { getBookImageURLs } from "@/utils/bookImageUtils";
 import tw from "@/utils/tw";
 import { cva } from "class-variance-authority";
 import { useEffect, useMemo, useState } from "react"

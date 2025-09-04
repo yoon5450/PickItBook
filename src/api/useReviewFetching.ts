@@ -19,6 +19,7 @@ export type UpdateReviewVars = {
   new_image_file?: File; 
 };
 
+// 파일과 함께 리뷰를 게시합니다 ( 파일 없어도 상관 없음 )
 export const useSetReviewWithFiles = () => {
   const qc = useQueryClient();
 
@@ -34,7 +35,8 @@ export const useSetReviewWithFiles = () => {
   });
 };
 
-export const useGetReview = (isbn13: string, p_limit = 20, p_offset = 0) => {
+// isbn에 기반한 리뷰 데이터를 가져옵니다.
+export const useGetReview = (isbn13: string, p_limit = 50, p_offset = 0) => {
   return useQuery<ReviewItemType[], Error>({
     queryKey: ["review", "byIsbn", isbn13, p_limit, p_offset],
     queryFn: () => reviewRepo.getReview(isbn13, p_limit, p_offset),
@@ -52,9 +54,7 @@ export const useGetMyReviews = (uid: string, limit = 20, offset = 0) =>
     staleTime: 60_000,
   });
 
-export const useUpdateReview = (opts?: {
-  invalidate?: { byUser?: string; byIsbn?: string };
-}) => {
+export const useUpdateReview = (opts?: { invalidate?: { byUser?: string; byIsbn?: string } }) => {
   const qc = useQueryClient();
   return useMutation({
     mutationKey: ["review", "update"],
@@ -62,6 +62,7 @@ export const useUpdateReview = (opts?: {
     onSuccess: () => {
       if (opts?.invalidate?.byUser) {
         qc.invalidateQueries({ queryKey: ["review", "byUser", opts.invalidate.byUser] });
+        qc.invalidateQueries({ queryKey: ["myReviewsWithCount", opts.invalidate.byUser] }); 
       }
       if (opts?.invalidate?.byIsbn) {
         qc.invalidateQueries({ queryKey: ["review", "byIsbn", opts.invalidate.byIsbn] });
@@ -70,10 +71,7 @@ export const useUpdateReview = (opts?: {
   });
 };
 
-/* ---------- 삭제(Delete) ---------- */
-export const useDeleteReview = (opts?: {
-  invalidate?: { byUser?: string; byIsbn?: string };
-}) => {
+export const useDeleteReview = (opts?: { invalidate?: { byUser?: string; byIsbn?: string } }) => {
   const qc = useQueryClient();
   return useMutation({
     mutationKey: ["review", "delete"],
@@ -81,6 +79,7 @@ export const useDeleteReview = (opts?: {
     onSuccess: () => {
       if (opts?.invalidate?.byUser) {
         qc.invalidateQueries({ queryKey: ["review", "byUser", opts.invalidate.byUser] });
+        qc.invalidateQueries({ queryKey: ["myReviewsWithCount", opts.invalidate.byUser] }); 
       }
       if (opts?.invalidate?.byIsbn) {
         qc.invalidateQueries({ queryKey: ["review", "byIsbn", opts.invalidate.byIsbn] });

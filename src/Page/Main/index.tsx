@@ -4,18 +4,28 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LoopSlider from "./Components/LoopSlider";
 import RecommendedBook from "./Components/RecommendedBook";
 import Attractiveness from "./Components/Attractiveness";
-import MainRoulette from "./Components/MainRoulette";
 import { Link } from "react-router";
 import { getMockDataByCategory } from "./utils/mockData";
+//import Loading from "@/Components/Loading";
+import MainRoulette from "./Components/MainRoulette";
+import { useMemo } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Main = () => {
-  const mockBooks = getMockDataByCategory("all").slice(0, 12);
-  const books = mockBooks.map((book) => ({
-    src: book.bookImageURL,
-    alt: book.bookname,
-  }));
+  const mockBooks = useMemo(
+    () => getMockDataByCategory("all").slice(0, 24),
+    []
+  );
+
+  const books = useMemo(
+    () =>
+      mockBooks.map((book) => ({
+        src: book.bookImageURL,
+        alt: book.bookname,
+      })),
+    [mockBooks]
+  );
 
   return (
     <main className="w-full">

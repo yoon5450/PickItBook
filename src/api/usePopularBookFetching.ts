@@ -11,7 +11,6 @@ type UseBookFetchingOptions = {
   retry?: number;
 };
 
-
 export const usePopularBookFetching = (
   { startDt = '2025-01-01', ...rest }: PopularBookSearchFields,
   {
