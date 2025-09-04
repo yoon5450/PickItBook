@@ -3,7 +3,7 @@ import { memo } from "react";
 
 function Login() {
   return (
-    <div className="w-full max-w-[1200px] mx-auto min-h-[760px] justify-items-center pt-58 px-48 h-screen">
+    <div className="w-full max-w-[1200px] mx-auto min-h-[760px] h-[calc(100vh-80px)] justify-items-center pt-50 px-48">
       <h1 hidden>AuthLayout</h1>
       <section className="flex">
         {/* 바인더 */}
