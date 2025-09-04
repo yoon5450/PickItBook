@@ -39,6 +39,13 @@ export interface Detail {
   book: Book;
 }
 
+export type FetchingOptions = {
+  enabled?: boolean;
+  staleTime?: number;
+  gcTime?: number;
+  refetchOnWindowFocus?: boolean;
+};
+
 export interface Book {
   no: number;
   bookname: string;
@@ -95,7 +102,7 @@ interface MissionItemType {
 
 export interface ReviewItemType {
   id: number;
-  create_at: string;
+  created_at: string;
   isbn13: string;
   user_id: string;
   title: string;
@@ -103,6 +110,7 @@ export interface ReviewItemType {
   score: number;
   image_url?: string;
   like_count: number;
+  comment_count: number;
   nickname: string;
   profile_image: string;
   liked_by_me: boolean;

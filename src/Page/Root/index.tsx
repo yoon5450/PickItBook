@@ -10,7 +10,6 @@ import supabase from "@/utils/supabase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useQueryClient } from "@tanstack/react-query";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-// import ConfettiCongrats from "@/Components/ConfettiCongrats";
 
 // 기본 레이아웃 구조 정의. 모달, floating Button등 Zustand를 통해 제어
 function Root() {
@@ -40,7 +39,8 @@ function Root() {
           queryClient.invalidateQueries({ queryKey: ["missions", user.id] });
 
           // 커스텀
-          console.log(payload.new.template_id, "완료");
+          const item = payload.new;
+          console.log(item.template_id, "완료");
         }
       )
       .subscribe();
