@@ -29,7 +29,7 @@ const RecommendedBook = () => {
   };
 
   return (
-    <section className="py-[50px] md:py-20 border-t border-primary-black">
+    <section className="py-[50px] md:py-20">
       <div className="w-[1200px] m-auto px-0 max-[1340px]:w-full max-[1340px]:px-20 max-[768px]:px-0">
         <h2 className="relative text-2xl md:text-3xl text-center text-primary-black font-semibold pb-2 mb-[30px] md:mb-16">
           분야별 추천 도서

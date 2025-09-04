@@ -3,9 +3,9 @@ import supabase from "@/utils/supabase";
 import type { MyReviewCardData } from "./MyReviewCard";
 import MyReviewCard from "./MyReviewCard";
 import { useGetMyReviewsWithCount } from "./useGetMyReviewsWithCount"; 
-import type { Tables } from "@/@types/supabase";
 import Pagination from "./Pagination";
 import { useState } from "react";
+import type { Tables } from "@/@types/database.types";
 
 const PAGE_SIZE = 3;
 const BUCKET = "review_image";

@@ -2,6 +2,7 @@ import tw from "@/utils/tw";
 import { BsArrowUp } from "react-icons/bs";
 import type React from "react";
 import { useState, useEffect } from "react";
+import { useMobileDetection } from "@/Page/Main/hooks/useMobileDetection";
 
 interface Props {
   target?: HTMLElement;
@@ -24,6 +25,8 @@ function ScrollTopButton({
 }: ExtendProps) {
   const [autoVisible, setAutoVisible] = useState(false);
   const [bottomPosition, setBottomPosition] = useState(30);
+
+  const isMobile = useMobileDetection(768);
 
   // 스크롤 감지
   useEffect(() => {
@@ -73,6 +76,7 @@ function ScrollTopButton({
           finalIsVisible
             ? "translate-y-0 opacity-100"
             : "translate-y-16 opacity-0 pointer-events-none",
+          isMobile ? "right-[20px]" : "right-[50px]",
           className
         )}
         style={{ bottom: `${bottomPosition}px` }}

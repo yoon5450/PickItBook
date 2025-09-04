@@ -1,17 +1,22 @@
-import { Outlet, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import BookList from "./Component/BookList";
 import SearchForm from "./Component/SearchForm";
 import { useEffect, useMemo, useState } from "react";
 import loaderIcon from "@/assets/loading.svg";
 import { useBookFetching } from "@/api/useBookFetching";
 import { normalizeSearchFields } from "@/utils/normalizeSearchParams";
-import type { SearchKey } from "@/@types/global";
+import type { BookItemType, SearchKey } from "@/@types/global";
 import tw from "@/utils/tw";
 import { scrollTop } from "@/utils/scrollFunctions";
 import PopularKeywords from "./Component/PopularKeywords";
 import { RxHamburgerMenu, RxGrid } from "react-icons/rx";
+import { useGetReviewsScore } from "@/api/useReviewFetching";
+import type { Tables } from "@/@types/database.types";
 
 export type listMode = "line" | "grid";
+
+export type MergedType = BookItemType &
+    Pick<Tables<"v_review_stats">, "avg_score" | "rating_count">;
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -76,6 +81,25 @@ function Search() {
     page
   );
 
+  const isbns = data?.items.map((item) => item.isbn13);
+
+  const { data: reviewsScoreData } = useGetReviewsScore(isbns);
+
+  const mergedItems: MergedType[] = useMemo(() => {
+    const items = data?.items ?? [];
+    const stats = reviewsScoreData ?? [];
+    const map = new Map(stats.map((s) => [s.isbn13, s]));
+    console.log(map);
+    return items.map((item) => {
+      const s = map.get(item.isbn13);
+      return {
+        ...item,
+        avg_score: s?.avg_score ?? null,
+        rating_count: s?.rating_count ?? 0,
+      };
+    });
+  }, [data?.items, reviewsScoreData]);
+
   const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
   const prevDisabled = isFetching || page <= 1;
   const nextDisabled = isFetching || page >= totalPages;
@@ -92,7 +116,7 @@ function Search() {
   }, [data.total, data.pageSize, page, searchParams]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen w-[1200px] px-8 bg-background-white pt-15">
+    <div className="flex flex-col items-center min-h-screen w-[1200px] px-8 bg-background-white py-15">
       {/* 검색창 */}
       <SearchForm
         key={keyword}
@@ -100,21 +124,25 @@ function Search() {
         onSearch={handleSearch}
       />
 
-      <Outlet/>
-
       {/* 추천 검색어, 목록 모드 변경 버튼 */}
       <div className="pb-5 px-4 flex w-full border-b border-black items-center justify-between">
         <PopularKeywords onSearch={handleSearch} />
         <div className="flex gap-2 items-center justify-center">
           <button
-            className="cursor-pointer hover:bg-primary transition rounded-xl active:bg-white"
+            className={tw(
+              "cursor-pointer hover:text-slate-400 transition rounded-xl active:bg-gray-200",
+              listMode === "line" && "text-primary hover:text-primary"
+            )}
             type="button"
             onClick={() => setListMode("line")}
           >
             <RxHamburgerMenu size={32} />
           </button>
           <button
-            className="cursor-pointer hover:bg-primary transition rounded-xl active:bg-white"
+            className={tw(
+              "cursor-pointer hover:text-slate-400 transition rounded-xl active:bg-gray-200",
+              listMode === "grid" && "text-primary hover:text-primary"
+            )}
             type="button"
             onClick={() => setListMode("grid")}
           >
@@ -135,7 +163,7 @@ function Search() {
       {/* 목록 */}
       <BookList
         mode={listMode}
-        bookList={data.items}
+        bookList={mergedItems}
         className="w-full"
         onSearch={handleSearch}
       />
@@ -145,15 +173,15 @@ function Search() {
         <button onClick={() => movePage(page - 1)} disabled={prevDisabled}>
           이전
         </button>
-        <span key={page} className="flex gap-2 text-center">
+        <span key={page} className="flex gap-2 text-center text-xl">
           {renderPageAnchors(page)}
         </span>
         <button onClick={() => movePage(page + 1)} disabled={nextDisabled}>
           다음
         </button>
-        <span className="ml-2 text-sm text-gray-500">
+        {/* <span className="ml-2 text-sm text-gray-500">
           총 {data.total.toLocaleString()}권
-        </span>
+        </span> */}
       </nav>
     </div>
   );

@@ -477,6 +477,14 @@ export type Database = {
         }
         Relationships: []
       }
+      v_review_stats: {
+        Row: {
+          avg_score: number | null
+          isbn13: string | null
+          rating_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       api_assign_book_tasks: {
@@ -484,6 +492,33 @@ export type Database = {
         Returns: {
           assignment_id: number
           bundle_id: number
+        }[]
+      }
+      api_get_my_tasks: {
+        Args: {
+          p_completed?: boolean
+          p_limit?: number
+          p_offset?: number
+          p_scope_id?: string
+          p_template_code?: string
+          p_user_id?: string
+        }
+        Returns: {
+          code: string
+          completed: boolean
+          completed_at: string
+          description: string
+          name: string
+          progress: Json
+          reward: Json
+          rule: Json
+          scope_id: string
+          scope_type: string
+          task_id: number
+          template_id: number
+          valid_from: string
+          valid_to: string
+          version: number
         }[]
       }
       api_list_book_missions: {
