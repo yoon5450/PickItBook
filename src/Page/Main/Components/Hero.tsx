@@ -67,7 +67,6 @@ const Hero = () => {
         pin: true,
         pinSpacing: true,
         anticipatePin: 1,
-        //markers: true,
       },
     });
 
@@ -119,8 +118,11 @@ const Hero = () => {
   }, [isMobile]);
 
   return (
-    <div>
-      <section className="h-screen relative overflow-hidden" ref={sectionRef}>
+    <>
+      <section
+        className="h-screen md:h-[940px] relative border-b border-primary-black overflow-hidden"
+        ref={sectionRef}
+      >
         <h2
           ref={titleRef}
           className="font-accent absolute left-[50%] top-[50%] -translate-[50%] text-white text-[50px] md:text-[100px] z-10"
@@ -130,14 +132,14 @@ const Hero = () => {
         <div className="flex h-full overflow-hidden">
           <div
             ref={leftBoxRef}
-            className="w-1/2 h-full bg-[url(/main/hero_bg.png)] bg-no-repeat bg-[center_right_-28rem] bg-cover"
+            className="w-1/2 h-full bg-[url(/main/hero_bg_left.png)] bg-no-repeat bg-[center_right] bg-cover"
           ></div>
           <div
             ref={rightBoxRef}
-            className="w-1/2 h-full bg-[url(/main/hero_bg.png)] bg-no-repeat bg-[center_left_-46rem] bg-cover"
+            className="w-1/2 h-full bg-[url(/main/hero_bg_right.png)] bg-no-repeat bg-[center_left] bg-cover"
           ></div>
         </div>
-        <div className="absolute top-[22%] left-[50%] -translate-x-[50%]">
+        <div className="absolute top-[21%] left-[50%] -translate-x-[50%]">
           <div className="flex flex-col gap-[10vh] md:gap-[15vh] max-[1200px]:min-w-[65vw] min-w-[780px]">
             <p className="text-effect text-3xl md:text-[40px] text-primary-black text-center">
               <span className="font-bold">독서의 재미</span>를 <br />
@@ -247,7 +249,7 @@ const Hero = () => {
           </svg>
         </div>
       </section>
-    </div>
+    </>
   );
 };
 export default Hero;

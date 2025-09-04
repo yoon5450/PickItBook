@@ -75,7 +75,7 @@ const WordCloud = ({
     isbn13: string
   ): Promise<string[]> => {
     try {
-     const url = makeBookDetailURL(isbn13, { displayInfo: "age", loaninfoYN: "N" });
+     const url = makeBookDetailURL(isbn13);
       const raw = await fetcher(url);
       if (!raw.response) return [];
       const book = raw.response.detail?.[0]?.book;
@@ -115,50 +115,82 @@ const WordCloud = ({
 
   // 북마크 → 키워드 변환 (빈도 반영)
   const extractKeywordsFromBookmarks = useCallback(
-    async (bookmarks: BookmarkBook[]): Promise<WordData[]> => {
-      const keywordCount: Record<string, number> = {};
-      for (let i = 0; i < bookmarks.length; i++) {
-        const book = bookmarks[i];
-        setProcessedCount(i + 1);
-        let keywords: string[] = [];
+  async (bookmarks: BookmarkBook[]): Promise<WordData[]> => {
+    const keywordCount: Record<string, number> = {};
+    for (let i = 0; i < bookmarks.length; i++) {
+      const book = bookmarks[i];
+      setProcessedCount(i + 1);
+      let keywords: string[] = [];
 
-        if (book.isbn13) {
-          const extracted = await extractKeywordsFromBookDetail(book.isbn13);
-          if (extracted.length > 0) keywords = extracted;
-        }
-
-        if (keywords.length === 0) {
-          const titleKeywords = extractKeywordsFromText(book.book_name || "");
-          const authorKeywords = extractKeywordsFromText(book.authors || "");
-          keywords = [...titleKeywords, ...authorKeywords];
-        }
-
-        if (keywords.length === 0 && book.keyword) {
-          keywords = book.keyword
-            .split(/[,;]/)
-            .map((k) => k.trim())
-            .filter((k) => k.length > 0);
-        }
-
-        // 키워드 빈도수 계산 후 누적 업데이트
-        if (keywords.length > 0) {
-          const counts = countKeywords(keywords);
-          Object.entries(counts).forEach(([k, c]) => {
-            keywordCount[k] = (keywordCount[k] || 0) + c;
-          });
-        }
-
-        if (i < bookmarks.length - 1)
-          await new Promise((res) => setTimeout(res, 100));
+      if (book.isbn13) {
+        const extracted = await extractKeywordsFromBookDetail(book.isbn13);
+        if (extracted.length > 0) keywords = extracted;
       }
 
-      return Object.entries(keywordCount)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 100)
-        .map(([text, value]) => ({ text, value }));
-    },
-    []
-  );
+      if (keywords.length === 0) {
+        const titleKeywords = extractKeywordsFromText(book.book_name || "");
+        const authorKeywords = extractKeywordsFromText(book.authors || "");
+        keywords = [...titleKeywords, ...authorKeywords];
+      }
+
+      if (keywords.length === 0 && book.keyword) {
+        keywords = book.keyword
+          .split(/[,;]/)
+          .map((k) => k.trim())
+          .filter((k) => k.length > 0);
+      }
+
+      // 키워드 빈도수 계산 후 누적 업데이트
+      if (keywords.length > 0) {
+        const counts = countKeywords(keywords);
+        Object.entries(counts).forEach(([k, c]) => {
+          keywordCount[k] = (keywordCount[k] || 0) + c;
+        });
+      }
+
+      if (i < bookmarks.length - 1)
+        await new Promise((res) => setTimeout(res, 100));
+    }
+
+    // 키워드를 빈도순으로 정렬
+    const sortedKeywords = Object.entries(keywordCount)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 100);
+
+    // 폰트 크기 차이를 강화
+    return enhanceFontSizeVariation(sortedKeywords);
+  },
+  []
+);
+
+// 폰트 크기 차이를 강화하는 함수
+const enhanceFontSizeVariation = (sortedKeywords: [string, number][]): WordData[] => {
+  if (sortedKeywords.length === 0) return [];
+  
+  const maxCount = sortedKeywords[0][1];
+  const minCount = sortedKeywords[sortedKeywords.length - 1][1];
+  
+  // 빈도수 차이가 작은 경우 인위적으로 차이를 증가
+  if (maxCount === minCount || (maxCount - minCount) < 2) {
+    return sortedKeywords.map(([text, value], index) => {
+
+      // 순위에 따라 가중치 적용 
+      const totalKeywords = sortedKeywords.length;
+      
+      // 로그 스케일을 사용하여 차이 증폭
+      const logWeight = Math.pow(2, (totalKeywords - index) / totalKeywords);
+      const enhancedValue = Math.round(value * 50 * logWeight) + (totalKeywords - index) * 5;
+      
+      return {
+        text,
+        value: Math.max(enhancedValue, 1) // 최소값 1 보장
+      };
+    });
+  }
+  
+  // 빈도수 차이가 충분한 경우 기본 로직 사용
+  return sortedKeywords.map(([text, value]) => ({ text, value }));
+};
 
   // 북마크 데이터 가져오기
   useEffect(() => {
@@ -187,39 +219,43 @@ const WordCloud = ({
   }, [userId, user?.id, extractKeywordsFromBookmarks]);
 
   useEffect(() => {
-    if (loading || bookmarkKeywords.length === 0) return;
+  if (loading || bookmarkKeywords.length === 0) return;
 
-    am4core.useTheme(am4themes_animated);
-    const chart = am4core.create(
-      "wordcloud-chart",
-      am4plugins_wordCloud.WordCloud
-    );
-    chart.logo.disabled = true;
+  am4core.useTheme(am4themes_animated);
+  const chart = am4core.create(
+    "wordcloud-chart",
+    am4plugins_wordCloud.WordCloud
+  );
+  chart.logo.disabled = true;
 
-    const series = chart.series.push(
-      new am4plugins_wordCloud.WordCloudSeries()
-    );
-    series.data = bookmarkKeywords.map((w) => ({
-      tag: w.text,
-      count: w.value,
-    }));
-    series.dataFields.word = "tag";
-    series.dataFields.value = "count";
-    series.minFontSize = responsiveFont.min;
-    series.maxFontSize = responsiveFont.max;
-    series.fontFamily = fontFamily;
-    series.colors = new am4core.ColorSet();
+  const series = chart.series.push(
+    new am4plugins_wordCloud.WordCloudSeries()
+  );
+  series.data = bookmarkKeywords.map((w) => ({
+    tag: w.text,
+    count: w.value,
+  }));
+  series.dataFields.word = "tag";
+  series.dataFields.value = "count";
+  series.minFontSize = responsiveFont.min;
+  series.maxFontSize = responsiveFont.max;
+  series.fontFamily = fontFamily;
+  series.colors = new am4core.ColorSet();
 
-    const hoverState = series.labels.template.states.create("hover");
-    hoverState.properties.scale = 1.1;
-    hoverState.transitionDuration = 300;
+  // 폰트 크기 스케일링 방식 조정
+  series.randomness = 0.2; // 약간의 랜덤성 추가
+  series.rotationThreshold = 0.5; // 회전 임계값
+  
+  const hoverState = series.labels.template.states.create("hover");
+  hoverState.properties.scale = 1.1;
+  hoverState.transitionDuration = 300;
 
-    return () => chart.dispose();
-  }, [bookmarkKeywords, loading, responsiveFont, fontFamily]);
+  return () => chart.dispose();
+}, [bookmarkKeywords, loading, responsiveFont, fontFamily]);
 
   return (
     <div className="py-12 max-[1250px]:mx-5">
-      <div className="flex items-center justify-center w-[1200px] max-[1250px]:w-full mx-auto h-[400px] rounded-2xl border bg-background-white border-gray-300 p-5">
+      <div className="flex items-center justify-center w-[1200px] max-[1250px]:w-full mx-auto h-[400px] rounded-2xl border bg-background-white border-gray-300 py-7 px-5">
         {loading ? (
           <div className="flex flex-col items-center justify-center">
             <div className="animate-spin rounded-full border-b-2 border-gray-400 h-8 w-8 mb-4"></div>

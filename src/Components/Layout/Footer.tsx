@@ -4,11 +4,15 @@ import slido from "/icons/slido_logo.svg";
 function Footer() {
   return (
     <div className="bg-pattern flex items-center justify-between border-t h-[80px] border-primary-black px-5 md:px-[50px]">
-      <p className="text-base text-primary-black">
+      <p className="text-sm md:text-base text-primary-black">
         Copyright © 2025 PickItBook. All rights Reserved
       </p>
       <div className="flex gap-4">
-        <a href="" target="_blank" className="pointer-events-none">
+        <a
+          href=""
+          target="_blank"
+          className="pointer-events-none inline-block w-8"
+        >
           <img src={slido} alt="slido" />
         </a>
         <a
