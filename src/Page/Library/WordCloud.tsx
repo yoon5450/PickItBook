@@ -255,7 +255,7 @@ const enhanceFontSizeVariation = (sortedKeywords: [string, number][]): WordData[
 
   return (
     <div className="py-12 max-[1250px]:mx-5">
-      <div className="flex items-center justify-center w-[1200px] max-[1250px]:w-full mx-auto h-[400px] rounded-2xl border bg-background-white border-gray-300 py-7 px-5">
+      <div className="flex items-center justify-center w-[1200px] max-[1250px]:w-full mx-auto h-[400px] rounded-2xl p-5">
         {loading ? (
           <div className="flex flex-col items-center justify-center">
             <div className="animate-spin rounded-full border-b-2 border-gray-400 h-8 w-8 mb-4"></div>
