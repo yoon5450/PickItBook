@@ -9,7 +9,6 @@ function BookMark() {
   const { user } = useAuthStore();
   const [bookmarks, setBookmarks] = useState<BookmarkBook[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(bookmarks.length / itemsPerPage);
@@ -38,7 +37,6 @@ function BookMark() {
   return (
     <div className="max-w-[1200px] mx-auto mt-18">
       <div className="text-base font-bold mb-6">My Book List</div>
-
       {/* 책 목록 */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 mt-8">
         {paginatedBookmarks.map((book) => (
