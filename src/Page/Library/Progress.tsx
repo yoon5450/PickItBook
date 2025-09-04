@@ -2,9 +2,33 @@ import { useUserMissions } from "@/api/useUserMissions";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useState } from "react";
 import { useProfileStore } from "@/store/useProfileStore";
+import tw from "@/utils/tw";
 
 
-export default function Progress() {
+interface Props {
+  stylefire?: string;
+  styleWrraper?: string;
+  styleNickname?: string;
+  styleMissionCount?: string;
+  styleMiddle?: string;
+  styleLevel?: string;
+  styleProgress?: string;
+  styleTrophy?: string;
+  styleTop?: string;
+}
+
+export default function Progress({
+  stylefire = '',
+  styleWrraper = '',
+  styleNickname = '',
+  styleMissionCount = '',
+  styleMiddle = '',
+  styleLevel = '',
+  styleProgress = '',
+  styleTrophy = '',
+  styleTop = '',
+
+}: Props) {
   const { user } = useAuthStore();
   const { nickname, fetchUser } = useProfileStore();
   const { data, isLoading, error } = useUserMissions(user?.id ?? "");
@@ -36,23 +60,23 @@ export default function Progress() {
   if (!data) return null;
 
   return (
-    <div className="w-full max-w-[900px] mx-auto rounded-xl px-8 py-6 shadow-md relative">
+    <div className={tw("w-full max-w-[900px] mx-auto rounded-xl px-8 py-6 shadow-md relative", styleWrraper)}>
       {/* 상단 */}
-      <div className="flex justify-between items-start -mb-4">
-        <div className="text-[28px] font-bold">
+      <div className={tw("flex justify-between items-start -mb-4", styleTop)}>
+        <div className={tw("text-[28px] font-bold", styleNickname)}>
           Hello as {nickname ?? "Any"} !
         </div>
-        <div className="text-sm font-medium mt-3">미션 {completedCount}개 클리어</div>
+        <div className={tw("text-sm font-medium mt-3", styleMissionCount)}>미션 {completedCount}개 클리어</div>
       </div>
 
       {/* 레벨 + 게이지 + 트로피 */}
-      <div className="flex items-center gap-2 mt-8">
+      <div className={tw("flex items-center gap-2 mt-8", styleMiddle)}>
         <div className="relative flex-1 max-w-[600px]">
-          <div className="absolute -top-5 right-0 text-sm font-semibold">
+          <div className={tw("absolute -top-5 right-0 text-sm font-semibold", styleLevel)}>
             LV.{level}
           </div>
           <div
-            className="w-full h-5 bg-gray-200 rounded-full overflow-hidden mb-10"
+            className={tw("w-full h-5 bg-gray-200 rounded-full overflow-hidden mb-10", styleProgress)}
             role="progressbar"
             aria-valuemin={0}
             aria-valuemax={100}
@@ -64,13 +88,11 @@ export default function Progress() {
             />
           </div>
         </div>
-        <img src="/trophy.svg" alt="trophy" className="w-11 h-11 ml-2 mb-13" />
+        <img src="/trophy.svg" alt="trophy" className={tw("w-11 h-11 ml-2 mb-13", styleTrophy)} />
       </div>
 
       {/* 불 아이콘 */}
-      <div className={`flex justify-end gap-0.5 -mt-23 transition-opacity duration-700 ${
-    showIcons ? "opacity-100" : "opacity-0"
-  }`}>
+      <div className={tw('flex justify-end gap-0.5 -mt-23 transition-opacity duration-700', showIcons ? "opacity-100" : "opacity-0", stylefire)}>
         {Array.from({ length: Math.floor(completedCount / 5) }).map((_, i) => (
           <img key={`yellow-${i}`} src="/fire_book_yellow.svg" alt="yellow streak" className="w-7 h-7" />
         ))}

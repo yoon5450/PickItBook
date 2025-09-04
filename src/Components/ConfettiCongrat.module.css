@@ -1,11 +1,13 @@
 * { box-sizing: border-box; }
 
 .wrapper {
-  position: relative;
+  position: absolute;
   height: 100vh;
   display: flex;
   flex-wrap: wrap;
-  overflow: hidden; /* 원본 body overflow hidden 대체 */
+  width: 100%;
+  overflow:hidden; /* 원본 body overflow hidden 대체 */
+  pointer-events: none;
 }
 
 .logo {
@@ -26,6 +28,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: none;
 }
 
 .txt {
