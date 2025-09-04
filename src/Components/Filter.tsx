@@ -1,4 +1,3 @@
-
 import tw from "@/utils/tw";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import { AiOutlinePlusCircle } from "react-icons/ai";
@@ -7,11 +6,11 @@ import { throttle } from "@/utils/throttle";
 import gsap from "gsap";
 import type { KdcItemType } from "@/constant/kdc";
 
-
 type filterType = KdcItemType;
 
 interface Props {
-  topItems: KdcItemType[];
+  isOpen: boolean
+  topItems: KdcItemType[] | null;
   bottomItems?: KdcItemType[] | null;
   className?: string;
   filterItem: { top?: KdcItemType; bottom?: KdcItemType } | null;
@@ -19,15 +18,19 @@ interface Props {
     top?: KdcItemType
     bottom?: KdcItemType
   } | null>>
+  onClose: () => void;
 }
 
 function Filter({
+  isOpen,
   topItems,
   bottomItems,
   filterItem,
   className,
   setFilterItem,
+  onClose
 }: Props) {
+
   // 상위(두 번째 자리가 0) / 하위 분리
   const filteredDetail = useMemo<filterType[]>(() => {
     if (!bottomItems || !filterItem?.top) return [];
@@ -36,6 +39,7 @@ function Filter({
       : bottomItems;
   }, [filterItem?.top?.code, bottomItems]);
 
+  const panelRef = useRef<HTMLDivElement>(null); // 외부 영역 지정
   const listRef = useRef<HTMLUListElement | null>(null);
   const cursorRef = useRef<HTMLDivElement | null>(null);
   const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -58,6 +62,27 @@ function Filter({
     });
   };
 
+  // 필터 초기값 설정
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    if (!filterItem?.top && topItems && topItems.length > 0) {
+      setFilterItem({ top: topItems[0], bottom: bottomItems?.[0] });          // 기본 top
+      if (cursorRef.current) gsap.set(cursorRef.current, { autoAlpha: 0, height: 0 }); // 커서 숨김
+    }
+  }, [isOpen, topItems, filterItem?.top, setFilterItem]);
+
+  // 외부 영역 클릭시 닫히게
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    const onPointerDown = (e: PointerEvent) => {
+      const t = e.target as Node;
+      if (panelRef.current && panelRef.current.contains(t)) return;
+      onClose();
+    };
+    document.addEventListener("pointerdown", onPointerDown, true);
+    return () => document.removeEventListener("pointerdown", onPointerDown, true);
+  }, [isOpen, onClose]);
+
   useLayoutEffect(() => {
     const onResize = () => {
       if (filterItem?.bottom) updateCursorFor(filterItem?.bottom.code);
@@ -73,14 +98,16 @@ function Filter({
   }, [filterItem, filteredDetail.length]);
 
   return (
+    isOpen &&
     <div
+      ref={panelRef}
       className={tw(
-        "absolute flex p-10 shadow-sm py-5 gap-7 rounded-xl bg-pattern z-10",
+        "absolute flex p-10 shadow-sm py-5 gap-6 rounded-xl bg-pattern z-10",
         className
       )}
     >
-      <div className="flex flex-col gap-6">
-        {topItems.map((item) => {
+      <div className="flex flex-col gap-4">
+        {topItems?.map((item) => {
           const selected = filterItem?.top?.code === item.code;
 
           return (
@@ -93,7 +120,6 @@ function Filter({
               type="button"
               onClick={() => {
                 setFilterItem({ top: item });
-                // 왜 height를 0으로 줘도 정상적으로 안 가는 것 같을까 ?????
                 if (cursorRef.current)
                   gsap.set(cursorRef.current, { autoAlpha: 0, height: 0 });
               }}

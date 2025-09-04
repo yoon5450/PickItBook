@@ -1,29 +1,28 @@
 import type { BookmarkItem } from "@/@types/global";
 import { useAuthStore } from "@/store/useAuthStore";
 import supabase from "@/utils/supabase";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-export function useFetchBookmarkList(isBookmarkSelect: boolean): BookmarkItem[] | null {
-  const [bookmarkData, setBookmarkData] = useState<BookmarkItem[] | null>(null);
-  const user_id = useAuthStore((s) => s.user?.id);
-  console.log(user_id);
+// supabase에서 유저의 북마크 목록 가져오기
+async function fetchBookmarks(userId: string): Promise<BookmarkItem[]> {
+  const { data, error } = await supabase
+    .from('bookmark')
+    .select('*')
+    .eq('user_id', userId);
 
-  const fetchData = async () => {
-    const { data, error } = await supabase
-      .from('bookmark')
-      .select('*')
-      .match({
-        user_id
-      });
+  if (error) throw error;
+  return (data ?? []) as BookmarkItem[];
+}
 
-    if (error) return console.error('북마크 데이터 가져오기 실패');
-    setBookmarkData(data);
-  }
+// 북마크 탭일 때만 요청
+export function useFetchBookmarkList(isBookmarkSelect: boolean) {
+  const userId = useAuthStore((s) => s.user?.id);
 
-  useEffect(() => {
-    fetchData();
-    console.log('슈파베이스에서 따끈하게 나온 북마크 리스트 : ', bookmarkData);
-  }, [user_id, isBookmarkSelect])
-
-  return bookmarkData
+  return useQuery({
+    queryKey: ['bookmarks', userId],
+    queryFn: () => fetchBookmarks(userId!),
+    enabled: !!userId && isBookmarkSelect,
+    gcTime: 5 * 60_000,
+    retry: 0,
+  });
 }

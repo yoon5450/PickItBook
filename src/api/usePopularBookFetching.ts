@@ -1,5 +1,5 @@
 import { makePopularBookSearchUrl, type PopularBookSearchFields } from "@/constant/constant";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { fetcher } from "./fetcher";
 import type { PopularBookItem, RawDoc } from "@/@types/global";
 
@@ -26,7 +26,6 @@ export const usePopularBookFetching = (
   return useQuery({
     queryKey: ['popularBooks', searchParams],
     queryFn: ({ signal }) => fetcher(makePopularBookSearchUrl(searchParams), { signal }),
-    placeholderData: keepPreviousData,
     staleTime,
     enabled,
     gcTime,
