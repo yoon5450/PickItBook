@@ -182,3 +182,12 @@ export interface PopularBookItem extends Omit<RawDoc, 'ranking' | 'loan_count'> 
   ranking: number;
   loan_count: number;
 }
+
+export interface BookmarkItem {
+  book_id: number | null;
+  created_at: string;
+  id: number;
+  isbn13: string;
+  user_id: string;
+}
+

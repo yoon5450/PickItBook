@@ -7,87 +7,151 @@ import { usePopularBookFetching } from "@/api/usePopularBookFetching";
 import { shuffle } from "./utils/shuffle";
 import Filter from "@/Components/Filter";
 import { KDC_CATEGORY_OPTIONS, type KdcItemType } from "@/constant/kdc";
-import type { PopularBookItem } from "@/@types/global";
+import type { BookmarkItem, PopularBookItem } from "@/@types/global";
+import { useFetchBookmarkList } from "./hooks/useFetchBookmarkList";
+import { extendItem } from "./utils/extendItem";
+import { useAuthStore } from "@/store/useAuthStore";
+import { BsShuffle } from "react-icons/bs";
+import RouletteSkeleton from "./Components/RouletteSkeleton";
 
 export interface SearchParam {
-  key: string
-  value: string
+  key: string;
+  value: string;
 }
 
 function RandomRoulette() {
-  const [filterTap, setFilterTap] = useState<'장르' | '연령' | '추천' | null>(null);
+  // 1. 책을 뽑았는지 상태 확인
+  // 1-1. 책이 뽑혔는지 여부 및 뽑힌 책
+  const [pickBook, setPickBook] = useState<PopularBookItem | BookmarkItem | null>(null);
+  // 1-2. 뽑힌 책을 클릭했는지 여부 -> 여부에 따라 책 팝업 뜰지 말지 결정
   const [isOpenPickBook, setIsOpenPickBook] = useState<boolean>(false);
-  const [pickBook, setPickBook] = useState<PopularBookItem | null>(null);
-  const [searchParam, setSearchParam] = useState<SearchParam[] | null>(null);
 
-  const [genre, setGenre] = useState<{ top?: KdcItemType, bottom?: KdcItemType } | null>(null)
+
+
+  // 2. 필터탭 상태
+  // 2-1. 현재 선택된 필터탭
+  const [filterTap, setFilterTap] = useState<"장르" | "연령" | "추천" | null>(null);
+  // 2-2. 책 셔플 버튼용 상태
+  const [shuffleBook, setShuffleBook] = useState<boolean>(false);
+  // 2-3. 연령탭 선택값 기록
+  const [ageKey, setAgeKey] = useState<string | null>('8'); // '8' | '14' | ...
+  // 2-4. 추천탭 선택값 기록
+  const [genderKey, setGenderKey] = useState<string | "all" | "bookmark" | null>('0');
+  // 2-4-1. 추천탭 -> 북마크 필터 선택했는지 여부
+  const [isBookmarkSelect, setIsBookmarkSelect] = useState<boolean>(false);
+  // 2-4-2. 북마크 필터 조건부 렌더링을 위한 유저 존재 확인
+  const user = useAuthStore((s) => s.user);
+  // 2-5. 장르탭 선택한 값 들고오기
+  const [genre, setGenre] = useState<{ top?: KdcItemType; bottom?: KdcItemType } | null>(null);
+  // 2-5-1. 장르탭 선택한 값 가공
   const kdc = genre?.top ? genre.top.code[0] : undefined; // 1자리 (0~9)
-  const dtl_kdc = genre?.bottom ? genre.bottom.code.slice(0, 2) : undefined; // 2자리(00~99) 
-  // 00, 01, 02 이런건 숫자화 시키면 한 자릿수로 들어가서 총류의 소주제 파라미터 값이 이상하게 들어갔다
-  // 어짜피 문자로 전달하니 그대로 받기
-
-  const topItems = useMemo<KdcItemType[]>(() => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] === "0"), []);
-  const bottomItems = useMemo<KdcItemType[]>(() => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] !== "0"), []);
+  const dtl_kdc = genre?.bottom ? genre.bottom.code.slice(0, 2) : undefined; // 2자리(00~99)
 
 
-  useEffect(() => {
-    // 총류는 kdc 자체가 0으로 시작해서 아래 조건문 kdc&&dtl_kdc 에 어긋나서 파라미터 전달이 안됐다
-    if (kdc !== undefined && dtl_kdc !== undefined) {
-      setSearchParam([
-        { key: 'kdc', value: kdc },
-        { key: 'dtl_kdc', value: dtl_kdc }
-      ])
-    }
-    if (kdc !== undefined && dtl_kdc === undefined)
-      setSearchParam([{ key: 'kdc', value: kdc }])
-  }, [kdc, dtl_kdc])
+
+  // 3. 장르탭에 넣어줄 필터 항목 가공
+  const topItems = useMemo<KdcItemType[]>(
+    () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] === "0"),
+    []
+  );
+  const bottomItems = useMemo<KdcItemType[]>(
+    () => KDC_CATEGORY_OPTIONS.filter((o) => o.code[1] !== "0"),
+    []
+  );
 
 
+  // 4. 필터별 api에 전달할 파라미터 가공
   const params = useMemo(() => {
-    if (!searchParam) return null
-    if (searchParam.length > 1) {
-      return ({
-        [searchParam[0].key]: searchParam[0].value,
-        [searchParam[1].key]: searchParam[1].value
-      })
-    } else {
-      return ({ [searchParam[0].key]: searchParam[0].value })
-    }
-  }, [searchParam, kdc, dtl_kdc])
+    const p: Record<string, string> = {};
+    if (kdc !== undefined) p.kdc = kdc;
+    if (dtl_kdc !== undefined) p.dtl_kdc = dtl_kdc;
+    if (ageKey) p.age = ageKey;
+    if (genderKey && genderKey !== "all" && genderKey !== "bookmark") p.gender = String(genderKey);
+    return p;
+  }, [kdc, dtl_kdc, ageKey, genderKey]);
 
-  // console.log(params)
-  const { data, isLoading, error } = usePopularBookFetching(params ?? {})
 
-  if (error) console.error(error, '장르별 책 불러오기 실패');
-  if (isLoading) console.log('장르별 책 가져오는중');
+  // 5. 룰렛에 뿌릴 데이터 가져오기
+  // 5-1. 북마크 리스트 가져오기
+  const { data: bookmarkList, isSuccess, isFetching } = useFetchBookmarkList(isBookmarkSelect);
 
+  // 5-2. 필터링한 책 가져오기
+  const { data: bookList, isLoading: isBookListLoading, error: BookListError, isPending: isBookListPending } = usePopularBookFetching(params ?? {});
+  if (BookListError) console.error(BookListError, "장르별 책 불러오기 실패");
+  // if (isBookListLoading) console.log("장르별 책 가져오는중");
+  // if (isBookListPending) console.log('장르 pending...')
+
+  // 5-3. 필터링한 책 가공
   const filterBooks = useMemo(() => {
-    const base = data?.books ?? [];
-    return shuffle(base).slice(0, 17);
-  }, [data?.books]);
+    const base = bookList?.books ?? [];
 
+    // 5-3-1. 데이터 가져오기 실패한 경우
+    if (!isSuccess) return shuffle(base).slice(0, 17);
+
+    // 5-3-2. 북마크 필터를 선택한 경우
+    if (isBookmarkSelect) {
+      const len = bookmarkList?.length ?? 0;
+
+      // 북마크가 아무것도 없을때 데이터 예외처리
+      if (len === 0) {
+        return shuffle(base).slice(0, 17);
+      }
+      // 북마크 갯수가 충분할때
+      if (len >= 17) {
+        return shuffle(bookmarkList!).slice(0, 17);
+      }
+      // 북마크 수가 부족할때 확장시키기
+      const extendBookmark = extendItem(bookmarkList!);
+      return shuffle(extendBookmark).slice(0, 17);
+    }
+    // 5-3-3. 북마크 필터가 아닐때. 선택된 장르에 대한 데이터 섞어서 반환
+    return shuffle(base).slice(0, 17);
+  }, [bookList?.books, isBookmarkSelect, bookmarkList, shuffleBook, isSuccess]);
+
+
+  // 5-3-4. 북마크가 없을때 ux용 예외처리
   useEffect(() => {
-    console.log('장르 필터링된 책들 : ', filterBooks);
-  }, [filterBooks]);
+    if (!isBookmarkSelect) return;
+    if (isSuccess && !isFetching && (bookmarkList?.length ?? 0) === 0) {
+      // sweetalert로 바꾸기
+      alert('북마크가 존재하지 않습니다. 전체 데이터를 불러옵니다');
+    }
+  }, [isBookmarkSelect, isSuccess, isFetching, bookmarkList]);
 
 
   return (
     <div className="relative w-full max-w-[1200px] h-screen mx-auto justify-items-center pt-17 py-2">
 
       <h1 hidden>Filter header</h1>
-      <section className="absolute left-2 flex flex-row gap-6 w-[364px]">
+      <section className="absolute left-2 flex flex-row gap-6 w-[370px]">
+        {/* 필터 : 장르탭 */}
         <div className="z-10">
-          <FilterButton text={'장르'} setFilterTap={setFilterTap} />
-          {filterTap === '장르' && (
-            <Filter topItems={topItems} bottomItems={bottomItems} filterItem={genre} setFilterItem={setGenre} />
-          )}
+          <FilterButton text={"장르"} setFilterTap={setFilterTap} setIsBookmarkSelect={setIsBookmarkSelect} />
+          <Filter
+            isOpen={filterTap === "장르"}
+            topItems={filterTap === "장르" ? topItems : null}
+            bottomItems={filterTap === "장르" ? bottomItems : null}
+            filterItem={genre}
+            setFilterItem={setGenre}
+            onClose={() => {
+              setFilterTap(null);
+            }}
+            className={"absolute"}
+          />
         </div>
+
+        {/* 필터 : 연령탭 */}
         <div className="z-10">
-          <FilterButton text={'연령'} setFilterTap={setFilterTap} />
+          <FilterButton text={"연령"} setFilterTap={setFilterTap} />
           <FilterModal
-            isOpen={filterTap === '연령'}
-            text='age'
-            setSearchParam={setSearchParam}
+            isOpen={filterTap === "연령"}
+            text="age"
+            selectedKey={ageKey}
+            onSelect={(key) => {
+              setAgeKey(key);
+              setIsBookmarkSelect(false);
+            }}
+            onClose={() => setFilterTap(null)}
             category={{
               8: "초등",
               14: "청소년",
@@ -95,32 +159,67 @@ function RandomRoulette() {
               30: "30대",
               40: "40대",
               50: "50대",
-              60: "60대 이상"
-            }} />
+              60: "60대⬆", // 60대 이상 ui 변경 필요
+            }}
+          />
         </div>
+
+        {/* 필터 : 추천탭 */}
         <div className="z-10">
-          <FilterButton text={'추천'} setFilterTap={setFilterTap} />
+          <FilterButton text={"추천"} setFilterTap={setFilterTap} />
           <FilterModal
-            isOpen={filterTap === '추천'}
-            text='gender'
-            setSearchParam={setSearchParam}
-            category={{
-              all: "인기작",
-              bookmark: "북마크",
-              0: "남성 추천",
-              1: "여성 추천"
-            }} />
+            isOpen={filterTap === "추천"}
+            text="gender"
+            selectedKey={genderKey}
+            onSelect={(key) => {
+              setGenderKey(key);
+              setIsBookmarkSelect(key === "bookmark");
+            }}
+            onClose={() => setFilterTap(null)}
+            category={
+              user ?
+                {
+                  all: "인기작",
+                  bookmark: "북마크",
+                  0: "남성 추천",
+                  1: "여성 추천",
+                } : {
+                  all: "인기작",
+                  0: "남성 추천",
+                  1: "여성 추천",
+                }}
+          />
         </div>
+
+        {/* 필터탭 : 셔플 */}
+        <button className="flex flex-row h-12 items-center justify-center "
+          type="button"
+          onClick={() => setShuffleBook(prev => !prev)}>
+          <BsShuffle size={22} title="새로 불러오기" className="transition hover:text-primary" />
+        </button>
       </section>
 
-
+      {/* 뽑힌 책 팝업 */}
       <div className="overflow-y-scroll">
-        <PickBook pickBook={pickBook} isOpenPickBook={isOpenPickBook} setIsOpenPickBook={setIsOpenPickBook} />
+        <PickBook
+          pickBook={pickBook}
+          isOpenPickBook={isOpenPickBook}
+          setIsOpenPickBook={setIsOpenPickBook}
+        />
       </div>
-      <Roulette books={filterBooks} setPickBook={setPickBook} setIsOpenPickBook={setIsOpenPickBook} />
 
-
-
+      {/* 필터 바꿀때 로딩, 펜딩중인 경우 스켈레톤 */}
+      {(isBookListPending || isBookListLoading) ? (
+        <RouletteSkeleton />
+      ) :
+        // 룰렛 
+        <Roulette
+          books={filterBooks}
+          filterTap={filterTap}
+          setPickBook={setPickBook}
+          setIsOpenPickBook={setIsOpenPickBook}
+        />
+      }
     </div>
   );
 }

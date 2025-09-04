@@ -1,35 +1,25 @@
-import type { PopularBookItem } from "@/@types/global";
+import type { BookmarkItem, PopularBookItem } from "@/@types/global";
+import { bookmarkRepo } from "@/api/bookmark.repo.supabase";
+import { logicRpcRepo } from "@/api/logicRpc.repo.supabase";
 import { useBookDetail } from "@/api/useBookDetail";
+import { useToggleBookmark } from "@/api/useBookmark";
 import { useGetMissionByISBN } from "@/api/useMissionsFetching";
+import { useGetReview } from "@/api/useReviewFetching";
 import RatingStars from "@/Components/RatingStar";
+import BookmarkButton from "@/Page/BookDetail/components/BookmarkButton";
+import LoadingSkeleton from "@/Page/Main/Components/LoadingSkeleton";
 import { getBookImageURLs } from "@/utils/bookImageUtils";
 import tw from "@/utils/tw";
 import { cva } from "class-variance-authority";
-import { useEffect, useState } from "react"
-
-
-/**
- * 중복되는 style component css로 만들어서 처리해보기
- * 스타일 분리해보고도 코드 길면 컴포넌트 분리하기
- * 하이라이팅 스타일 수정하기
- * 책 닫힐때 스르륵 사라지게 애니메이션 넣기
- */
+import { useEffect, useMemo, useState } from "react"
 
 interface Props {
-  pickBook: PopularBookItem | null;
+  pickBook: PopularBookItem | BookmarkItem | null;
   isOpenPickBook: boolean;
   setIsOpenPickBook: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// type Missions = {
-//   name: string
-//   description: string
-//   completed: boolean
-//   reward: {
-//     amount: number
-//   }
-// }
-
+// 책 페이지에 따른 스타일, 애니메이션 구분
 const openBook = cva(
   'absolute origin-left transition-transform duration-1000 ease-in-out border border-2 border-gray-500 ',
   {
@@ -54,43 +44,85 @@ const openBook = cva(
 )
 
 function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
-  // setIsOpenPickBook : 모달을 띄울지 여부 설정 함수
-  // isOpenPickBook : 모달을 띄우는지 값이 불린으로 저장된 상태
-  const [isOpen, setIsOpen] = useState<boolean>(false); // 모달이 떠 있는 상태에서 책을 펼쳤는지의 여부
-  const [isBookMark, setIsBookMark] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isBookmark, setIsBookmark] = useState<boolean>(false);
 
   const isbn13 = pickBook?.isbn13 ?? undefined;
   const open = !!(isbn13 && isOpenPickBook);
 
-  const { status: bookStatus, data: bookData } = useBookDetail(isbn13);
+  // 1. 책 상세 정보 조회
+  const { status: bookStatus, data: bookData } = useBookDetail(isbn13 ?? '');
+  // 2. 책 미션 조회
+  const { data: missionData } = useGetMissionByISBN(isbn13 ?? '');
 
-  const { data: missionData } = useGetMissionByISBN(isbn13!);
-  // if(!missionData) return; 이 코드는 아래 훅 호출하는데 에러를 유발
-
+  // 2-1. 책 미션 데이터 가공 (완료 여부)
   const missions = missionData ?
     missionData
       .map(({ name, description, completed, reward, }) => ({ name, description, completed, reward }))
       .sort((a, b) => b.reward.amount - a.reward.amount)
       .filter(m => !m.completed) : [];
-  // console.log(missions);
+
+  // 3. 북마크 여부 조회에 따라 북마크 표시
+  useEffect(() => {
+    const bookmarkCheck = async () => {
+      if (!isbn13) return;
+      const bookmarked = await bookmarkRepo.isBookmarked(isbn13);
+      setIsBookmark(bookmarked);
+    }
+    bookmarkCheck();
+  }, [isbn13]);
+
+  // 3-1. 북마크 처리중인지 확인
+  const { mutate: toggleBookmark, isPending: togglePending } = useToggleBookmark(isbn13)
+
+  // 3-2. 북마크 이벤트 핸들러
+  const handleBookMark = () => {
+    setIsBookmark(prev => !prev);
+    toggleBookmark()
+  }
+
+  // 4. 별점 표시용 리뷰 데이터 불러오기
+  const { data: reviewData } = useGetReview(isbn13 ?? '')
+
+  // 4-1. 별점 계산
+  const ratingAvg = useMemo(() => {
+    let summary = 0;
+    if (!reviewData) return 0;
+    reviewData.map((item) => (summary += item.score));
+    return summary === 0
+      ? summary
+      : Math.ceil((summary / reviewData?.length) * 10) / 10;
+  }, [reviewData]);
+
+  // 5. 책 팝업 클릭시에 해당 책의 미션이 유저에게 등록되도록 
+  useEffect(() => {
+    if (isOpenPickBook) {
+      const insertMissionsToUser = () => {
+        logicRpcRepo.setBundle(isbn13 ?? '');
+      }
+      insertMissionsToUser();
+    }
+  }, [isbn13, isOpenPickBook])
 
 
+  // 6. 책 닫기
   useEffect(() => {
     setIsOpen(false);
     if (pickBook) console.log(pickBook)
   }, [isbn13])
 
+  // 7. 책 열기
   const handleOpenBook = () => {
-    console.log('책 열기')
     setIsOpen(prev => !prev);
   }
 
+  // 8. 책 닫기 (esc 또는 바깥 영역 클릭으로)
   const handleCloseBook = () => {
-    console.log('책 닫기')
     setIsOpen(false);
     setIsOpenPickBook(false);
   }
 
+  // 8-1. esc로 책 닫기
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -103,8 +135,25 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen]);
 
-  const handleBookMark = () => {
-    setIsBookMark(prev => !prev);
+
+  // 원작: 흔한남매 ;그림: 유난희
+  // 에드 콘웨이 지음 ;이종인 옮김
+  // 지은이: 히가시노 게이고 ;옮긴이: 양윤옥
+  // 김준성,안상준 지음
+  // 송민섭 지음
+  // 글: 김미영 ;정보글: 최은하
+  // 기시미 이치로,전경아 옮김
+  // 지은이: 양귀자
+
+
+  // 9. 장르 데이터 가공 (제일 소분류 장르만 가져오도록. 장르 없는 경우는 null 처리)
+  const defineGenre = (): string | null => {
+    const copy = bookData?.book.class_nm;
+    if (copy?.length === undefined) return null;
+    if (!copy.indexOf('>')) return copy.trim();
+    const genreArr = copy?.split(' > ').reverse()
+    console.log(genreArr)
+    return genreArr[0]
   }
   // xl : 1280 lg : 1024 md : 768 sm : 640
 
@@ -113,15 +162,18 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
       <h1 hidden>Pick Book</h1>
       {
         open &&
-        (bookStatus === 'pending' || !bookData?.book ? (<p>로딩중</p>)
+        (bookStatus === 'pending' || !bookData?.book ? (<LoadingSkeleton />)
           : (
             <div key={isbn13} className="fixed inset-0 z-[1000]">
-              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm">
-                <section className="book w-screen h-screen flex flex-col items-center justify-center">
+              {/* 책 팝업 뒷배경 블러처리 */}
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm w-screen h-screen flex items-center justify-center" onPointerDown={handleCloseBook}>
+                {/* 책 팝업 영역 */}
+                <section className="book flex items-center justify-center" onPointerDown={(e) => e.stopPropagation()} role="dialog" aria-modal='true' aria-labelledby="pickbook popup">
                   <div className="container relative z-20 perspective-distant [perspective-origin:center] flex justify-center">
                     <div className={tw("book relative w-[320px] h-[470px] lg:w-[400px] lg:h-[588px] xl:w-[473px] xl:h-[696px] left-0 transform-3d transition-left duration-700 ease-in-out",
                       isOpen ? 'left-[160px] lg:left-[200px] xl:left-[236px]' : '')}>
 
+                      {/* 4. 책 뒷면 */}
                       <div className={tw(openBook({ intent: 'coverEnd', isOpen }), "coverEnd")}>
                         <img
                           className="w-[100%] h-[100%]"
@@ -130,72 +182,93 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                         />
                       </div>
 
+                      {/* 책 중간 심지 */}
                       <div className="absolute w-3 h-full origin-left bg-gray-500 pageGap"></div>
 
+                      {/* 3. 책 오른쪽 영역 (미션 정보) */}
                       <div className={tw(openBook({ intent: 'pageRight', isOpen }), "pt-13 lg:pt-20 pb-9 px-9 flex flex-col", "pageRight")}>
-                        <button type="button" onClick={handleBookMark} className="absolute -top-2">
-                          <img className="w-8 lg:w-10" src={isBookMark ? "/bookmarkOn.svg" : "/bookmarkOff.svg"} alt="책갈피" />
-                        </button>
-
+                        {/* 3-1. 북마크 */}
+                        <BookmarkButton
+                          className={'absolute -top-2 left-8'}
+                          onClick={handleBookMark}
+                          isBookmarked={isBookmark}
+                          disabled={togglePending}
+                          size={48}
+                        />
+                        {/* 3-2. 책 닫기 x 버튼 */}
                         <button type="button" onClick={handleCloseBook} className="absolute top-9 right-9">
                           <img className="w-4 lg:w-6" src="/close.svg" alt="닫기" /></button>
 
-                        <div className="flex flex-col gap-3 lg:gap-6 xl:gap-8">
+                        {/* 3-3. 미션 렌더링 */}
+                        <div className="flex flex-col gap-2 lg:gap-4 xl:gap-6">
                           <p className="font-semibold text-lg lg:text-2xl text-primary-black pl-1">미션</p>
-                          <p className="text-xs lg:text-sm xl:text-[16px]"><span className="text-primary">{bookData.book.bookname}</span> 미션이 도착했어요!</p>
-                          {/* 미션 map으로 렌더링하기 */}
+                          <div className="w-full px-2 flex flex-row justify-between gap-1" >
+                            <p className="text-sm lg:text-[16px] xl:text-[18px]">
+                              <span className="text-primary text-[16px] lg:text-[18px] xl:text-[20px]">{bookData.book.bookname}</span>
+                              의<br /> 미션이 도착했어요!
+                            </p>
+                          </div>
                           {
                             missions.map(({ name, description }, index) => (
-                              <>
-                                {
-                                  index === 0 ? (
-                                    <div key={index} className="w-full border border-gray-300 bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-row justify-between gap-1" >
-                                      <div>
-                                        <p className="text-xs lg:text-sm xl:text-[16px]">{name}</p>
-                                        <p className="text-xs lg:text-sm xl:text-[16px]">{description}</p>
-                                      </div>
-                                      <img className="w-5 lg:w-6 xl:w-8" src="/fire_book_yellow.svg" alt="책 미션" />
-                                    </div>
-                                  ) : (
-                                    <div key={index} className="w-full bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-col">
-                                      <p className="text-xs lg:text-sm xl:text-[16px]">{name}</p>
-                                      <p className="text-xs lg:text-sm xl:text-[16px]">{description}</p>
-                                    </div>
-                                  )
-                                }
-                              </>
+                              index === 0 ? (
+                                // 3-3-1. 점수가 제일 높은 미션 (부스트 스타일)
+                                <div key={index} className="w-full border border-gray-300 bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-row justify-between gap-1" >
+                                  <div>
+                                    <p className="text-xs lg:text-sm xl:text-[16px] text-primary">{name}</p>
+                                    <p className="text-xs lg:text-sm xl:text-[16px] ">{description}</p>
+                                  </div>
+                                  <img className="w-5 lg:w-6 xl:w-8" src="/fire_book_yellow.svg" alt="책 미션" />
+                                </div>
+                              ) : (
+                                // 3-3-2. 그 의 미션들
+                                <div key={index} className="w-full bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-col">
+                                  <p className="text-xs lg:text-sm xl:text-[16px]">{name}</p>
+                                  <p className="text-xs lg:text-sm xl:text-[16px]">{description}</p>
+                                </div>
+                              )
                             ))
                           }
 
                         </div>
                       </div>
 
+                      {/* 2. 책 왼쪽 영역 (책 상세 정보 영역) */}
                       <div className={tw(openBook({ intent: 'pageLeft', isOpen }), "pt-13 pb-9 px-9", "pageLeft")}>
-                        <div className="-rotate-y-180 flex flex-col gap-1">
+                        {/* 2-1. 책 표지 여닫는 버튼 */}
+                        <div className="absolute bottom-[11px] right-[11px] w-14 h-14 rotate-135 bg-pattern z-10"></div>
+                        <button onClick={handleOpenBook} className="absolute bottom-0 right-0 w-10 h-10 bg-gray-700"></button>
+
+                        {/* 2-2. 책 상세 정보 영역 */}
+                        <div className="-rotate-y-180 flex flex-col gap-2">
+
+                          {/* 2-2-1. 책 이름 */}
                           <p className="font-semibold text-lg md:text-xl lg:text-2xl text-primary-black">{bookData.book.bookname}</p>
-                          <RatingStars value={3} size={28} gap={2} />
+
+                          {/* 2-2-2. 책 평점 */}
+                          <RatingStars value={ratingAvg ? ratingAvg : 0} size={28} gap={2} />
+
+                          {/* 2-2-3. 작가, 출판사, 장르, isbn13 */}
                           <div className="flex flex-row flex-wrap gap-2.5 lg:gap-4 xl:gap-6 pb-2">
                             <div className="flex items-center w-fit px-3 py-1.5 lg:px-5 lg:py-2.5 bg-stone-200 rounded-2xl" aria-label="작가">
                               <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{bookData.book.authors}</p></div>
                             <div className="font-semibold text-primary-black flex items-center w-fit px-3 py-1.5 lg:px-5 lg:py-2.5 bg-stone-200 rounded-2xl" aria-label="출판사">
                               <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{bookData.book.publisher}</p></div>
-                            {
-                              bookData.book.class_nm.length === 0 ? null : (
-                                <div className="font-semibold text-primary-black flex items-center w-fit px-3 py-1.5 lg:px-5 lg:py-2.5 bg-stone-200 rounded-2xl" aria-label="장르">
-                                  <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{bookData.book.class_nm}</p></div>
-                              )
-                            }
+                            <div className="font-semibold text-primary-black flex items-center w-fit px-3 py-1.5 lg:px-5 lg:py-2.5 bg-stone-200 rounded-2xl" aria-label="장르">
+                              <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{defineGenre() ?? ''}</p></div>
                             <div className="font-semibold text-primary-black flex items-center w-fit px-3 py-1.5 lg:px-5 lg:py-2.5 bg-stone-200 rounded-2xl" aria-label="isbn13">
                               <p className="text-xs lg:text-sm xl:text-[16px] font-semibold text-primary-black ">{isbn13}</p></div>
                           </div>
+
+                          {/* 2-2-4. 책 설명 */}
                           <div>
-                            <p className="text-xs lg:text-sm xl:text-[16px] line-clamp-[9] lg:line-clamp-[12]">
+                            <p className="text-xs lg:text-sm xl:text-[16px] line-clamp-[7] lg:line-clamp-[12]">
                               {bookData.book.description}
                             </p>
                           </div>
                         </div>
                       </div>
 
+                      {/* 1. 책 표지 */}
                       <div className={tw(openBook({ intent: 'cover', isOpen, }), "cover")}>
                         <button type='button' onClick={handleOpenBook} className="w-full h-full">
                           <img
