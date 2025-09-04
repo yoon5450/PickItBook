@@ -70,7 +70,7 @@ function FilterModal({
           key={key}
           aria-label={value}
           className={tw(
-            "w-19 rounded-xl py-1 px-2 transition",
+            "w-fit text-xs sm:text-[16px] sm:w-19 rounded-lg sm:rounded-xl py-1 px-2 transition",
             selectedKey === key
               ? "bg-primary text-white"
               : "hover:bg-primary/50 hover:text-white focus:bg-primary focus:text-white",
