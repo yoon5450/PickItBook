@@ -1,10 +1,11 @@
-import type { BookItemType, SearchKey } from "@/@types/global";
+import type { SearchKey } from "@/@types/global";
 import BookItem from "./BookItem";
 import tw from "@/utils/tw";
-import type { listMode } from "..";
+import type { listMode, MergedType } from "..";
+
 
 type Props = {
-  bookList: BookItemType[];
+  bookList: MergedType[];
   className?: string;
   onSearch: ({ key, value }: { key: SearchKey; value: string }) => void;
   mode: listMode;
@@ -12,10 +13,11 @@ type Props = {
 
 const modeUlClass = {
   line: "flex flex-col justify-center",
-  grid: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 justify-items-center"
+  grid: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 justify-items-center pt-6"
 }as const
 
 function BookList({ bookList, className, onSearch, mode = "line" }: Props) {
+  console.log(bookList);
   return (
     <ul className={tw("min-h-screen", modeUlClass[mode], className)}>
       {bookList && bookList.length === 0 ? (
