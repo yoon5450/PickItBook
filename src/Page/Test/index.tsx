@@ -66,12 +66,12 @@ function Test() {
       >
         로그아웃
       </button>
-      <Filter
+      {/* <Filter
         topItems={topItems}
         bottomItems={bottomItems}
         filterItem={filterItem}
         setFilterItem={setFilterItem}
-      />
+      /> */}
       <BookDataSkeleton />
     </div>
   );
