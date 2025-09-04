@@ -5,14 +5,18 @@ import { useEffect, useMemo, useState } from "react";
 import loaderIcon from "@/assets/loading.svg";
 import { useBookFetching } from "@/api/useBookFetching";
 import { normalizeSearchFields } from "@/utils/normalizeSearchParams";
-import type { SearchKey } from "@/@types/global";
+import type { BookItemType, SearchKey } from "@/@types/global";
 import tw from "@/utils/tw";
 import { scrollTop } from "@/utils/scrollFunctions";
 import PopularKeywords from "./Component/PopularKeywords";
 import { RxHamburgerMenu, RxGrid } from "react-icons/rx";
 import { useGetReviewsScore } from "@/api/useReviewFetching";
+import type { Tables } from "@/@types/database.types";
 
 export type listMode = "line" | "grid";
+
+export type MergedType = BookItemType &
+    Pick<Tables<"v_review_stats">, "avg_score" | "rating_count">;
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -79,17 +83,22 @@ function Search() {
 
   const isbns = data?.items.map((item) => item.isbn13);
 
-  const { data: reviewsScoreData, isFetching: reviewsScoreFetching } =
-    useGetReviewsScore(isbns);
+  const { data: reviewsScoreData } = useGetReviewsScore(isbns);
 
-  if (!reviewsScoreFetching) {
-    const reviewsMap = new Map(data.items.map((s) => [s.isbn13, s]));
-    const merged = data.items.map((item) => ({
-      ...item,
-      avgScore: reviewsMap.get(item.isbn13)?.avg_score ?? null,
-      ratingCount: reviewsMap.get(item.isbn13)?.rating_count ?? 0,
-    }));
-  }
+  const mergedItems: MergedType[] = useMemo(() => {
+    const items = data?.items ?? [];
+    const stats = reviewsScoreData ?? [];
+    const map = new Map(stats.map((s) => [s.isbn13, s]));
+    console.log(map);
+    return items.map((item) => {
+      const s = map.get(item.isbn13);
+      return {
+        ...item,
+        avg_score: s?.avg_score ?? null,
+        rating_count: s?.rating_count ?? 0,
+      };
+    });
+  }, [data?.items, reviewsScoreData]);
 
   const totalPages = Math.max(1, Math.ceil(data.total / data.pageSize));
   const prevDisabled = isFetching || page <= 1;
@@ -154,7 +163,7 @@ function Search() {
       {/* 목록 */}
       <BookList
         mode={listMode}
-        bookList={data.items}
+        bookList={mergedItems}
         className="w-full"
         onSearch={handleSearch}
       />

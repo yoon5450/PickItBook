@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { reviewRepo } from "./review.repo.supabase";
 import type { ReviewItemType } from "@/@types/global";
 import { logicRpcRepo } from "./logicRpc.repo.supabase";
+import type { Tables } from "@/@types/database.types";
 
 export type SetReviewType = {
   isbn13: string;
@@ -108,6 +109,8 @@ export const useDeleteReview = (opts?: {
   });
 };
 
+type ReviewsScoreType = Tables<"v_review_stats">
+
 // isbn 목록에 기반한 리뷰 점수 목록을 가져옵니다.
 export const useGetReviewsScore = (isbns: string[], opts:FetchingOptions = {}) => {
   const {
@@ -117,7 +120,7 @@ export const useGetReviewsScore = (isbns: string[], opts:FetchingOptions = {}) =
     refetchOnWindowFocus = false,
   } = opts;
 
-  return useQuery({
+  return useQuery<ReviewsScoreType[], Error>({
     queryKey:['reviewsScore', isbns],
     queryFn:() => reviewRepo.getReviewsScore(isbns),
     enabled,
