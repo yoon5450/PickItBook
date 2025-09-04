@@ -8,6 +8,7 @@ import { Link } from "react-router";
 import { getMockDataByCategory } from "./utils/mockData";
 import MainRoulette from "./Components/MainRoulette";
 import { useMemo } from "react";
+import BookPileUp from "./Components/BookPileUp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -85,6 +86,9 @@ const Main = () => {
           <MainRoulette books={books} />
         </div>
       </section>
+
+      <hr />
+      <BookPileUp />
     </main>
   );
 };
