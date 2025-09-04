@@ -10,9 +10,8 @@ import supabase from "@/utils/supabase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useQueryClient } from "@tanstack/react-query";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-// import ConfettiCongrats from "@/Components/ConfettiCongrats";
-// import { useGetMissionDetailByTemplateID } from "@/api/useGetMissionDetailByTemplateID";
 import MissionCompletePopup from "./Components/MissionCompletePopup";
+// import type { Tables } from "@/@types/database.types";
 
 // 기본 레이아웃 구조 정의. 모달, floating Button등 Zustand를 통해 제어
 function Root() {
@@ -27,6 +26,7 @@ function Root() {
   const [missionCompletePopup, setMissionCompletePopup] = useState<boolean>(false);
   const [missionTemplateID, setMissionTemplateID] = useState<string | null>(null);
   const [isbn13, setISBN13] = useState<string | null>(null);
+  // const scopeRef = useRef("");
 
   useEffect(() => {
     if (!user?.id) return;
@@ -43,8 +43,9 @@ function Root() {
         (payload) => {
           queryClient.invalidateQueries({ queryKey: ["rewards", user.id] });
           queryClient.invalidateQueries({ queryKey: ["missions", user.id] });
-
           console.log(payload.new, "완료");
+          // const item = payload.new as Tables<"task_rewards">;
+          // scopeRef.current = item.scope_id ?? "";
           setMissionTemplateID(payload.new.template_id);
           setMissionCompletePopup(true);
           setISBN13(payload.new.scope_id)
@@ -64,12 +65,24 @@ function Root() {
 
 
   const handleClosePopup = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ["missions", 'books', isbn13], refetchType: "all" }),
-      queryClient.invalidateQueries({ queryKey: ["rewards", user?.id], refetchType: "all" }),
-    ]);
+    // const scope_id = scopeRef.current
+
+    // if (scope_id)
+    if (isbn13)
+      await Promise.all([
+        queryClient.invalidateQueries({
+          // queryKey: ["missions", "book", scope_id],
+          queryKey: ["missions", "book", isbn13],
+          refetchType: "all",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["rewards", user?.id],
+          refetchType: "all",
+        }),
+      ]);
+
     setMissionCompletePopup(false);
-    setMissionTemplateID(null); // 다음 이벤트 때 다시 마운트되도록 초기화 권장
+    setMissionTemplateID(null);
   };
 
 
