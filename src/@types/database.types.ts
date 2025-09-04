@@ -95,6 +95,42 @@ export type Database = {
         }
         Relationships: []
       }
+      export_books: {
+        Row: {
+          added_num: string | null
+          author: string | null
+          book_name: string | null
+          book_num: string | null
+          created_at: string
+          id: number
+          isbn13: string | null
+          publisher: string | null
+          publishing_date: string | null
+        }
+        Insert: {
+          added_num?: string | null
+          author?: string | null
+          book_name?: string | null
+          book_num?: string | null
+          created_at?: string
+          id?: number
+          isbn13?: string | null
+          publisher?: string | null
+          publishing_date?: string | null
+        }
+        Update: {
+          added_num?: string | null
+          author?: string | null
+          book_name?: string | null
+          book_num?: string | null
+          created_at?: string
+          id?: number
+          isbn13?: string | null
+          publisher?: string | null
+          publishing_date?: string | null
+        }
+        Relationships: []
+      }
       review: {
         Row: {
           content: string
@@ -103,6 +139,7 @@ export type Database = {
           image_url: string | null
           isbn13: string
           like_count: number
+          reply_count: number
           score: number
           title: string | null
           user_id: string
@@ -114,6 +151,7 @@ export type Database = {
           image_url?: string | null
           isbn13: string
           like_count?: number
+          reply_count?: number
           score: number
           title?: string | null
           user_id?: string
@@ -125,6 +163,7 @@ export type Database = {
           image_url?: string | null
           isbn13?: string
           like_count?: number
+          reply_count?: number
           score?: number
           title?: string | null
           user_id?: string
@@ -154,6 +193,38 @@ export type Database = {
           {
             foreignKeyName: "review_likes_review_id_fkey"
             columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "review"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_replys: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: number
+          parent_id: number
+        }
+        Insert: {
+          author_id?: string
+          content: string
+          created_at?: string
+          id?: number
+          parent_id: number
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: number
+          parent_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_reply_parent_id_fkey"
+            columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "review"
             referencedColumns: ["id"]
@@ -477,6 +548,26 @@ export type Database = {
         }
         Relationships: []
       }
+      v_review_replys_with_author: {
+        Row: {
+          author_id: string | null
+          content: string | null
+          created_at: string | null
+          id: number | null
+          nickname: string | null
+          parent_id: number | null
+          profile_image: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_reply_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "review"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_review_stats: {
         Row: {
           avg_score: number | null
@@ -519,6 +610,24 @@ export type Database = {
           valid_from: string
           valid_to: string
           version: number
+        }[]
+      }
+      api_get_reviews_by_isbn: {
+        Args: { p_isbn13: string; p_limit?: number; p_offset?: number }
+        Returns: {
+          comment_count: number
+          content: string
+          created_at: string
+          id: number
+          image_url: string
+          isbn13: string
+          like_count: number
+          liked_by_me: boolean
+          nickname: string
+          profile_image: string
+          score: number
+          title: string
+          user_id: string
         }[]
       }
       api_list_book_missions: {
@@ -591,7 +700,7 @@ export type Database = {
         Returns: undefined
       }
       api_toggle_bookmark: {
-        Args: { p_emit_event?: boolean; p_isbn13: string; p_user_id?: string }
+        Args: { p_emit_event?: boolean; p_isbn13: string }
         Returns: {
           bookmark_id: number
           bookmarked: boolean
@@ -612,23 +721,6 @@ export type Database = {
       fn_pick_bundle_by_isbn: {
         Args: { p_isbn: string }
         Returns: number
-      }
-      get_reviews_by_isbn: {
-        Args: { p_isbn13: string; p_limit?: number; p_offset?: number }
-        Returns: {
-          content: string
-          created_at: string
-          id: number
-          image_url: string
-          isbn13: string
-          like_count: number
-          liked_by_me: boolean
-          nickname: string
-          profile_image: string
-          score: number
-          title: string
-          user_id: string
-        }[]
       }
       toggle_like: {
         Args: { p_review_id: number }
