@@ -48,7 +48,7 @@ export default function MyReviewSection() {
   return (
     <section className="w-full max-w-[540px] mx-auto">
       <header className="flex items-center justify-between mb-3">
-        <h2 className="text-[20px] font-bold">My Review</h2>
+        <div className="text-base font-bold mb-6">My Review List</div>
       </header>
 
       {isLoading ? (

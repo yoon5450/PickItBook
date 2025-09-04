@@ -46,7 +46,7 @@ function MainRoulette({ books }: Props) {
           duration: 1.5,
           ease: "elastic.out",
           elasticStrength: 2,
-          elasticPower: 0.8
+          elasticPower: 0.8,
         }}
         isMainPage={true}
       />
