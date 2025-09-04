@@ -11,6 +11,7 @@ import BookmarkButton from "./BookmarkButton";
 import { useAssignMissions } from "@/api/useMissionsFetching";
 import { useAuthStore } from "@/store/useAuthStore";
 import Swal from "sweetalert2";
+import tw from "@/utils/tw";
 
 interface Props {
   data: BookDetailData | undefined;
@@ -26,6 +27,7 @@ function BookDataPatition({
   isMissionAssigned,
 }: Props) {
   const isbn13 = data?.book?.isbn13;
+  const [missionAssigned, setMissionAssigned] = useState(isMissionAssigned);
 
   const { mutate: toggleBookmark, isPending: togglePending } =
     useToggleBookmark(isbn13);
@@ -34,6 +36,10 @@ function BookDataPatition({
   // 서버단에서 북마크 정보 join해서 주는 게 낫나?
   const [isBookmarked, setIsBookmarked] = useState<boolean>();
   const isLogIn = useAuthStore((s) => s.user?.id) ? true : false;
+
+  useEffect(() => {
+    setMissionAssigned(isMissionAssigned);
+  }, [isMissionAssigned]);
 
   // 북마크 여부 체크
   useEffect(() => {
@@ -83,11 +89,17 @@ function BookDataPatition({
         {/* 미션 수령하기 버튼 */}
         <button
           type="button"
-          className="px-4 py-2 rounded-md text-xl bg-primary text-background-white absolute right-0 bottom-0"
-          onClick={() => assignMission()}
-          disabled={isMissionAssigned}
+          className={tw(
+            "px-4 py-2 rounded-md text-xl bg-primary text-background-white absolute right-0 bottom-0",
+            missionAssigned && "bg-gray-10 text-primary border border-primary"
+          )}
+          onClick={() => {
+            assignMission();
+            setMissionAssigned(true);
+          }}
+          disabled={missionAssigned}
         >
-          미션 수령하기
+          {missionAssigned ? "미션 수령 완료" : "미션 수령하기"}
         </button>
 
         <img
