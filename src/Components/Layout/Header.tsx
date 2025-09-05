@@ -24,7 +24,7 @@ const Header = () => {
     { label: "Home", path: "/" },
     { label: "Random Roulette", path: "/roulette" },
     { label: "Book Search", path: "/search" },
-    { label: "Bookshelf", path: "/library" },
+    { label: "Bookshelf", path: "/library", requiresAuth: true},
     { label: "Mypage", path: "/mypage", requiresAuth: true },
   ];
 
@@ -304,12 +304,12 @@ const Header = () => {
                       }`
                     }
                     onClick={
-                      item.label === "Mypage"
+                      item.requiresAuth
                         ? (e) => {
                             if (!user) {
                               e.preventDefault();
                               handleMenuClick();
-                              navigate("/auth/login");
+                              navigate("/login");
                             } else {
                               handleMenuClick();
                             }
