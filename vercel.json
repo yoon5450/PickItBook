@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/data4library/(.*)",
-      "destination": "https://3.35.131.185/api/$1"
+      "destination": "http://3.35.131.185/api/$1"
     },
     {
       "source": "/(.*)",
