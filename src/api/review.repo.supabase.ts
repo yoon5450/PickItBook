@@ -48,7 +48,7 @@ export const reviewRepo = {
 
   /* ---------- 조회(Read) ---------- */
   getReview: async (p_isbn13: string, p_limit: number, p_offset: number) => {
-    const { data, error } = await supabase.rpc("get_reviews_by_isbn", {
+    const { data, error } = await supabase.rpc("api_get_reviews_by_isbn", {
       p_isbn13,
       p_limit,
       p_offset,

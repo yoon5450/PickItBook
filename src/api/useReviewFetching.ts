@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { reviewRepo } from "./review.repo.supabase";
-import type { ReviewItemType } from "@/@types/global";
+import type { FetchingOptions, ReviewItemType } from "@/@types/global";
 import { logicRpcRepo } from "./logicRpc.repo.supabase";
 import type { Tables } from "@/@types/database.types";
 
@@ -18,13 +18,6 @@ export type UpdateReviewVars = {
   content?: string;
   score?: number;
   new_image_file?: File;
-};
-
-type FetchingOptions = {
-  enabled?: boolean;
-  staleTime?: number;
-  gcTime?: number;
-  refetchOnWindowFocus?: boolean;
 };
 
 // 파일과 함께 리뷰를 게시합니다 ( 파일 없어도 상관 없음 )
@@ -56,6 +49,7 @@ export const useGetReview = (isbn13: string, p_limit = 50, p_offset = 0) => {
   });
 };
 
+// 내 리뷰 목록을 가져옵니다.
 export const useGetMyReviews = (uid: string, limit = 20, offset = 0) =>
   useQuery<ReviewItemType[], Error>({
     queryKey: ["review", "byUser", uid, limit, offset],
@@ -64,6 +58,7 @@ export const useGetMyReviews = (uid: string, limit = 20, offset = 0) =>
     staleTime: 60_000,
   });
 
+// 리뷰 기존 내용을 업데이트합니다. 
 export const useUpdateReview = (opts?: { invalidate?: { byUser?: string; byIsbn?: string } }) => {
   const qc = useQueryClient();
   return useMutation({
@@ -83,6 +78,7 @@ export const useUpdateReview = (opts?: { invalidate?: { byUser?: string; byIsbn?
   });
 };
 
+// 리뷰를 삭제합니다.
 export const useDeleteReview = (opts?: { invalidate?: { byUser?: string; byIsbn?: string } }) => {
   const qc = useQueryClient();
   return useMutation({

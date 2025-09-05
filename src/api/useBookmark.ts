@@ -10,7 +10,7 @@ export const useBookmarkWithMissions = (isbn13: string | undefined) => {
     mutationFn: async () => {
       if (!isbn13) throw new Error("isbn13 is required");
       // 북마크 API 호출
-      const {error} = await bookmarkRepo.toggleBookmark(isbn13);
+      const { error } = await bookmarkRepo.toggleBookmark(isbn13);
 
       // 번들 미션 API 호출
       logicRpcRepo.setBundle(isbn13);
@@ -29,7 +29,7 @@ export const useBookmarkWithMissions = (isbn13: string | undefined) => {
 };
 
 // 북마크 토글을 처리합니다.
-export const useToggleBookmark = (isbn13: string | undefined) => {
+export const useToggleBookmark = (isbn13: string | undefined, uid?: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -39,6 +39,7 @@ export const useToggleBookmark = (isbn13: string | undefined) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bookmark", isbn13] });
+      if (uid) queryClient.invalidateQueries({ queryKey: ["bookmarks", uid] });
     },
   });
 };
