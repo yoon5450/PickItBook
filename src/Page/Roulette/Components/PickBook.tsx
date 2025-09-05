@@ -22,14 +22,14 @@ interface Props {
 
 // 책 페이지에 따른 스타일, 애니메이션 구분
 const openBook = cva(
-  'absolute origin-left transition-transform duration-1000 ease-in-out border border-2 border-gray-500 ',
+  'absolute origin-top sm:origin-left transition-transform duration-1000 ease-in-out border border-2 border-gray-500 ',
   {
     variants: {
       intent: {
-        cover: 'w-full h-full scale-[1.01] transform-[translateZ(2px)_rotateY(-2deg)] bg-yellow-500',
-        pageLeft: 'w-full h-full bg-pattern transform-[translateZ(1px)_translateX(2px)_rotateY(0deg)]',
-        pageRight: 'w-full h-full bg-pattern translate-x-2 rotate-y-0',
-        coverEnd: 'w-full h-full scale-[1.01] transform-[translateX(10px)_rotateY(0deg)] bg-yellow-500'
+        cover: 'w-full h-full scale-[1.01] transform-[translateY(-2px)_rotateX(20deg)] sm:transform-[translateZ(2px)_rotateY(-2deg)] bg-pattern',
+        pageLeft: 'w-full h-full bg-pattern transform-[translateZ(-3px)_translateY(10px)_rotateX(20deg)] sm:transform-[translateZ(1px)_translateX(2px)_rotateY(0deg)]',
+        pageRight: 'w-full h-full bg-pattern translate-y-2 rotate-x-0 sm:translate-y-0 sm:translate-x-2 sm:rotate-y-0',
+        coverEnd: 'w-full h-full scale-[1.01] transform-[translateY(8px)_rotateX(0deg)] sm:transform-[translateX(10px)_rotateY(0deg)] bg-pattern'
       },
       isOpen: {
         true: '',
@@ -38,8 +38,8 @@ const openBook = cva(
     },
     // 책 열릴때 중앙정렬
     compoundVariants: [
-      { intent: 'cover', isOpen: true, class: 'transform-[translateZ(0px)_rotateY(-180deg)]' },
-      { intent: 'pageLeft', isOpen: true, class: 'transform-[translateZ(1px)_translateX(2px)_rotateY(-180deg)]' },
+      { intent: 'cover', isOpen: true, class: 'transform-[translateY(0px)_rotateX(180deg)] sm:transform-[translateZ(0px)_rotateY(-180deg)]' },
+      { intent: 'pageLeft', isOpen: true, class: 'transform-[translateZ(1px)_translateY(0px)_rotateX(180deg)] sm:transform-[translateZ(1px)_translateX(2px)_rotateY(-180deg)]' },
     ]
   }
 )
@@ -169,12 +169,12 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
           : (
             <div key={isbn13} className="fixed inset-0 z-[1000]">
               {/* 책 팝업 뒷배경 블러처리 */}
-              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm w-screen h-screen flex items-center justify-center" onPointerDown={handleCloseBook}>
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm w-full h-full flex items-center justify-center" onPointerDown={handleCloseBook}>
                 {/* 책 팝업 영역 */}
                 <section className="book flex items-center justify-center" onPointerDown={(e) => e.stopPropagation()} role="dialog" aria-modal='true' aria-labelledby="pickbook popup">
                   <div className="container relative z-20 perspective-distant [perspective-origin:center] flex justify-center">
-                    <div className={tw("book relative w-[320px] h-[470px] lg:w-[400px] lg:h-[588px] xl:w-[473px] xl:h-[696px] left-0 transform-3d transition-left duration-700 ease-in-out",
-                      isOpen ? 'left-[160px] lg:left-[200px] xl:left-[236px]' : '')}>
+                    <div className={tw("book relative w-[300px] h-[400px] sm:w-[320px] sm:h-[470px] lg:w-[400px] lg:h-[588px] xl:w-[473px] xl:h-[696px] top-0 sm:left-0 transform-3d transition-top sm:transition-left duration-700 ease-in-out",
+                      isOpen ? 'top-[200px] sm:top-0 sm:left-[160px] lg:left-[200px] xl:left-[236px]' : '')}>
 
                       {/* 4. 책 뒷면 */}
                       <div className={tw(openBook({ intent: 'coverEnd', isOpen }), "coverEnd")}>
@@ -186,7 +186,8 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                       </div>
 
                       {/* 책 중간 심지 */}
-                      <div className="absolute w-3 h-full origin-left bg-gray-500 pageGap"></div>
+                      <div className="absolute w-full h-3 sm:w-3 sm:h-full 
+                      -translate-x-0 translate-y-0 -rotate-z-0 origin-left bg-gray-500 pageGap"></div>
 
                       {/* 3. 책 오른쪽 영역 (미션 정보) */}
                       <div className={tw(openBook({ intent: 'pageRight', isOpen }), "pt-13 lg:pt-20 pb-9 px-9 flex flex-col", "pageRight")}>
@@ -199,15 +200,15 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                           size={48}
                         />
                         {/* 3-2. 책 닫기 x 버튼 */}
-                        <button type="button" onClick={handleCloseBook} className="absolute top-9 right-9">
+                        <button type="button" onClick={handleCloseBook} className="absolute sm:top-9 right-9">
                           <img className="w-4 lg:w-6" src="/close.svg" alt="닫기" /></button>
 
                         {/* 3-3. 미션 렌더링 */}
                         <div className="flex flex-col gap-2 lg:gap-4 xl:gap-6">
                           <p className="font-semibold text-lg lg:text-2xl text-primary-black pl-1">미션</p>
                           <div className="w-full px-2 flex flex-row justify-between gap-1" >
-                            <p className="text-sm lg:text-[16px] xl:text-[18px]">
-                              <span className="text-primary text-[16px] lg:text-[18px] xl:text-[20px]">{bookData.book.bookname}</span>
+                            <p className="text-xs sm:text-sm lg:text-[16px] xl:text-[18px]">
+                              <span className="text-primary text-sm sm:text-[16px] lg:text-[18px] xl:text-[20px]">{bookData.book.bookname}</span>
                               의<br /> 미션이 도착했어요!
                             </p>
                           </div>
@@ -215,7 +216,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                             missions.map(({ name, description }, index) => (
                               index === 0 ? (
                                 // 3-3-1. 점수가 제일 높은 미션 (부스트 스타일)
-                                <div key={index} className="w-full border border-gray-300 bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-row justify-between gap-1" >
+                                <div key={index} className="w-full border border-gray-300 bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-2xl sm:rounded-3xl flex flex-row justify-between gap-1" >
                                   <div>
                                     <p className="text-xs lg:text-sm xl:text-[16px] text-primary">{name}</p>
                                     <p className="text-xs lg:text-sm xl:text-[16px] ">{description}</p>
@@ -224,7 +225,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                                 </div>
                               ) : (
                                 // 3-3-2. 그 의 미션들
-                                <div key={index} className="w-full bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-3xl flex flex-col">
+                                <div key={index} className="w-full bg-white px-6 py-3 lg:px-7 lg:py-4 xl:px-8 xl:py-5 rounded-2xl sm:rounded-3xl flex flex-col">
                                   <p className="text-xs lg:text-sm xl:text-[16px]">{name}</p>
                                   <p className="text-xs lg:text-sm xl:text-[16px]">{description}</p>
                                 </div>
@@ -236,13 +237,13 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                       </div>
 
                       {/* 2. 책 왼쪽 영역 (책 상세 정보 영역) */}
-                      <div className={tw(openBook({ intent: 'pageLeft', isOpen }), "pt-13 pb-9 px-9", "pageLeft")}>
+                      <div className={tw(openBook({ intent: 'pageLeft', isOpen }), "pt-10 sm:pt-13 pb-9 px-9", "pageLeft")}>
                         {/* 2-1. 책 표지 여닫는 버튼 */}
-                        <div className="absolute bottom-[11px] right-[11px] w-14 h-14 rotate-135 bg-pattern z-10"></div>
-                        <button onClick={handleOpenBook} className="absolute bottom-0 right-0 w-10 h-10 bg-gray-700"></button>
+                        <div className="absolute bottom-[8px] sm:bottom-[11px] right-[9px] sm:right-[11px] w-10 h-10 sm:w-14 sm:h-14 rotate-135 bg-pattern z-10"></div>
+                        <button onClick={handleOpenBook} className="absolute bottom-0 right-0 w-7 h-7 sm:w-10 sm:h-10 bg-gray-700"></button>
 
                         {/* 2-2. 책 상세 정보 영역 */}
-                        <div className="-rotate-y-180 flex flex-col gap-2">
+                        <div className="rotate-x-180 sm:-rotate-z-180 flex flex-col gap-2">
 
                           {/* 2-2-1. 책 이름 */}
                           <p className="font-semibold text-lg md:text-xl lg:text-2xl text-primary-black">{bookData.book.bookname}</p>
