@@ -1,9 +1,8 @@
 import { useUserMissions } from "@/api/useUserMissions";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useProfileStore } from "@/store/useProfileStore";
 import tw from "@/utils/tw";
-
 
 interface Props {
   stylefire?: string;
@@ -18,31 +17,29 @@ interface Props {
 }
 
 export default function Progress({
-  stylefire = '',
-  styleWrraper = '',
-  styleNickname = '',
-  styleMissionCount = '',
-  styleMiddle = '',
-  styleLevel = '',
-  styleProgress = '',
-  styleTrophy = '',
-  styleTop = '',
-
+  stylefire = "",
+  styleWrraper = "",
+  styleNickname = "",
+  styleMissionCount = "",
+  styleMiddle = "",
+  styleLevel = "",
+  styleProgress = "",
+  styleTrophy = "",
+  styleTop = "",
 }: Props) {
   const { user } = useAuthStore();
   const { nickname, fetchUser } = useProfileStore();
   const { data, isLoading, error } = useUserMissions(user?.id ?? "");
   const [animatedPercent, setAnimatedPercent] = useState(0);
   const [showIcons, setShowIcons] = useState(false);
+
   const progressPercent = data?.progressPercent ?? 0;
   const level = data?.level ?? 0;
   const missions = data?.missions ?? [];
   const completedCount = missions.filter((m) => m.completed).length;
 
   useEffect(() => {
-    if (user?.id) {
-      fetchUser(user.id);
-    }
+    if (user?.id) fetchUser(user.id);
   }, [user?.id, fetchUser]);
 
   useEffect(() => {
@@ -52,6 +49,32 @@ export default function Progress({
     });
     return () => cancelAnimationFrame(id);
   }, [progressPercent]);
+
+  // 불 아이콘 갯수 계산 (보라 25 / 노랑 5 / 빨강 1)
+  const { purple, yellow, red } = useMemo(() => {
+    const PURPLE_UNIT = 25;
+    const YELLOW_UNIT = 5;
+    const CAP = 5;
+
+    let p = Math.floor(completedCount / PURPLE_UNIT);
+    let y = Math.floor((completedCount % PURPLE_UNIT) / YELLOW_UNIT);
+    let r = completedCount % YELLOW_UNIT;
+
+    // 최대 CAP개까지만 표시 (우선 제거: 빨강 → 노랑 → 보라)
+    let overflow = p + y + r - CAP;
+    if (overflow > 0) {
+      const trim = (n: number) => {
+        const t = Math.min(n, overflow);
+        overflow -= t;
+        return n - t;
+      };
+      r = trim(r);
+      y = trim(y);
+      p = trim(p);
+    }
+
+    return { purple: p, yellow: y, red: r };
+  }, [completedCount]);
 
   if (isLoading) return <div>로딩중...</div>;
   if (error) return <div>에러가 발생했습니다</div>;
@@ -64,7 +87,9 @@ export default function Progress({
         <div className={tw("text-[28px] font-bold", styleNickname)}>
           Hello as {nickname ?? "Any"} !
         </div>
-        <div className={tw("text-sm font-medium mt-3", styleMissionCount)}>미션 {completedCount}개 클리어</div>
+        <div className={tw("text-sm font-medium mt-3", styleMissionCount)}>
+          미션 {completedCount}개 클리어
+        </div>
       </div>
 
       {/* 레벨 + 게이지 + 트로피 */}
@@ -89,13 +114,23 @@ export default function Progress({
         <img src="/trophy.svg" alt="trophy" className={tw("w-11 h-11 ml-2 mb-13", styleTrophy)} />
       </div>
 
-      {/* 불 아이콘 */}
-      <div className={tw('flex justify-end gap-0.5 -mt-23 transition-opacity duration-700', showIcons ? "opacity-100" : "opacity-0", stylefire)}>
-        {Array.from({ length: Math.floor(completedCount / 5) }).map((_, i) => (
-          <img key={`yellow-${i}`} src="/fire_book_yellow.svg" alt="yellow streak" className="w-7 h-7" />
+      {/* 불 아이콘: 보라(25), 노랑(5), 빨강(1) — 화면 최대 5개 */}
+      <div
+        className={tw(
+          "flex justify-end gap-0.5 -mt-23 transition-opacity duration-700",
+          showIcons ? "opacity-100" : "opacity-0",
+          stylefire
+        )}
+        aria-label={`연속 클리어 아이콘: 보라 ${purple}개, 노랑 ${yellow}개, 빨강 ${red}개`}
+      >
+        {Array.from({ length: purple }).map((_, i) => (
+          <img key={`purple-${i}`} src="/fire_book_pup.svg" alt="purple streak (25)" className="w-7 h-7" />
         ))}
-        {Array.from({ length: completedCount % 5 }).map((_, i) => (
-          <img key={`red-${i}`} src="/fire_book.svg" alt="red streak" className="w-7 h-7" />
+        {Array.from({ length: yellow }).map((_, i) => (
+          <img key={`yellow-${i}`} src="/fire_book_yellow.svg" alt="yellow streak (5)" className="w-7 h-7" />
+        ))}
+        {Array.from({ length: red }).map((_, i) => (
+          <img key={`red-${i}`} src="/fire_book.svg" alt="red streak (1)" className="w-7 h-7" />
         ))}
       </div>
     </div>
