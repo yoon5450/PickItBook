@@ -1,6 +1,7 @@
 // import { useEffect, useState } from "react";
 import BadgeList from "./BadgeList";
 import BookMark from "./BookMark"
+import BookPileUp from "./BookPileUp";
 import MissionList from "./MissionList";
 // import BookStack from "./BookStack"
 import MyReviewSection from "./MyReviewSection";
@@ -31,6 +32,8 @@ function Library() {
 
             <MyReviewSection />                
             </div>
+
+            <BookPileUp />
 
         </div>
 

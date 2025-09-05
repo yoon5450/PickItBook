@@ -1,11 +1,11 @@
 import type { Tables } from "@/@types/database.types";
 import supabase from "./supabase";
 
-export type BookmarkBook = Tables<"v_bookmark_books">
+export type BookmarkBook = Tables<"bookmark">
 
 export async function getBookmarks(userId: string) {
   const { data, error } = await supabase
-    .from("v_bookmark_books")
+    .from("bookmark")
     .select("*")
     .eq("user_id", userId);
 
@@ -13,6 +13,6 @@ export async function getBookmarks(userId: string) {
     console.error("Error fetching bookmarks:", error);
     return [];
   }
-
+  
   return data as (BookmarkBook)[];
 }
