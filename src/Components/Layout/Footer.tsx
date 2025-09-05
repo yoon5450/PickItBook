@@ -9,9 +9,9 @@ function Footer() {
       </p>
       <div className="flex gap-4">
         <a
-          href=""
+          href="https://app.sli.do/event/c4H1r3aUMWaWgLwECFXEQU/live/questions"
           target="_blank"
-          className="pointer-events-none inline-block w-8"
+          className="inline-block w-8"
         >
           <img src={slido} alt="slido" />
         </a>
