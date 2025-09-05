@@ -8,7 +8,7 @@ type Category = {
   30?: "30대";
   40?: "40대";
   50?: "50대";
-  60?: "60대⬆";
+  60?: "60대 이상";
   all?: "인기작";
   bookmark?: "북마크";
   0?: "남성 추천";
@@ -70,7 +70,7 @@ function FilterModal({
           key={key}
           aria-label={value}
           className={tw(
-            "w-19 rounded-xl py-1 px-2 transition",
+            "w-fit text-xs sm:text-[16px] sm:w-19 rounded-lg sm:rounded-xl py-1 px-2 transition break-keep",
             selectedKey === key
               ? "bg-primary text-white"
               : "hover:bg-primary/50 hover:text-white focus:bg-primary focus:text-white",
