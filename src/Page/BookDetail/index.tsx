@@ -89,7 +89,7 @@ function BookDetail() {
         </PartitionBase>
 
         <PartitionBase title="나만의 요약">
-          <SummaryPartition />
+          <SummaryPartition missions={missionData}/>
         </PartitionBase>
 
         <PartitionBase title="리뷰 작성">
