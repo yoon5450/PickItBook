@@ -7,6 +7,7 @@ import UserScorePatition from "./components/UserScorePartition";
 import MisstionPartition from "./components/MissionPartition";
 import ReviewWritePartition from "./components/ReviewWritePartition";
 import ReviewListPartition from "./components/ReviewListPartition";
+import SummaryPartition from "./components/SummaryPartition";
 import { useEffect, useMemo } from "react";
 import { scrollTop } from "@/utils/scrollFunctions";
 import { useGetReview } from "@/api/useReviewFetching";
@@ -85,6 +86,10 @@ function BookDetail() {
 
         <PartitionBase title="유저 평점">
           <UserScorePatition data={reviewData} ratingAvg={ratingAvg}/>
+        </PartitionBase>
+
+        <PartitionBase title="나만의 요약">
+          <SummaryPartition />
         </PartitionBase>
 
         <PartitionBase title="리뷰 작성">
