@@ -33,7 +33,7 @@ function MissionList() {
 
   return (
     <div className="flex flex-col gap-1 w-full">
-      <div className="text-lg font-semibold mb-8">Missions</div>
+      <div className="text-lg font-semibold mb-5">Missions</div>
       {paginatedMissions.map((m) => {
         const clickable = !!m.book?.isbn13;
 
@@ -89,7 +89,7 @@ function MissionList() {
         );
       })}
       {totalPages > 1 && (
-        <div className="mt-4">
+        <div className="mt-[1px]">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
