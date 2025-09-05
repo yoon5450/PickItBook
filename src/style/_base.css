@@ -1,4 +1,3 @@
-
 @layer base {
   *,
   *::before,
@@ -17,6 +16,7 @@
     background-repeat: repeat;
     background-size: auto;
     background-attachment: fixed;
+    touch-action: manipulation; /* 더블탭 확대 방지 */
   }
 
   [hidden] {
@@ -52,7 +52,6 @@
   button {
     @apply disabled:cursor-not-allowed cursor-pointer;
   }
-
 
   a {
     font-size: 100%;
