@@ -3,7 +3,8 @@ import SummaryModal from "./SummaryModal";
 import type { MissionItemType } from "@/@types/global";
 import { useGetSummaryByIsbn, useSetSummary } from "@/api/useSummaryFetching";
 import tw from "@/utils/tw";
-import profileDefault from '/profile_default.png';
+import profileDefault from "/profile_default.png";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   missions?: MissionItemType[];
@@ -15,8 +16,11 @@ const SummaryPartition = ({ missions, isbn13 }: Props) => {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  const qc = useQueryClient();
 
-  const { mutate } = useSetSummary();
+  const { mutate } = useSetSummary({onSuccess:() => {
+    qc.invalidateQueries({queryKey:["getSummary", isbn13]})
+  }});
   const summaryData = useGetSummaryByIsbn(isbn13);
 
   // 미션이 바뀔 때만 재계산됨.
@@ -32,6 +36,11 @@ const SummaryPartition = ({ missions, isbn13 }: Props) => {
   return (
     <div className="w-full p-4">
       <ul className="flex flex-col gap-3">
+        {summaryData.data && summaryData.data?.length < 1 && (
+          <div className="flex justify-center items-center h-30">
+            데이터가 없습니다.
+          </div>
+        )}
         {summaryData &&
           summaryData.data?.map((item) => (
             <li
