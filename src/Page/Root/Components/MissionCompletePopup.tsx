@@ -2,10 +2,10 @@ import { useBookDetail } from "@/api/useBookDetail";
 import { useGetMissionDetailByTemplateID } from "@/api/useGetMissionDetailByTemplateID";
 import ConfettiCongrats from "@/Components/ConfettiCongrats";
 import Progress from "@/Page/Library/Progress";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 interface Props {
-  isbn13: string
+  isbn13?: string
   missionCompletePopup: boolean
   missionTemplateID: string
   onClose: () => void;
@@ -13,22 +13,52 @@ interface Props {
 
 function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID, onClose }: Props) {
   // 미션 세부 정보 가져오기
-  const { data: missionDetailData, isPending: isMissionDetailDataPending, error: missionDetailDataError } = useGetMissionDetailByTemplateID(missionTemplateID ?? '');
+  const {
+    data: missionDetailData,
+    isPending: isMissionDetailDataPending,
+    error: missionDetailDataError
+  } = useGetMissionDetailByTemplateID(missionTemplateID ?? '');
 
   // 미션에 관련된 책 제목 가져오기
-  const { data: bookName, isPending: isbookNamePending, error: bookNameError } = useBookDetail(isbn13);
-
-  const isOpen = missionCompletePopup && !!missionDetailData;
-
-  if (isMissionDetailDataPending) console.log('미션 상세 정보 가져오는중...')
-  if (missionDetailDataError) console.error(missionDetailDataError, '미션 상세 정보 불러오기 실패')
-  console.log(missionDetailData);
-
-  if (isbookNamePending) console.log('책 정보 가져오는중...');
-  if (bookNameError && missionDetailData?.[0].kind !== 'achievement') console.log('책 이름 가져오기 실패');
+  const {
+    data: bookName,
+    isPending: isBookNamePending,
+    error: bookNameError
+  } = useBookDetail(isbn13);
 
 
+  // 미션 종류 분기
+  const isOpen = useMemo(() => {
+    if (!missionCompletePopup) return false;
 
+    const kind = missionDetailData?.[0].kind;
+    if (!kind) return false;
+    if (kind === "achievement") return true;
+
+    return !!bookName?.book.bookname;
+  }, [missionCompletePopup, missionDetailData, bookName?.book.bookname])
+
+
+  // 미션 팝업 배경 스크롤 방지 처리
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev || "";
+    }
+
+  }, [isOpen])
+
+
+  // 디버깅 로그
+  if (isMissionDetailDataPending) console.log("미션 상세 정보 가져오는중...");
+  if (missionDetailDataError) console.error(missionDetailDataError, "미션 상세 정보 불러오기 실패");
+  if (isBookNamePending) console.log("책 정보 가져오는중...");
+  if (bookNameError && missionDetailData?.[0]?.kind !== "achievement")
+    console.log("책 이름 가져오기 실패");
+
+  // 닫기 이벤트
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -40,6 +70,10 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
+  const kind = missionDetailData?.[0].kind
+
+
 
   return (
     missionDetailData &&
@@ -64,7 +98,7 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
               styleTop='flex-col sm:flex-row justify-between items-center'
             />
             {
-              missionDetailData[0].kind === 'mission' ?
+              kind === 'mission' ?
                 (<>
                   {/* 폭죽 터지는 애니메이션이면 좋을듯 */}
                   <img className="w-20 md:w-30 h-fit pb-4" src="/missionComplete.png" alt="미션 완료 축하" />
