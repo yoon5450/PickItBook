@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import profileDefault from "@/assets/profile_default.png";
 import loadingImg from "@/assets/loading.svg";
 import { type UseMutateFunction } from "@tanstack/react-query";
+import tw from "@/utils/tw";
 
 type ReplyVars = { content: string; parent_id: number };
 
@@ -157,7 +158,12 @@ function ReviewItem({
               else mutate();
             }}
           >
-            <span className={item.liked_by_me ? "text-amber-400" : "bg-white"}>
+            <span
+              className={tw(
+                "transition",
+                item.liked_by_me ? "text-amber-400" : "bg-white"
+              )}
+            >
               유용해요 {item.like_count}
             </span>
           </button>

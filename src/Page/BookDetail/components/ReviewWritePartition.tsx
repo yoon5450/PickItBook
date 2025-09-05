@@ -54,7 +54,7 @@ function ReviewWritePartition({ data }: Props) {
 
     setImagePreview(null);
     setImage(undefined);
-    setRating(0)
+    setRating(0);
     setContent("");
   };
 
@@ -75,7 +75,7 @@ function ReviewWritePartition({ data }: Props) {
         action=""
         onSubmit={handleSubmit}
       >
-        <div className="relative w-full flex border border-gray-300 bg-background-white rounded-2xl p-6 gap-2">
+        <div className="relative w-full flex border border-gray-300 bg-white rounded-2xl p-6 gap-2">
           {imagePreview && (
             <img
               className="max-w-20 object-cover"
