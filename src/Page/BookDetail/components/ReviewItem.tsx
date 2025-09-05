@@ -117,9 +117,9 @@ function ReviewItem({
               >
                 삭제
               </button>
-              <button type="button" className="cursor-pointer">
+              {/* <button type="button" className="cursor-pointer">
                 편집
-              </button>
+              </button> */}
             </>
           )}
         </div>
@@ -227,9 +227,9 @@ function ReviewItem({
 
                         {author_id === uid && (
                           <div className="ml-auto flex gap-3 text-sm">
-                            <button type="button" className="cursor-pointer">
+                            {/* <button type="button" className="cursor-pointer">
                               편집
-                            </button>
+                            </button> */}
                             <button type="button" className="cursor-pointer">
                               삭제
                             </button>

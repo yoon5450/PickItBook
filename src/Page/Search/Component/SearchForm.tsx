@@ -138,6 +138,8 @@ function SearchForm({ onSearch, initialValue, disabled }: Props) {
             style={{ height: 0, opacity: 0 }}
           >
             <Filter
+              isOpen={pannelOpen}
+              onClose={() => closePanel()}
               topItems={[
                 { code: "00", value: "키워드" },
                 { code: "10", value: "도서명" },

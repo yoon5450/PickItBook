@@ -15,12 +15,12 @@ type Props = {
 
 const modeLiClass = {
   line: "flex justify-between items-center px-2 py-6 border-b border-gray-200",
-  grid: "flex flex-col gap-2 mt-4 w-fit items-center justify-center",
+  grid: "flex flex-col gap-2 mt-4 w-full items-center justify-center",
 } as const;
 
 const modeImgClass = {
   line: "relative w-full aspect-[2/3] overflow-hidden rounded-md bg-gray-50 ",
-  grid: "relative h-60 aspect-[2/3] overflow-hidden rounded-md bg-gray-50 flex-shrink-0",
+  grid: "relative w-full aspect-[2/3] overflow-hidden rounded-md bg-gray-50 flex-shrink-0",
 } as const;
 
 function BookItem({ item, onSearch, mode = "line" }: Props) {
@@ -33,9 +33,9 @@ function BookItem({ item, onSearch, mode = "line" }: Props) {
     <>
       <li className={tw(modeLiClass[mode], responsiveLineClass)}>
         {/* 책 이미지 & 정보 (공통) */}
-        <div className="flex flex-col gap-5 items-center sm:flex-row sm:items-center ">
+        <div className="flex flex-col gap-5 items-center sm:flex-row sm:items-center shrink-0">
           <NavLink
-            className={"flex-shrink-0 sm:w-32"}
+            className={"flex-shrink-0 sm:w-32 "}
             to={`/book_detail/?isbn13=${item.isbn13}`}
           >
             <img
