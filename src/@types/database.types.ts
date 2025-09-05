@@ -223,13 +223,43 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "review_reply_parent_id_fkey"
+            foreignKeyName: "review_replys_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "review"
             referencedColumns: ["id"]
           },
         ]
+      }
+      summary: {
+        Row: {
+          author_id: string
+          created_at: string
+          id: number
+          isbn13: string
+          line_0: string
+          line_1: string
+          line_2: string
+        }
+        Insert: {
+          author_id?: string
+          created_at?: string
+          id?: number
+          isbn13: string
+          line_0: string
+          line_1: string
+          line_2: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          id?: number
+          isbn13?: string
+          line_0?: string
+          line_1?: string
+          line_2?: string
+        }
+        Relationships: []
       }
       task_bundle_items: {
         Row: {
@@ -560,7 +590,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "review_reply_parent_id_fkey"
+            foreignKeyName: "review_replys_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "review"
@@ -573,6 +603,21 @@ export type Database = {
           avg_score: number | null
           isbn13: string | null
           rating_count: number | null
+        }
+        Relationships: []
+      }
+      v_summary_with_author: {
+        Row: {
+          author_id: string | null
+          created_at: string | null
+          email: string | null
+          id: number | null
+          isbn13: string | null
+          line_0: string | null
+          line_1: string | null
+          line_2: string | null
+          nickname: string | null
+          profile_image: string | null
         }
         Relationships: []
       }

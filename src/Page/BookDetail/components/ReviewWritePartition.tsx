@@ -54,7 +54,7 @@ function ReviewWritePartition({ data }: Props) {
 
     setImagePreview(null);
     setImage(undefined);
-    setRating(0)
+    setRating(0);
     setContent("");
   };
 

@@ -23,9 +23,9 @@ function ReviewList({ data, isbn13 }: Props) {
     },
   });
 
-  const { mutate:deleteReview } = useDeleteReview({
-    invalidate: { byIsbn: isbn13 }
-  })
+  const { mutate: deleteReview } = useDeleteReview({
+    invalidate: { byIsbn: isbn13 },
+  });
 
   return (
     <ul className="flex flex-col w-full gap-2 px-6 py-4">

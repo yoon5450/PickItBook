@@ -54,8 +54,6 @@ function BookDetail() {
     return reviewData?.length
   }, [reviewData])
 
-  console.log(missionData);
-
   return (
     <div className="flex justify-center w-full bg-pattern">
       <div className="flex flex-col items-center min-h-screen w-[1200px] px-8 bg-background-white pt-15">
@@ -88,8 +86,8 @@ function BookDetail() {
           <UserScorePatition data={reviewData} ratingAvg={ratingAvg}/>
         </PartitionBase>
 
-        <PartitionBase title="나만의 요약">
-          <SummaryPartition missions={missionData}/>
+        <PartitionBase title="3줄 요약">
+          <SummaryPartition missions={missionData} isbn13={isbn13}/>
         </PartitionBase>
 
         <PartitionBase title="리뷰 작성">

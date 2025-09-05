@@ -1,14 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import tw from "@/utils/tw";
 import logo from "/pickitbook_logo.svg";
 import type { MissionItemType } from "@/@types/global";
+import RelatedMissionsInfo from "./RelatedMissionsInfo";
+import type { UseMutateFunction } from "@tanstack/react-query";
+import type { SetSummaryType } from "@/api/summary.repo.supabase";
 
-interface SummaryModalProps {
+interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (summary: string[]) => Promise<void> | void;
+  onSave?: UseMutateFunction<unknown, Error, SetSummaryType, unknown>;
   relatedMissions?: MissionItemType[];
   bookTitle?: string;
+  isbn13?: string;
 }
 
 export default function SummaryModal({
@@ -17,7 +21,8 @@ export default function SummaryModal({
   onSave,
   relatedMissions,
   bookTitle,
-}: SummaryModalProps) {
+  isbn13,
+}: Props) {
   const [summaryLines, setSummaryLines] = useState<string[]>(["", "", ""]);
   const [saving, setSaving] = useState(false);
   const firstInputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -37,7 +42,7 @@ export default function SummaryModal({
   const handleSave = async () => {
     setSaving(true);
     try {
-      onSave?.(summaryLines);
+      onSave?.({ summary: summaryLines, isbn13 });
       onClose();
     } finally {
       setSaving(false);
@@ -116,45 +121,7 @@ export default function SummaryModal({
             </div>
           </div>
 
-          {relatedMissions && relatedMissions.length && (
-            <div className="md:col-span-2">
-              <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <span className="inline-flex h-6 items-center rounded-md bg-amber-500/10 px-2 text-xs font-semibold text-amber-700 ring-1 ring-inset ring-amber-600/20">
-                    미션 연동
-                  </span>
-                  <span className="text-sm text-amber-800">
-                    이 책과 연관된 미션이{" "}
-                    {relatedMissions && relatedMissions.length}개 있어요
-                  </span>
-                </div>
-                <ul className="space-y-2">
-                  {relatedMissions &&
-                    relatedMissions.map((m) => (
-                      <li
-                        key={m.template_id}
-                        className={tw(
-                          "flex items-center justify-between rounded-lg bg-white px-3 py-2 ring-1 ring-amber-200"
-                        )}
-                      >
-                        <span className="truncate text-sm font-medium text-amber-900">
-                          {m.description}
-                        </span>
-                        {!m.assigned && <span className="text-amber-700">아직 미션을 수령하지 않았어요!</span>} 
-                        {m.reward && (
-                          <span className="ml-3 shrink-0 text-xs text-red-600">
-                            {m.reward.amount}
-                          </span>
-                        )}
-                      </li>
-                    ))}
-                </ul>
-                <p className="mt-3 text-xs text-amber-800/80">
-                  요약을 저장하면 해당 미션 진행도가 자동으로 갱신됩니다.
-                </p>
-              </div>
-            </div>
-          )}
+          <RelatedMissionsInfo relatedMissions={relatedMissions} />
         </div>
 
         {/* Footer */}

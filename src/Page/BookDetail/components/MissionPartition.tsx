@@ -7,8 +7,6 @@ interface Props {
 }
 
 function MisstionPartition({ data }: Props) {
-
-  console.log(data);
   if (!data) {
     return (
       <img
