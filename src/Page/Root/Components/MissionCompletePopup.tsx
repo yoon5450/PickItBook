@@ -4,7 +4,8 @@ import { useUserBadges } from "@/api/useUserBadges";
 import ConfettiCongrats from "@/Components/ConfettiCongrats";
 import Progress from "@/Page/Library/Progress";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useEffect, useMemo } from "react";
+import tw from "@/utils/tw";
+import { useEffect, useMemo, useState } from "react";
 
 interface Props {
   isbn13?: string
@@ -15,6 +16,7 @@ interface Props {
 
 function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID, onClose }: Props) {
   const user = useAuthStore((s) => s.user);
+  const [badgeImage, setBadgeImage] = useState<string | null>(null);
   // 미션 세부 정보 가져오기
   const {
     data: missionDetailData,
@@ -38,10 +40,6 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
   } = useUserBadges(user?.id ?? '');
   console.log(badges);
 
-  // 달성한 미션의 뱃지 이미지 가져오기
-  const filterBadge = badges?.filter((b) => b.code === missionDetailData?.[0].reward.code)
-  const badgeImage = filterBadge?.[0].image;
-  console.log('뱃지 이미지: ', badgeImage)
 
   // 미션 종류 분기
   const isOpen = useMemo(() => {
@@ -53,6 +51,8 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
 
     return !!bookName?.book.bookname;
   }, [missionCompletePopup, missionDetailData, bookName?.book.bookname])
+
+
 
 
 
@@ -90,39 +90,55 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
 
   const kind = missionDetailData?.[0].kind
 
+  // 달성한 미션의 뱃지 이미지 가져오기
+  useEffect(() => {
+    if (kind === 'achievement') {
+      const filterBadge = badges?.filter((b) => b.code === missionDetailData?.[0].reward.code)
+      if (filterBadge) {
+        setBadgeImage(filterBadge?.[0].image);
+      }
+      // console.log('뱃지 이미지: ', filterBadge?.[0].image)
+    }
+  }, [badges])
+
+
+  if (!isOpen) return null;
 
 
   return (
     missionDetailData &&
     <div className="fixed inset-0 z-[1000]">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm w-screen h-screen flex items-center justify-center" onPointerDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}>
-        <ConfettiCongrats onPointerDown={(e) => e.stopPropagation()} message="" count={301} />
-        <div className="popup bg-pattern shadow-lg w-2/3 max-w-[500px] min-x-[300px] md:min-h-[600px] rounded-3xl"
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm w-screen h-screen flex items-center justify-center"
+        onPointerDown={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}>
+        <ConfettiCongrats onPointerDown={(e) => e.stopPropagation()} message="" />
+        <div
+          className={tw(kind === 'mission' ? "popup bg-pattern shadow-lg w-2/5 max-w-[500px] md:min-h-[600px] rounded-3xl" :
+            "popup bg-pattern shadow-lg w-1/3 max-w-[500px] h-fit rounded-3xl")}
           onPointerDown={(e) => e.stopPropagation()}
         >
           <div className="w-full h-full px-10 py-10 flex flex-col justify-between items-center">
             <Progress
-              stylefire="hidden"
-              styleWrraper="py-0 shadow-none mx-0 rounded-none px-2 sm:px-8"
-              styleNickname=""
-              styleMissionCount="md:absolute md:right-2"
-              styleMiddle="mt-9"
-              styleLevel="md:right-5 text-[9px] md:text-sm"
+              styleTop='w-full justify-center items-center -mb-0'
+              styleWrraper="py-0 shadow-none mx-0 rounded-none px-0"
+              styleNickname="hidden"
+              styleMissionCount="absolute left-0 mt-8"
+              styleMiddle="w-full"
+              styleLevel="-top-[30px] right-1 text-[10px]"
               styleProgress="mb-3 md:mb-10"
-              styleTrophy="absolute right-0 w-8 h-8 bottom-2 md:bottom-8 md:w-11 md:h-11 md:ml-2 mb-0"
-              styleTop='flex-col sm:flex-row justify-between items-center'
+              styleTrophy="absolute -right-2 w-9 h-9 bottom-2 md:bottom-8 md:w-11 md:h-11 md:ml-2 mb-0"
+              stylefire="hidden"
             />
             {
               kind === 'mission' ?
                 (<>
                   {/* 폭죽 터지는 애니메이션이면 좋을듯 */}
-                  <img className="w-20 md:w-30 h-fit pb-4" src="/missionComplete.png" alt="미션 완료 축하" />
+                  <img className="w-20 md:w-30 h-fit pb-5 pt-8" src="/missionComplete.png" alt="미션 완료 축하" />
                   <h1 className="text-primary-black text-lg sm:text-xl md:text-3xl font-bold pb-4 sm:pb-8">Congratulations!</h1>
                   <div className="font-medium text-sm md:text-xl pb-7 text-center md:pb-12 flex items-center flex-col break-keep">
                     <div>
@@ -134,8 +150,8 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
                 </>) : (
                   <>
                     {/* 진강님 뱃지 이미지 유틸 사용 */}
-                    <img className="w-20 md:w-30 h-fit pb-4" src={badgeImage} alt="미션 완료 축하" />
-                    <h1 className="text-primary-black text-lg sm:text-xl md:text-3xl font-bold pb-4 sm:pb-8">Congratulations!</h1>
+                    <img className="w-20 md:w-30 h-fit pb-5 pt-8" src={badgeImage ?? "/missionComplete.png"} alt="미션 완료 축하" />
+                    <h1 className="text-primary-black text-[16px] sm:text-xl md:text-3xl font-bold pb-2 sm:pb-5">Congratulations!</h1>
                     <div className="font-medium text-sm md:text-xl pb-7 text-center md:pb-12 flex items-center flex-col break-keep">
                       <div>
                         <span className="text-primary">{missionDetailData[0].name} &nbsp;</span>

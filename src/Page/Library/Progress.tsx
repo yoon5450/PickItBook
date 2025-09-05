@@ -18,16 +18,15 @@ interface Props {
 }
 
 export default function Progress({
-  stylefire = '',
-  styleWrraper = '',
-  styleNickname = '',
-  styleMissionCount = '',
-  styleMiddle = '',
-  styleLevel = '',
-  styleProgress = '',
-  styleTrophy = '',
-  styleTop = '',
-
+  stylefire,
+  styleWrraper,
+  styleNickname,
+  styleMissionCount,
+  styleMiddle,
+  styleLevel,
+  styleProgress,
+  styleTrophy,
+  styleTop,
 }: Props) {
   const { user } = useAuthStore();
   const { nickname, fetchUser } = useProfileStore();
@@ -68,13 +67,13 @@ export default function Progress({
       </div>
 
       {/* 레벨 + 게이지 + 트로피 */}
-      <div className={tw("flex items-center gap-2 mt-8", styleMiddle)}>
-        <div className="relative flex-1 max-w-[600px]">
+      <div className="flex items-center gap-2 mt-8">
+        <div className={tw("relative flex-1 max-w-[600px]", styleMiddle)}>
           <div className={tw("absolute -top-5 right-0 text-sm font-semibold", styleLevel)}>
             LV.{level}
           </div>
           <div
-            className={tw("w-full h-5 bg-gray-200 rounded-full overflow-hidden mb-10", styleProgress)}
+            className={tw("h-5 bg-gray-200 rounded-full overflow-hidden mb-10", styleProgress)}
             role="progressbar"
             aria-valuemin={0}
             aria-valuemax={100}
