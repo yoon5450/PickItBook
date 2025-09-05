@@ -230,9 +230,9 @@ function ReviewItem({
                             {/* <button type="button" className="cursor-pointer">
                               편집
                             </button> */}
-                            <button type="button" className="cursor-pointer">
+                            {/* <button type="button" className="cursor-pointer">
                               삭제
-                            </button>
+                            </button> */}
                           </div>
                         )}
                       </div>
