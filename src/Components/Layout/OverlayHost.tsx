@@ -1,15 +1,17 @@
 import { useRootUIShellStore } from "@/store/useRootUIShellStore";
 import { useLocation } from "react-router";
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import React from "react";
 import ImagePreview from "../ImagePreview";
 import { createPortal } from "react-dom";
+import UserModal from "../UserModal";
 
 // 추가하고 싶은 컴포넌트가 있다면 여기에 추가
 // 코드 스플리팅
 const registry = {
   imagePreview: ImagePreview,
-} satisfies Record<string, React.ComponentType<HTMLElement>>;
+  userModal: UserModal
+} satisfies Record<string, React.ComponentType<ReactNode>>;
 
 function OverlayHost() {
   const modalMap = useRootUIShellStore((s) => s.modalMap);
@@ -45,24 +47,25 @@ function OverlayHost() {
 
   // 포탈 루트 보장
   useEffect(() => {
-    if(!document.getElementById("portal-root")){
+    if (!document.getElementById("portal-root")) {
       const el = document.createElement("div");
-        el.id = "portal-root";
-        document.body.appendChild(el)
+      el.id = "portal-root";
+      document.body.appendChild(el);
     }
-  }, [])
+  }, []);
   const portal = document.getElementById("portal-root");
-  if(!portal) return null
+  if (!portal) return null;
 
   return createPortal(
     <>
       {layerCount > 0 ? (
-        <div
-          className="fixed inset-0 z-[1000] bg-black/40 flex items-center justify-center"
-          onClick={setInitial}
-        >
-          <div className="fixed inset-0 z-[1010] flex items-center justify-center"
-          onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[1000] bg-black/40 flex items-center justify-center">
+          <div
+            className="fixed inset-0 z-[1010] flex items-center justify-center"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setInitial();
+            }}
+          >
             {Object.entries(modalMap).map(([id, state]) => {
               if (!state?.open) return null;
               const Cmp = registry[id as keyof typeof registry];
