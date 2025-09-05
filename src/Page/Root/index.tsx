@@ -11,7 +11,6 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useQueryClient } from "@tanstack/react-query";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import MissionCompletePopup from "./Components/MissionCompletePopup";
-// import type { Tables } from "@/@types/database.types";
 
 
 type RewardPayload = {
@@ -21,8 +20,6 @@ type RewardPayload = {
 }
 
 
-
-// 기본 레이아웃 구조 정의. 모달, floating Button등 Zustand를 통해 제어
 function Root() {
   const scrollTopButtonVisible = useRootUIShellStore(
     (s) => s.scrollTopButtonVisible

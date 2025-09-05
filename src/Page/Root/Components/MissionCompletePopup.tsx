@@ -1,7 +1,9 @@
 import { useBookDetail } from "@/api/useBookDetail";
 import { useGetMissionDetailByTemplateID } from "@/api/useGetMissionDetailByTemplateID";
+import { useUserBadges } from "@/api/useUserBadges";
 import ConfettiCongrats from "@/Components/ConfettiCongrats";
 import Progress from "@/Page/Library/Progress";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useMemo } from "react";
 
 interface Props {
@@ -12,12 +14,14 @@ interface Props {
 }
 
 function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID, onClose }: Props) {
+  const user = useAuthStore((s) => s.user);
   // 미션 세부 정보 가져오기
   const {
     data: missionDetailData,
     isPending: isMissionDetailDataPending,
     error: missionDetailDataError
   } = useGetMissionDetailByTemplateID(missionTemplateID ?? '');
+  console.log(missionDetailData?.[0].reward.code);
 
   // 미션에 관련된 책 제목 가져오기
   const {
@@ -26,6 +30,18 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
     error: bookNameError
   } = useBookDetail(isbn13);
 
+  // 뱃지 목록 가져오기
+  const {
+    data: badges,
+    isPending: isBadgesPending,
+    error: badgesError
+  } = useUserBadges(user?.id ?? '');
+  console.log(badges);
+
+  // 달성한 미션의 뱃지 이미지 가져오기
+  const filterBadge = badges?.filter((b) => b.code === missionDetailData?.[0].reward.code)
+  const badgeImage = filterBadge?.[0].image;
+  console.log('뱃지 이미지: ', badgeImage)
 
   // 미션 종류 분기
   const isOpen = useMemo(() => {
@@ -37,6 +53,7 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
 
     return !!bookName?.book.bookname;
   }, [missionCompletePopup, missionDetailData, bookName?.book.bookname])
+
 
 
   // 미션 팝업 배경 스크롤 방지 처리
@@ -53,10 +70,14 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
 
   // 디버깅 로그
   if (isMissionDetailDataPending) console.log("미션 상세 정보 가져오는중...");
-  if (missionDetailDataError) console.error(missionDetailDataError, "미션 상세 정보 불러오기 실패");
   if (isBookNamePending) console.log("책 정보 가져오는중...");
-  if (bookNameError && missionDetailData?.[0]?.kind !== "achievement")
-    console.log("책 이름 가져오기 실패");
+  if (isBadgesPending) console.log('뱃지 정보 가져오는중...');
+
+  if (missionDetailDataError) console.error(missionDetailDataError, "미션 상세 정보 불러오기 실패");
+  if (bookNameError && missionDetailData?.[0]?.kind !== "achievement") console.log("책 이름 가져오기 실패");
+  if (badgesError) console.log('뱃지 정보 불러오기 실패');
+
+
 
   // 닫기 이벤트
   useEffect(() => {
@@ -89,7 +110,7 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
             <Progress
               stylefire="hidden"
               styleWrraper="py-0 shadow-none mx-0 rounded-none px-2 sm:px-8"
-              styleNickname="sm:text-lg md:text-[28px]"
+              styleNickname=""
               styleMissionCount="md:absolute md:right-2"
               styleMiddle="mt-9"
               styleLevel="md:right-5 text-[9px] md:text-sm"
@@ -113,7 +134,7 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
                 </>) : (
                   <>
                     {/* 진강님 뱃지 이미지 유틸 사용 */}
-                    <img className="w-20 md:w-30 h-fit pb-4" src="/missionComplete.png" alt="미션 완료 축하" />
+                    <img className="w-20 md:w-30 h-fit pb-4" src={badgeImage} alt="미션 완료 축하" />
                     <h1 className="text-primary-black text-lg sm:text-xl md:text-3xl font-bold pb-4 sm:pb-8">Congratulations!</h1>
                     <div className="font-medium text-sm md:text-xl pb-7 text-center md:pb-12 flex items-center flex-col break-keep">
                       <div>
