@@ -1,12 +1,12 @@
 import { useUserMissions } from "@/api/useUserMissions";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useProfileStore } from "@/store/useProfileStore";
 import tw from "@/utils/tw";
 
 interface Props {
   stylefire?: string;
-  styleWrraper?: string;
+  styleWrraper?: string;     
   styleNickname?: string;
   styleMissionCount?: string;
   styleMiddle?: string;
@@ -50,29 +50,17 @@ export default function Progress({
     return () => cancelAnimationFrame(id);
   }, [progressPercent]);
 
-  // 불 아이콘 갯수 계산 (보라 25 / 노랑 5 / 빨강 1)
+  // 아이콘 수 계산: 보라(25) / 노랑(5) / 빨강(1), 최대 5개 표시
   const { purple, yellow, red } = useMemo(() => {
-    const PURPLE_UNIT = 25;
-    const YELLOW_UNIT = 5;
-    const CAP = 5;
-
-    let p = Math.floor(completedCount / PURPLE_UNIT);
-    let y = Math.floor((completedCount % PURPLE_UNIT) / YELLOW_UNIT);
-    let r = completedCount % YELLOW_UNIT;
-
-    // 최대 CAP개까지만 표시 (우선 제거: 빨강 → 노랑 → 보라)
+    const PURPLE = 25, YELLOW = 5, CAP = 5;
+    let p = Math.floor(completedCount / PURPLE);
+    let y = Math.floor((completedCount % PURPLE) / YELLOW);
+    let r = completedCount % YELLOW;
     let overflow = p + y + r - CAP;
     if (overflow > 0) {
-      const trim = (n: number) => {
-        const t = Math.min(n, overflow);
-        overflow -= t;
-        return n - t;
-      };
-      r = trim(r);
-      y = trim(y);
-      p = trim(p);
+      const trim = (n: number) => { const t = Math.min(n, overflow); overflow -= t; return n - t; };
+      r = trim(r); y = trim(y); p = trim(p);
     }
-
     return { purple: p, yellow: y, red: r };
   }, [completedCount]);
 
@@ -80,39 +68,70 @@ export default function Progress({
   if (error) return <div>에러가 발생했습니다</div>;
   if (!data) return null;
 
-
-const wrapperClass = styleWrraper;
-
-
+  const wrapperClass = styleWrraper;
 
   return (
-    <div
+    <section
       className={tw(
-        // 너비는 부모 컨테이너가 책임지도록: w-full만 사용
-        "w-full rounded-xl px-4 md:px-6 py-6 shadow-md relative bg-white/70",
+        "w-full rounded-2xl px-4 md:px-6 py-6 shadow-md relative",
         wrapperClass
       )}
     >
-      {/* 상단: 좌측 인사 / 우측 (미션 수 + 아이콘) */}
+      {/* 좌: 인사 + 게이지 / 우: 미션 수 + 아이콘 */}
       <div
         className={tw(
-          "flex flex-col md:flex-row md:items-start md:justify-between gap-3",
+          "grid gap-4 md:gap-6 md:grid-cols-[minmax(0,1fr)_auto] items-start",
           styleTop
         )}
       >
-        <div className={tw("text-[28px] font-bold", styleNickname)}>
-          Hello as {nickname ?? "Any"} !
+        {/* LEFT */}
+        <div>
+          <div className={tw("text-[28px] font-bold mb-12", styleNickname)}>
+            Hello as {nickname ?? "Any"} !
+          </div>
+
+          {/* 게이지 영역(트로피/레벨 오버레이) */}
+          <div className={tw("relative max-w-[700px] mt-4 md:mt-3", styleMiddle)}>
+            <div
+              className={tw("w-full h-5 bg-gray-200 rounded-full overflow-hidden", styleProgress)}
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Number(animatedPercent) || 0}
+            >
+              <div
+                className="h-full bg-yellow-500 transition-all duration-1000 ease-out"
+                style={{ width: `${animatedPercent}%` }}
+              />
+            </div>
+
+            {/* LV: 게이지 '위' 오른쪽(트로피 고려해 살짝 왼쪽) */}
+            <span className={tw("absolute -top-5 right-12 text-sm font-semibold", styleLevel)}>
+              LV.{level}
+            </span>
+
+            {/* 트로피: 게이지 오른쪽 끝 중앙 고정 */}
+            <img
+              src="/trophy.svg"
+              alt="trophy"
+              className={tw(
+                "absolute -right-3 top-1/2 -translate-y-1/2 w-8 h-8 md:w-11 md:h-11",
+                styleTrophy
+              )}
+            />
+          </div>
         </div>
 
-        <div className="flex flex-col items-end gap-2 shrink-0">
-          <div className={tw("text-sm font-medium", styleMissionCount)}>
+        {/* RIGHT */}
+        <div className="flex hidden md:flex flex-col items-end gap-2 shrink-0">
+          <div className={tw("text-sm text-gray-700", styleMissionCount)}>
             미션 {completedCount}개 클리어
           </div>
 
-          {/* 불 아이콘 줄: 높이 고정으로 레이아웃 점프 방지 */}
+          {/* 아이콘 줄 – 높이 고정으로 레이아웃 안정화 */}
           <div
             className={tw(
-              "flex items-center gap-1 min-h-[28px] transition-opacity duration-700",
+              "flex items-center gap-1 min-h-[28px] mt-13 transition-opacity duration-700",
               showIcons ? "opacity-100" : "opacity-0",
               stylefire
             )}
@@ -130,32 +149,6 @@ const wrapperClass = styleWrraper;
           </div>
         </div>
       </div>
-
-      {/* 프로그래스 + LV + 트로피 */}
-      <div className={tw("mt-6 flex items-center gap-3", styleMiddle)}>
-        <div className="flex-1">
-          <div
-            className={tw(
-              "w-full h-5 bg-gray-200 rounded-full overflow-hidden",
-              styleProgress
-            )}
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Number(animatedPercent) || 0}
-          >
-            <div
-              className="h-full bg-yellow-500 transition-all duration-1000 ease-out"
-              style={{ width: `${animatedPercent}%` }}
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0 whitespace-nowrap">
-          <span className={tw("text-sm font-semibold", styleLevel)}>LV.{level}</span>
-          <img src="/trophy.svg" alt="trophy" className={tw("w-11 h-11", styleTrophy)} />
-        </div>
-      </div>
-    </div>
+    </section>
   );
-} 
+}

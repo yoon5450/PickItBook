@@ -15,7 +15,7 @@ function Library() {
     return(
     <div className="w-full min-h-screen flex flex-col items-center">
         <div className="w-full max-w-[1200px] mt-28 px-4">
-            <div className="max-w-[1100px] mx-auto px-4 md:px-6">
+            <div className="max-w-[1000px] mx-auto px-4 md:px-6">
                             <Progress/>
             </div>
 
