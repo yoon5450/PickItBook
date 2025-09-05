@@ -1,5 +1,5 @@
+import { useEffect } from "react";
 import type { Badge } from "@/api/useUserBadges";
-
 
 type BadgeModalProps = {
   badges: Badge[];
@@ -7,13 +7,31 @@ type BadgeModalProps = {
 };
 
 function BadgeModal({ badges, onClose }: BadgeModalProps) {
+  // Escape 키 닫기
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+      onClick={onClose} // 배경 클릭 시 닫기
+    >
+      <div
+        className="bg-white rounded-lg p-6 max-w-2xl w-full"
+        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 막기
+      >
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">모든 Badge</h3>
+          <h3 className="text-lg font-semibold">🏅 Badge</h3>
           <button onClick={onClose} className="text-gray-500">닫기</button>
         </div>
+
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
           {badges.map((b) => (
             <div key={b.code} className="flex flex-col items-center text-center">
