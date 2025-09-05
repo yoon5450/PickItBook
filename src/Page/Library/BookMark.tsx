@@ -1,9 +1,9 @@
-
-
 import { useEffect, useState } from "react";
 import { getBookmarks, type BookmarkBook } from "@/utils/getBookmarks";
 import { useAuthStore } from "@/store/useAuthStore";
-import Pagination from "./Pagination"; 
+import Pagination from "./Pagination";
+import { getBookImageURLs } from "@/utils/bookImageUtils";
+import { NavLink } from "react-router-dom";
 
 function BookMark() {
   const { user } = useAuthStore();
@@ -38,29 +38,31 @@ function BookMark() {
     <div className="max-w-[1200px] mx-auto mt-18">
       <div className="text-base font-bold mb-6">My Book List</div>
       {/* 책 목록 */}
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 mt-8">
         {paginatedBookmarks.map((book) => (
-          <div
-            key={book.bookmark_id}
-            className="flex flex-col items-start max-w-41 "
-          >
-            {/* 이미지 */}
-            <img
-              src={book.image_url ?? undefined}
-              alt={book.book_name ?? undefined}
-              className="w-full max-h-60 mt-8 aspect-[2/3] object-cover rounded-xl shadow-xl"
-            />
-            {/* 텍스트 */}
+          <NavLink to={`/book_detail/?isbn13=${book.isbn13}`}>
+            <div
+              key={book.isbn13}
+              className="flex flex-col items-start max-w-41 "
+            >
+              {/* 이미지 */}
+              <img
+                src={getBookImageURLs(book.isbn13 ?? "")[0] ?? undefined}
+                className="w-full max-h-60 mt-8 aspect-[2/3] object-cover rounded-xl shadow-xl"
+              />
+              {/* 텍스트
             <div className="mt-8 font-semibold text-base">
               {book.book_name}
             </div>
-            <div className="text-sm mt-8 text-black">{book.authors}</div>
-          </div>
+            <div className="text-sm mt-8 text-black">{book.authors}</div> */}
+            </div>
+          </NavLink>
         ))}
       </div>
 
       {/* 페이지네이션 */}
-      <Pagination 
+      <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}

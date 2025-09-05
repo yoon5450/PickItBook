@@ -13,6 +13,9 @@ interface Props {
   topItems: KdcItemType[] | null;
   bottomItems?: KdcItemType[] | null;
   className?: string;
+  styleTopItems?: string;
+  styleBottomTotal?: string;
+  styleBottomItems?: string;
   filterItem: { top?: KdcItemType; bottom?: KdcItemType } | null;
   setFilterItem: React.Dispatch<React.SetStateAction<{
     top?: KdcItemType
@@ -27,6 +30,9 @@ function Filter({
   bottomItems,
   filterItem,
   className,
+  styleTopItems,
+  styleBottomTotal,
+  styleBottomItems,
   setFilterItem,
   onClose
 }: Props) {
@@ -114,7 +120,8 @@ function Filter({
               key={item.code}
               className={tw(
                 "flex w-fit rounded-xl py-1 px-3 transition hover:bg-primary/50 hover:text-white text-nowrap",
-                selected ? "bg-primary text-white" : "text-[#303030]"
+                selected ? "bg-primary text-white" : "text-[#303030]",
+                styleTopItems
               )}
               type="button"
               onClick={() => {
@@ -144,7 +151,8 @@ function Filter({
           <label
             className={tw(
               "block text-sm font-bold mb-1 text-[16px]",
-              !filterItem.bottom && "text-primary"
+              !filterItem.bottom && "text-primary",
+              styleBottomTotal
             )}
           >
             {filterItem.top?.value} 전체
@@ -158,7 +166,8 @@ function Filter({
                 }}
                 className={tw(
                   "flex min-w-44 justify-between items-center transition hover:text-primary",
-                  item.code === filterItem.bottom?.code && "text-primary"
+                  item.code === filterItem.bottom?.code && "text-primary",
+                  styleBottomItems
                 )}
                 onClick={() => {
                   if (item.code !== filterItem.bottom?.code) {

@@ -120,10 +120,10 @@ function RandomRoulette() {
 
 
   return (
-    <div className="relative w-full max-w-[1200px] h-[calc(100vh-80px)] mx-auto justify-items-center pt-17 py-2">
+    <div className="relative w-full max-w-[1200px] h-[calc(100vh-80px)] min-h-[900px] mx-auto justify-items-center pt-17 py-2">
 
       <h1 hidden>Filter header</h1>
-      <section className="absolute left-2 flex flex-row gap-6 w-[370px]">
+      <section className="absolute left-2 flex flex-row gap-3 sm:gap-6 w-[320px] md:w-[370px]">
         {/* 필터 : 장르탭 */}
         <div className="z-10">
           <FilterButton text={"장르"} setFilterTap={setFilterTap} setIsBookmarkSelect={setIsBookmarkSelect} />
@@ -136,7 +136,10 @@ function RandomRoulette() {
             onClose={() => {
               setFilterTap(null);
             }}
-            className={"absolute"}
+            className={"absolute sm:p-10 p-5"}
+            styleTopItems={'text-xs sm:text-[16px]'}
+            styleBottomTotal={'text-sm sm:text-[16px]'}
+            styleBottomItems={'text-xs sm:text-[16px] pt-1 sm:pt-0'}
           />
         </div>
 
@@ -159,7 +162,7 @@ function RandomRoulette() {
               30: "30대",
               40: "40대",
               50: "50대",
-              60: "60대⬆", // 60대 이상 ui 변경 필요
+              60: "60대 이상", // 60대 이상 ui 변경 필요
             }}
           />
         </div>
@@ -195,7 +198,7 @@ function RandomRoulette() {
         <button className="flex flex-row h-12 items-center justify-center "
           type="button"
           onClick={() => setShuffleBook(prev => !prev)}>
-          <BsShuffle size={22} title="새로 불러오기" className="transition hover:text-primary" />
+          <BsShuffle size={18} title="새로 불러오기" className="transition hover:text-primary" />
         </button>
       </section>
 
