@@ -146,7 +146,7 @@ function RandomRoulette() {
             filterItem={genre}
             setFilterItem={setGenre}
             setFilterTap={setFilterTap}
-            className={"absolute sm:p-10 p-5"}
+            className={"absolute sm:p-8 p-5"}
             styleTopItems={'text-xs sm:text-[16px]'}
             styleBottomTotal={'text-sm sm:text-[16px]'}
             styleBottomItems={'text-xs sm:text-[16px] pt-1 sm:pt-0'}

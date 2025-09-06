@@ -21,7 +21,7 @@ interface Props {
     top?: KdcItemType
     bottom?: KdcItemType
   } | null>>
-  setFilterTap: React.Dispatch<React.SetStateAction<"장르" | "연령" | "추천" | null>>
+  setFilterTap?: React.Dispatch<React.SetStateAction<"장르" | "연령" | "추천" | null>>
 
 }
 
@@ -87,7 +87,7 @@ function Filter({
       if ((e.target as Element)?.closest('[data-filter-trigger]')) return;
       // 모달 내부를 클릭할때는 외부로 인식하지 않게 예외처리
       if (panelRef.current && panelRef.current.contains(t)) return;
-      setFilterTap(null);
+      setFilterTap?.(null);
     };
     document.addEventListener("pointerdown", onPointerDown, true);
     return () => document.removeEventListener("pointerdown", onPointerDown, true);
@@ -112,7 +112,7 @@ function Filter({
     <div
       ref={panelRef}
       className={tw(
-        "flex p-10 shadow-sm py-5 gap-7 rounded-xl bg-pattern z-10",
+        "flex px-5 shadow-sm py-5 gap-7 rounded-xl bg-pattern z-10",
         className
       )}
     >
