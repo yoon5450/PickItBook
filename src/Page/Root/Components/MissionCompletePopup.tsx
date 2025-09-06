@@ -2,10 +2,10 @@ import { useBookDetail } from "@/api/useBookDetail";
 import { useGetMissionDetailByTemplateID } from "@/api/useGetMissionDetailByTemplateID";
 import { useUserBadges } from "@/api/useUserBadges";
 import ConfettiCongrats from "@/Components/ConfettiCongrats";
-import Progress from "@/Page/Library/Progress";
 import { useAuthStore } from "@/store/useAuthStore";
 import tw from "@/utils/tw";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
+import PopupProgress from "./PopupProgress";
 
 interface Props {
   isbn13?: string
@@ -116,7 +116,7 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
           onPointerDown={(e) => e.stopPropagation()}
         >
           <div className="w-full h-full px-10 py-10 flex flex-col justify-between items-center">
-            <Progress
+            <PopupProgress
               styleTop='w-full justify-center items-center -mb-0'
               styleWrraper="py-0 shadow-none mx-0 rounded-none px-0"
               styleNickname="hidden"
