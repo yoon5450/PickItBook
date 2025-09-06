@@ -64,12 +64,25 @@ function RandomRoulette() {
   // 4. 필터별 api에 전달할 파라미터 가공
   const params = useMemo(() => {
     const p: Record<string, string> = {};
-    if (kdc !== undefined) p.kdc = kdc;
-    if (dtl_kdc !== undefined) p.dtl_kdc = dtl_kdc;
-    if (ageKey) p.age = ageKey;
-    if (genderKey && genderKey !== "all" && genderKey !== "bookmark") p.gender = String(genderKey);
-    return p;
-  }, [kdc, dtl_kdc, ageKey, genderKey]);
+    switch (filterTap) {
+      case "장르": {
+        if (kdc !== undefined) p.kdc = kdc;
+        if (dtl_kdc !== undefined) p.dtl_kdc = dtl_kdc;
+        return p;
+      }
+      case "연령": {
+        if (ageKey) p.age = ageKey;
+        return p;
+      }
+      case "추천": {
+        if (genderKey && genderKey !== "all" && genderKey !== "bookmark") p.gender = String(genderKey);
+        return p;
+      }
+      default:
+        return p;
+    }
+  }, [filterTap, kdc, dtl_kdc, ageKey, genderKey]);
+  console.log(params);
 
 
   // 5. 룰렛에 뿌릴 데이터 가져오기
