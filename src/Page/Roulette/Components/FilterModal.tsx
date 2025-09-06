@@ -52,8 +52,8 @@ function FilterModal({
       if (panelRef.current && panelRef.current.contains(t)) return;
       setFilterTap(null);
     };
-    document.addEventListener("click", onPointerDown, true);
-    return () => document.removeEventListener("click", onPointerDown, true);
+    document.addEventListener("pointerdown", onPointerDown, true);
+    return () => document.removeEventListener("pointerdown", onPointerDown, true);
   }, [isOpen]);
 
   // 필터탭을 눌렀을때만 보임처리
