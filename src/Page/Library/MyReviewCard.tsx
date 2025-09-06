@@ -4,7 +4,6 @@ import { showWarningAlert } from "@/Components/sweetAlert";
 import { useState, type FC } from "react";
 import { BiImageAdd } from "react-icons/bi";
 import { useNavigate, createSearchParams } from "react-router-dom";
-import Swal from "sweetalert2";
 
 export type MyReviewCardData = {
   id: number;
