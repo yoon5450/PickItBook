@@ -16,7 +16,6 @@ interface Props {
 
 function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID, onClose }: Props) {
   const user = useAuthStore((s) => s.user);
-  const [badgeImage, setBadgeImage] = useState<string | null>(null);
   // 미션 세부 정보 가져오기
   const {
     data: missionDetailData,
@@ -94,15 +93,9 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
   const kind = missionDetailData?.[0].kind
 
   // 달성한 미션의 뱃지 이미지 가져오기
-  useEffect(() => {
-    if (kind === 'achievement') {
-      const filterBadge = badges?.filter((b) => b.code === missionDetailData?.[0].reward.code)
-      if (filterBadge) {
-        setBadgeImage(filterBadge?.[0].image);
-      }
-      // console.log('뱃지 이미지: ', filterBadge?.[0].image)
-    }
-  }, [badges])
+  const code = missionDetailData?.[0]?.reward?.code
+  const badgeImageUrl = useMemo(() => badges?.find(b => b.code === code)?.image ?? null, [badges, code])
+
 
 
   if (!isOpen) return null;
@@ -150,7 +143,7 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
                 </>) : (
                   <>
                     {/* 진강님 뱃지 이미지 유틸 사용 */}
-                    <img className="w-20 md:w-30 h-fit pb-5 pt-8" src={badgeImage ?? "/missionComplete.png"} alt="미션 완료 축하" />
+                    <img className="w-20 md:w-30 h-fit pb-5 pt-8" src={badgeImageUrl ?? "/missionComplete.png"} alt="미션 완료 축하" />
                     <h1 className="text-primary-black text-[16px] sm:text-xl md:text-3xl font-bold pb-2 sm:pb-5">Congratulations!</h1>
                     <div className="font-medium text-sm md:text-xl pb-7 text-center md:pb-12 flex items-center flex-col break-keep">
                       <div>
