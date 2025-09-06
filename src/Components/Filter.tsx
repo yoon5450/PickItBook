@@ -21,7 +21,8 @@ interface Props {
     top?: KdcItemType
     bottom?: KdcItemType
   } | null>>
-  onClose?: () => void;
+  setFilterTap: React.Dispatch<React.SetStateAction<"장르" | "연령" | "추천" | null>>
+
 }
 
 function Filter({
@@ -34,7 +35,7 @@ function Filter({
   styleBottomTotal,
   styleBottomItems,
   setFilterItem,
-  onClose
+  setFilterTap,
 }: Props) {
 
   // 상위(두 번째 자리가 0) / 하위 분리
@@ -82,12 +83,15 @@ function Filter({
     if (!isOpen) return;
     const onPointerDown = (e: PointerEvent) => {
       const t = e.target as Node;
+      // 필터 대분류 버튼을 외부로 인식하지 않게 하기 위해 예외처리
+      if ((e.target as Element)?.closest('[data-filter-trigger]')) return;
+      // 모달 내부를 클릭할때는 외부로 인식하지 않게 예외처리
       if (panelRef.current && panelRef.current.contains(t)) return;
-      onClose?.();
+      setFilterTap(null);
     };
     document.addEventListener("pointerdown", onPointerDown, true);
     return () => document.removeEventListener("pointerdown", onPointerDown, true);
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   useLayoutEffect(() => {
     const onResize = () => {
