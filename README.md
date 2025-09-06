@@ -20,12 +20,13 @@
   - 독서 습관 형성을 위한 게임화 요소 도입  
   - 다양한 장르와 미션을 통한 새로운 독서 경험 제공  
 
-<details>
-  <summary><b>와이어프레임 보기</b></summary>
-  <p align="center">
-    <img src="./public/readmeImg/wireframe.jpg" width="1000" alt="와이어프레임" />
-  </p>
-</details>
+- **와이어프레임**  
+  <details>
+    <summary>펼쳐보기</summary>
+    <p align="center">
+      <img src="./public/readmeImg/wireframe.jpg" width="1000" alt="와이어프레임" />
+    </p>
+  </details>
 
 ---
 
@@ -101,14 +102,35 @@ FES-5-Project-TEAM-6
 ![roulette](./public/readmeImg/roulette.png)
 
 
+
+---
+
+## 🧩 시스템 아키텍처  
+
+- **클라이언트/배포**: Vercel (정적 + 서버리스)  
+- **프록시 계층**: AWS EC2 (Nginx → Node Proxy)  
+  - 외부 OpenAPI(도서관 정보나루 등) 화이트리스트 IP 대응  
+  - AuthKey 보호, 타임아웃/리트라이 제어  
+- **데이터**: Supabase (PostgreSQL / Auth / Storage)  
+- **라우팅**: `/api/*` 요청은 Vercel → EC2 프록시 → 외부 API  
+- **헬스체크**: `/healthz` (EC2)
+
+```mermaid
+flowchart LR
+  A[Browser] -->|/api/*| B[Vercel (SPA + Rewrites)]
+  A <-->|HTML/CSS/JS| B
+  B -->|rewrite/proxy| C[EC2 (Nginx → Node Proxy)]
+  C --> D[data4library OpenAPI]
+  C --> E[Supabase<br/>DB · Auth · Storage]
+
+  ```
 ---
 
 ## ⚙️ 기술 스택  
-- **Frontend**: React, Vite, TypeScript, TailwindCSS, GSAP, React-Router  
+- **Frontend**: React, Vite, TypeScript, TailwindCSS, GSAP, Three.js, React-Router  
 - **Backend/DB**: Supabase (PostgreSQL, Auth, Storage)  
-- **API**: 국립중앙도서관 OpenAPI, 도서관 정보나루 API  
-- **Visualization**: Chart.js
-- **Deployment**: Vercel  
+- **API**: 도서관 정보나루 API  
+- **Deployment**: Vercel, AWS
 
 ---
 
@@ -118,7 +140,7 @@ FES-5-Project-TEAM-6
 - **팀원**: 황유정 
 - **팀원**: 박진강
 
-
+ajx
 
 ---
 
