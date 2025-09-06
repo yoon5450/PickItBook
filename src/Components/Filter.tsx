@@ -16,6 +16,7 @@ interface Props {
   styleTopItems?: string;
   styleBottomTotal?: string;
   styleBottomItems?: string;
+  onClose?: () => void;
   filterItem: { top?: KdcItemType; bottom?: KdcItemType } | null;
   setFilterItem: React.Dispatch<React.SetStateAction<{
     top?: KdcItemType
@@ -34,6 +35,7 @@ function Filter({
   styleTopItems,
   styleBottomTotal,
   styleBottomItems,
+  onClose,
   setFilterItem,
   setFilterTap,
 }: Props) {
@@ -88,6 +90,7 @@ function Filter({
       // 모달 내부를 클릭할때는 외부로 인식하지 않게 예외처리
       if (panelRef.current && panelRef.current.contains(t)) return;
       setFilterTap?.(null);
+      onClose?.();
     };
     document.addEventListener("pointerdown", onPointerDown, true);
     return () => document.removeEventListener("pointerdown", onPointerDown, true);

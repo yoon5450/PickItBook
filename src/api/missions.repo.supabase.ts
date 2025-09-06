@@ -25,8 +25,8 @@ export const missionsRepo = {
       p_offset: 0,
     });
 
-    if(error) throw new Error("getMyMissions ", error);
+    if (error) throw new Error("getMyMissions ", error);
 
-    return data
+    return data;
   },
 };

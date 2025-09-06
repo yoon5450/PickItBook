@@ -1,7 +1,7 @@
 // src/api/useUserBadges.ts
 import { useQuery } from "@tanstack/react-query";
 import supabase from "@/utils/supabase";
-import type { Tables } from "@/@types/supabase";
+import type { Tables } from "@/@types/database.types";
 
 export type Badge = {
   code: string;

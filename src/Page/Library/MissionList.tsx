@@ -6,7 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Pagination from "./Pagination"; 
 
-const PAGE_SIZE = 5; 
+const PAGE_SIZE = 5;
+const ROW_HEIGHT = 76; // 카드 실제 높이(px)
+const GAP = 4;         // 카드 사이 gap(px)
+const SECTION_HEIGHT = ROW_HEIGHT * PAGE_SIZE + GAP * (PAGE_SIZE - 1);
 
 function MissionList() {
   const { user } = useAuthStore();
@@ -20,20 +23,23 @@ function MissionList() {
 
   const { missions } = data;
 
-
+  // 완료 여부에 따라 정렬
   const sortedMissions = [...missions].sort((a, b) => {
     if (a.completed === b.completed) return 0;
     return a.completed ? 1 : -1;
   });
-
 
   const totalPages = Math.ceil(sortedMissions.length / PAGE_SIZE);
   const startIndex = (currentPage - 1) * PAGE_SIZE;
   const paginatedMissions = sortedMissions.slice(startIndex, startIndex + PAGE_SIZE);
 
   return (
-    <div className="flex flex-col gap-1 w-full">
+    <section
+      className="flex flex-col gap-1 w-full"
+      style={{ minHeight: SECTION_HEIGHT }}
+    >
       <div className="text-lg font-semibold mb-5">Missions</div>
+
       {paginatedMissions.map((m) => {
         const clickable = !!m.book?.isbn13;
 
@@ -88,6 +94,7 @@ function MissionList() {
           </div>
         );
       })}
+
       {totalPages > 1 && (
         <div className="mt-[1px]">
           <Pagination
@@ -98,7 +105,7 @@ function MissionList() {
           />
         </div>
       )}
-    </div>
+    </section>
   );
 }
 

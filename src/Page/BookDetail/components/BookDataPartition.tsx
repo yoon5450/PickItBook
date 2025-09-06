@@ -1,8 +1,6 @@
 import type { BookDetailData } from "@/api/useBookDetail";
 import loaderIcon from "@/assets/loading.svg";
 import RatingStars from "@/Components/RatingStar";
-import { NavLink } from "react-router-dom";
-
 import { useToggleBookmark } from "@/api/useBookmark";
 import { getBookImageURLs } from "@/utils/bookImageUtils";
 import { useEffect, useState } from "react";
@@ -35,6 +33,7 @@ function BookDataPatition({
 
   // 서버단에서 북마크 정보 join해서 주는 게 낫나?
   const [isBookmarked, setIsBookmarked] = useState<boolean>();
+  const [isbnOpen, setIsbnOpen] = useState<boolean>(false);
   const isLogIn = useAuthStore((s) => s.user?.id) ? true : false;
 
   useEffect(() => {
@@ -122,37 +121,22 @@ function BookDataPatition({
           </div>
           <div className="py-3">
             <span className="line-clamp-5 text-black">{book.description}</span>
-            <div>
-              <button type="button" className="flex items-center gap-2">
-                더보기
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="17"
-                  height="9"
-                  viewBox="0 0 17 9"
-                  fill="none"
-                >
-                  <path
-                    d="M1 1L8.5 8L16 1"
-                    stroke="black"
-                    strokeOpacity="0.57"
-                  />
-                </svg>
-              </button>
-            </div>
+            <div></div>
           </div>
 
           <p className="flex gap-2 items-center">
             <span>장르 구분</span>
 
-            {book.class_nm.split(" > ").map((item, index) => (
-              <NavLink to={"#"} className={"hover:underline"} key={`${item}${index}`}>
-                {item}
-              </NavLink>
+            {book.class_nm.split(" > ").map((item) => (
+              <span>{item}</span>
             ))}
           </p>
           <p>
-            <button type="button" className="flex items-center gap-2">
+            <button
+              type="button"
+              className="flex items-center gap-2"
+              onClick={() => setIsbnOpen((prev) => !prev)}
+            >
               책 정보
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -164,6 +148,7 @@ function BookDataPatition({
                 <path d="M1 1L8.5 8L16 1" stroke="black" strokeOpacity="0.57" />
               </svg>
             </button>
+            {isbnOpen && <div>ISBN13 : {isbn13}</div>}
           </p>
         </div>
       </div>

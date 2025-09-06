@@ -8,6 +8,7 @@ import profileDefault from "@/assets/profile_default.png";
 import loadingImg from "@/assets/loading.svg";
 import { type UseMutateFunction } from "@tanstack/react-query";
 import { showInfoAlert, showWarningAlert } from "@/Components/sweetAlert";
+import tw from "@/utils/tw";
 
 type ReplyVars = { content: string; parent_id: number };
 
@@ -115,9 +116,9 @@ function ReviewItem({
               >
                 삭제
               </button>
-              <button type="button" className="cursor-pointer">
+              {/* <button type="button" className="cursor-pointer">
                 편집
-              </button>
+              </button> */}
             </>
           )}
         </div>
@@ -155,7 +156,12 @@ function ReviewItem({
               else mutate();
             }}
           >
-            <span className={item.liked_by_me ? "text-amber-400" : "bg-white"}>
+            <span
+              className={tw(
+                "transition",
+                item.liked_by_me ? "text-amber-400" : "bg-white"
+              )}
+            >
               유용해요 {item.like_count}
             </span>
           </button>
@@ -225,12 +231,12 @@ function ReviewItem({
 
                         {author_id === uid && (
                           <div className="ml-auto flex gap-3 text-sm">
-                            <button type="button" className="cursor-pointer">
+                            {/* <button type="button" className="cursor-pointer">
                               편집
-                            </button>
-                            <button type="button" className="cursor-pointer">
+                            </button> */}
+                            {/* <button type="button" className="cursor-pointer">
                               삭제
-                            </button>
+                            </button> */}
                           </div>
                         )}
                       </div>
