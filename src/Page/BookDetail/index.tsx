@@ -91,7 +91,7 @@ function BookDetail() {
         </PartitionBase>
 
         <PartitionBase title="리뷰 작성">
-          <ReviewWritePartition data={BookDetailData} />
+          <ReviewWritePartition missions={missionData} data={BookDetailData} />
         </PartitionBase>
 
         <PartitionBase

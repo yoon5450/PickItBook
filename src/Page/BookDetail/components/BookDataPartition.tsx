@@ -52,11 +52,20 @@ function BookDataPatition({
 
   const handleToggleBookmark = () => {
     if (!isLogIn) {
-      showInfoAlert('로그인 필요', '북마크하기 위해서는 로그인해야 합니다')
+      showInfoAlert("로그인 필요", "북마크하기 위해서는 로그인해야 합니다");
       return;
     }
     toggleBookmark();
     setIsBookmarked((prev) => !prev);
+  };
+
+  const handleClickAssignMission = () => {
+    if (!isLogIn) {
+      showInfoAlert("로그인 필요", "미션을 수령하기 위해서는 로그인해야 합니다");
+      return;
+    }
+    assignMission();
+    setMissionAssigned(true);
   };
 
   if (!data) {
@@ -92,10 +101,7 @@ function BookDataPatition({
             "px-4 py-2 rounded-md text-xl bg-primary text-background-white absolute right-0 bottom-0",
             missionAssigned && "bg-gray-10 text-primary border border-primary"
           )}
-          onClick={() => {
-            assignMission();
-            setMissionAssigned(true);
-          }}
+          onClick={handleClickAssignMission}
           disabled={missionAssigned}
         >
           {missionAssigned ? "미션 수령 완료" : "미션 수령하기"}
@@ -128,7 +134,7 @@ function BookDataPatition({
             <span>장르 구분</span>
 
             {book.class_nm.split(" > ").map((item, index) => (
-              <span key={index} >{item}</span>
+              <span key={index}>{item}</span>
             ))}
           </p>
           <p>
