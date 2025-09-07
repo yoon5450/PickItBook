@@ -32,6 +32,8 @@ function RandomRoulette() {
   // 2. 필터탭 상태
   // 2-1. 현재 선택된 필터탭
   const [filterTap, setFilterTap] = useState<"장르" | "연령" | "추천" | null>(null);
+  // 2-1-2. 실제로 파라미터 전달용 필터 상태
+  const [appliedFilter, setAppliedFilter] = useState<"장르" | "연령" | "추천" | null>(null);
   // 2-2. 책 셔플 버튼용 상태
   const [shuffleBook, setShuffleBook] = useState<boolean>(false);
   // 2-3. 연령탭 선택값 기록
@@ -64,7 +66,7 @@ function RandomRoulette() {
   // 4. 필터별 api에 전달할 파라미터 가공
   const params = useMemo(() => {
     const p: Record<string, string> = {};
-    switch (filterTap) {
+    switch (appliedFilter) {
       case "장르": {
         if (kdc !== undefined) p.kdc = kdc;
         if (dtl_kdc !== undefined) p.dtl_kdc = dtl_kdc;
@@ -81,7 +83,8 @@ function RandomRoulette() {
       default:
         return p;
     }
-  }, [filterTap, kdc, dtl_kdc, ageKey, genderKey]);
+  }, [appliedFilter, kdc, dtl_kdc, ageKey, genderKey]);
+  // console.log(params);
 
 
   // 5. 룰렛에 뿌릴 데이터 가져오기
@@ -143,6 +146,7 @@ function RandomRoulette() {
             filterItem={genre}
             setFilterItem={setGenre}
             setFilterTap={setFilterTap}
+            setAppliedFilter={setAppliedFilter}
             className={"absolute sm:p-8 p-5"}
             styleTopItems={'text-xs sm:text-[16px]'}
             styleBottomTotal={'text-sm sm:text-[16px]'}
@@ -160,6 +164,7 @@ function RandomRoulette() {
             onSelect={(key) => {
               setAgeKey(key);
               setIsBookmarkSelect(false);
+              setAppliedFilter("연령");
             }}
             setFilterTap={setFilterTap}
             category={{
@@ -184,6 +189,7 @@ function RandomRoulette() {
             onSelect={(key) => {
               setGenderKey(key);
               setIsBookmarkSelect(key === "bookmark");
+              setAppliedFilter("추천");
             }}
             setFilterTap={setFilterTap}
             category={
