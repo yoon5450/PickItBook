@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePageEnterAnimation } from "./usePageEnterAnimation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useProfileStore } from "@/store/useProfileStore";
+import { showSuccessAlert, showConfirmAlert } from "@/utils/confirmAlert";
 
 function MyPage() {
   const { email, nickname, created_at, profile_image, fetchUser, setNickname } =
@@ -90,60 +91,60 @@ function MyPage() {
       }
     }
 
-    alert("프로필이 저장되었습니다.");
+    showSuccessAlert("프로필 저장 완료", "변경사항이 성공적으로 저장되었습니다.");
   };
 
   async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
     setProfileImage(file);
 
-    if (file) {
-      setFilePreview(file, setImagePreview);
+    if (!file) return;
+    setFilePreview(file, setImagePreview);
 
-      const confirmUpload = window.confirm(
-        "선택한 이미지를 프로필 사진으로 변경하시겠습니까?"
-      );
-      if (!confirmUpload) return;
+    const result = await showConfirmAlert({
+      title: "프로필 이미지 변경",
+      text: "선택한 이미지를 프로필 사진으로 변경하시겠습니까?",
+      confirmText: "네, 변경합니다",
+      cancelText: "취소",
+    });
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+    if (!result.isConfirmed) return;
 
-      const ext = file.name.includes(".")
-        ? file.name.split(".").pop()
-        : "png";
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
 
-      const filePath = `private/${user.id}.${ext}`;
+    const ext = file.name.includes(".") ? file.name.split(".").pop() : "png";
+    const filePath = `private/${user.id}.${ext}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("profile_image")
-        .upload(filePath, file, { upsert: true });
+    const { error: uploadError } = await supabase.storage
+      .from("profile_image")
+      .upload(filePath, file, { upsert: true });
 
-      if (uploadError) {
-        alert("이미지 업로드 실패: " + uploadError.message);
-        return;
-      }
-
-      const { data } = supabase.storage
-        .from("profile_image")
-        .getPublicUrl(filePath);
-
-      const cacheBustedUrl = `${data.publicUrl}?t=${Date.now()}`;
-
-      const { error: updateError } = await supabase
-        .from("user_profile")
-        .update({ profile_image: cacheBustedUrl })
-        .eq("id", user.id);
-
-      if (updateError) {
-        alert("프로필 갱신 실패: " + updateError.message);
-        return;
-      }
-
-      fetchUser(user.id);
-      alert("프로필 이미지가 변경되었습니다.");
+    if (uploadError) {
+      alert("이미지 업로드 실패: " + uploadError.message);
+      return;
     }
+
+    const { data } = supabase.storage
+      .from("profile_image")
+      .getPublicUrl(filePath);
+
+    const cacheBustedUrl = `${data.publicUrl}?t=${Date.now()}`;
+
+    const { error: updateError } = await supabase
+      .from("user_profile")
+      .update({ profile_image: cacheBustedUrl })
+      .eq("id", user.id);
+
+    if (updateError) {
+      alert("프로필 갱신 실패: " + updateError.message);
+      return;
+    }
+
+    fetchUser(user.id);
+    showSuccessAlert("프로필 이미지 변경 완료", "이미지가 성공적으로 변경되었습니다.");
   }
 
   return (
@@ -160,9 +161,7 @@ function MyPage() {
         className="cursor-pointer relative"
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
-        onMouseMove={(e) =>
-          setTooltipPos({ x: e.clientX, y: e.clientY })
-        }
+        onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
       >
         <img
           src={
@@ -175,10 +174,7 @@ function MyPage() {
       {showTooltip && (
         <div
           className="fixed text-sm text-black transition-opacity pointer-events-none z-[9999]"
-          style={{
-            top: tooltipPos.y + 16,
-            left: tooltipPos.x + 16,
-          }}
+          style={{ top: tooltipPos.y + 16, left: tooltipPos.x + 16 }}
         >
           프로필 이미지 변경하기
         </div>
@@ -217,9 +213,7 @@ function MyPage() {
           <div className="flex flex-col w-[400px]">
             <label className="text-base mb-1.5">가입일</label>
             <span className="h-[50px] flex items-center px-2 text-gray-700 border border-[var(--color-background-gray)] rounded bg-gray-200">
-              {created_at
-                ? new Date(created_at).toLocaleDateString()
-                : "-"}
+              {created_at ? new Date(created_at).toLocaleDateString() : "-"}
             </span>
           </div>
         </div>
@@ -276,18 +270,10 @@ function MyPage() {
             <p className="text-base mb-2">Linked Accounts</p>
             <div className="flex gap-4 text-2xl">
               {provider === "google" && (
-                <img
-                  src="/google_icon.svg"
-                  alt="Google"
-                  className="w-[30px] h-[30px]"
-                />
+                <img src="/google_icon.svg" alt="Google" className="w-[30px] h-[30px]" />
               )}
               {provider === "github" && (
-                <img
-                  src="/git_icon.svg"
-                  alt="Github"
-                  className="w-[30px] h-[30px]"
-                />
+                <img src="/git_icon.svg" alt="Github" className="w-[30px] h-[30px]" />
               )}
             </div>
           </div>
