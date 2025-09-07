@@ -84,7 +84,7 @@ function RandomRoulette() {
         return p;
     }
   }, [appliedFilter, kdc, dtl_kdc, ageKey, genderKey]);
-  console.log(params);
+  // console.log(params);
 
 
   // 5. 룰렛에 뿌릴 데이터 가져오기
