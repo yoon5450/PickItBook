@@ -5,6 +5,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Pagination from "./Pagination"; 
+import { showConfirmAlert } from "@/utils/confirmAlert";
 
 const PAGE_SIZE = 5;
 const ROW_HEIGHT = 76; // 카드 실제 높이(px)
@@ -50,13 +51,32 @@ function MissionList() {
             tabIndex={clickable ? 0 : -1}
             onClick={() => {
               if (m.book?.isbn13) {
-                navigate(`/book_detail?isbn13=${m.book?.isbn13}`);
+                showConfirmAlert({
+                  title: "도서 페이지로 이동하시겠습니까?",
+                  text: "미션을 받은 도서페이지로 이동합니다.",
+                  confirmText: "네, 이동합니다",
+                  cancelText: "취소",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    navigate(`/book_detail?isbn13=${m.book?.isbn13}`);
+                  }
+                });
               }
             }}
+
             onKeyDown={(e) => {
               if (clickable && (e.key === "Enter" || e.key === " ")) {
                 e.preventDefault();
-                navigate(`/book_detail?isbn13=${m.book?.isbn13}`);
+                showConfirmAlert({
+                  title: "도서 페이지로 이동하시겠습니까?",
+                  text: "미션을 받은 도서페이지로 이동합니다.",
+                  confirmText: "네, 이동합니다",
+                  cancelText: "취소",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    navigate(`/book_detail?isbn13=${m.book?.isbn13}`);
+                  }
+                });
               }
             }}
             className={`flex items-center justify-between px-4 py-5 shadow-md rounded-lg border transition
