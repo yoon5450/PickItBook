@@ -122,7 +122,7 @@ const SummaryPartition = ({ missions, isbn13 }: Props) => {
                   >
                     마우스를 올려 마지막 요약을 확인할 수 있습니다.
                   </div>
-                  <p className="text-center">{item.line_2}</p>
+                  <p>{item.line_2}</p>
                 </div>
               </div>
             </li>

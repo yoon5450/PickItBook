@@ -84,12 +84,12 @@ function BookDetail() {
           <MisstionPartition data={missionData} />
         </PartitionBase>
 
-        <PartitionBase title="유저 평점">
-          <UserScorePatition data={reviewData} ratingAvg={ratingAvg} />
-        </PartitionBase>
-
         <PartitionBase title="3줄 요약">
           <SummaryPartition missions={missionData} isbn13={isbn13} />
+        </PartitionBase>
+
+        <PartitionBase title="유저 평점">
+          <UserScorePatition data={reviewData} ratingAvg={ratingAvg} />
         </PartitionBase>
 
         <PartitionBase title="리뷰 작성">
