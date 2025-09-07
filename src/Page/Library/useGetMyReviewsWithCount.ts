@@ -13,12 +13,14 @@ type MyReviewsResponse = {
 export function useGetMyReviewsWithCount(
   userId: string,
   limit: number,
-  offset: number
+  offset: number,
+  options?: { enabled?: boolean },
 ) {
   return useQuery({
     queryKey: ["myReviewsWithCount", userId, limit, offset],
     queryFn: (): Promise<MyReviewsResponse> =>
       getMyReviews(userId, limit, offset),
-    placeholderData: (prev) => prev, 
+    placeholderData: (prev) => prev,
+    enabled: options?.enabled ?? true, 
   });
 }

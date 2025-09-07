@@ -10,6 +10,7 @@ import { useAssignMissions } from "@/api/useMissionsFetching";
 import { useAuthStore } from "@/store/useAuthStore";
 import tw from "@/utils/tw";
 import { showInfoAlert } from "@/Components/sweetAlert";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   data: BookDetailData | undefined;
@@ -29,7 +30,12 @@ function BookDataPatition({
 
   const { mutate: toggleBookmark, isPending: togglePending } =
     useToggleBookmark(isbn13);
-  const { mutate: assignMission } = useAssignMissions(isbn13);
+  const qc = useQueryClient();
+  const { mutate: assignMission } = useAssignMissions(isbn13, {
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["missions", "book", isbn13] });
+    },
+  });
 
   // 서버단에서 북마크 정보 join해서 주는 게 낫나?
   const [isBookmarked, setIsBookmarked] = useState<boolean>();
@@ -52,11 +58,23 @@ function BookDataPatition({
 
   const handleToggleBookmark = () => {
     if (!isLogIn) {
-      showInfoAlert('로그인 필요', '북마크하기 위해서는 로그인해야 합니다')
+      showInfoAlert("로그인 필요", "북마크하기 위해서는 로그인해야 합니다");
       return;
     }
     toggleBookmark();
     setIsBookmarked((prev) => !prev);
+  };
+
+  const handleClickAssignMission = () => {
+    if (!isLogIn) {
+      showInfoAlert(
+        "로그인 필요",
+        "미션을 수령하기 위해서는 로그인해야 합니다"
+      );
+      return;
+    }
+    assignMission();
+    setMissionAssigned(true);
   };
 
   if (!data) {
@@ -92,10 +110,7 @@ function BookDataPatition({
             "px-4 py-2 rounded-md text-xl bg-primary text-background-white absolute right-0 bottom-0",
             missionAssigned && "bg-gray-10 text-primary border border-primary"
           )}
-          onClick={() => {
-            assignMission();
-            setMissionAssigned(true);
-          }}
+          onClick={handleClickAssignMission}
           disabled={missionAssigned}
         >
           {missionAssigned ? "미션 수령 완료" : "미션 수령하기"}
@@ -128,7 +143,7 @@ function BookDataPatition({
             <span>장르 구분</span>
 
             {book.class_nm.split(" > ").map((item, index) => (
-              <span key={index} >{item}</span>
+              <span key={index}>{item}</span>
             ))}
           </p>
           <p>

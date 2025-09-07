@@ -4,6 +4,7 @@ import { showWarningAlert } from "@/Components/sweetAlert";
 import { useState, type FC } from "react";
 import { BiImageAdd } from "react-icons/bi";
 import { useNavigate, createSearchParams } from "react-router-dom";
+import { showConfirmAlert } from "@/utils/confirmAlert";
 
 export type MyReviewCardData = {
   id: number;
@@ -68,9 +69,19 @@ const MyReviewCard: FC<{ data: MyReviewCardData }> = ({ data }) => {
   const goDetail = () => {
     if (isEditing) return;
     if (!data.isbn13) return;
-    navigate({
-      pathname: "/book_detail",
-      search: createSearchParams({ isbn13: data.isbn13 }).toString(),
+
+    showConfirmAlert({
+      title: "도서 페이지로 이동하시겠습니까?",
+      text: "리뷰를 남긴 도서페이지로 이동합니다.",
+      confirmText: "네, 이동합니다",
+      cancelText: "취소",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate({
+          pathname: "/book_detail",
+          search: createSearchParams({ isbn13: String(data.isbn13) }).toString(),
+        });
+      }
     });
   };
 
@@ -181,12 +192,12 @@ const MyReviewCard: FC<{ data: MyReviewCardData }> = ({ data }) => {
 
         {!isEditing && (
           <div className="flex items-center gap-4 text-sm text-gray-700" onClick={stop}>
-            <button type="button" className="hover:underline">
+            <div className="">
               유용해요 <span className="ml-1">{data.like_count ?? 0}</span>
-            </button>
-            <button type="button" className="hover:underline">
+            </div>
+            <div className="">
               댓글 <span className="ml-1">{data.comment_count ?? 0}</span>
-            </button>
+            </div>
           </div>
         )}
       </div>

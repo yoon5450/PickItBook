@@ -5,6 +5,9 @@ import { useGetSummaryByIsbn, useSetSummary } from "@/api/useSummaryFetching";
 import tw from "@/utils/tw";
 import profileDefault from "/profile_default.png";
 import { useQueryClient } from "@tanstack/react-query";
+import RelatedMissionsInfo from "./RelatedMissionsInfo";
+import { showInfoAlert } from "@/Components/sweetAlert";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface Props {
   missions?: MissionItemType[];
@@ -13,14 +16,27 @@ interface Props {
 
 const SummaryPartition = ({ missions, isbn13 }: Props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRelatedOpen, setIsRelatedOpen] = useState<boolean>(false);
+  const isLogIn = useAuthStore((s) => s.user?.id) ? true : false;
 
-  const openModal = () => setIsModalOpen(true);
+  const openModal = () => {
+    if (!isLogIn) {
+      showInfoAlert(
+        "로그인 필요",
+        "요약을 작성하기 위해서는 로그인해야 합니다"
+      );
+      return;
+    }
+    setIsModalOpen(true);
+  };
   const closeModal = () => setIsModalOpen(false);
   const qc = useQueryClient();
 
-  const { mutate } = useSetSummary({onSuccess:() => {
-    qc.invalidateQueries({queryKey:["getSummary", isbn13]})
-  }});
+  const { mutate } = useSetSummary({
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["getSummary", isbn13] });
+    },
+  });
   const summaryData = useGetSummaryByIsbn(isbn13);
 
   // 미션이 바뀔 때만 재계산됨.
@@ -33,9 +49,32 @@ const SummaryPartition = ({ missions, isbn13 }: Props) => {
     [missions]
   );
 
+  const hasMissions = relatedMissions && relatedMissions?.length > 0;
+
   return (
     <div className="w-full p-4">
-      <ul className="flex flex-col gap-3">
+      <button
+        type="button"
+        disabled={!hasMissions}
+        className={tw(
+          "inline-flex p-2 transition items-center rounded-md bg-amber-500/10 hover:bg-inherit px-2 mb-2",
+          "text-amber-700 font-semibold ring-1 ring-inset ring-amber-600/20",
+          !hasMissions && "hover:bg-amber-500/10"
+        )}
+        onClick={() => setIsRelatedOpen((prev) => !prev)}
+      >
+        {hasMissions ? (
+          <span>남은 관련 미션 {relatedMissions?.length}개</span>
+        ) : (
+          <span>관련 미션이 없습니다.</span>
+        )}
+      </button>
+
+      {isRelatedOpen && (
+        <RelatedMissionsInfo relatedMissions={relatedMissions} />
+      )}
+
+      <ul className="flex flex-col gap-3 mt-2">
         {summaryData.data && summaryData.data?.length < 1 && (
           <div className="flex justify-center items-center h-30">
             데이터가 없습니다.
