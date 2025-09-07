@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import tw from "@/utils/tw";
 import logo from "/pickitbook_logo.svg";
 import type { MissionItemType } from "@/@types/global";
+import RelatedMissionsInfo from "./RelatedMissionsInfo";
 import type { UseMutateFunction } from "@tanstack/react-query";
 import type { SetSummaryType } from "@/api/summary.repo.supabase";
 
@@ -18,6 +19,7 @@ export default function SummaryModal({
   isOpen,
   onClose,
   onSave,
+  relatedMissions,
   bookTitle,
   isbn13,
 }: Props) {
@@ -119,6 +121,7 @@ export default function SummaryModal({
             </div>
           </div>
 
+          <RelatedMissionsInfo relatedMissions={relatedMissions} />
         </div>
 
         {/* Footer */}
