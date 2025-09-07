@@ -125,7 +125,7 @@ function ReviewItem({
       </header>
 
       {/* 컨텐츠 영역 */}
-      <section className="flex">
+      <section className="flex gap-3">
         {item.image_url && (
           <img
             src={item.image_url}

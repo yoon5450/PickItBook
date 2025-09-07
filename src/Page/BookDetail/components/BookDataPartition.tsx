@@ -127,8 +127,8 @@ function BookDataPatition({
           <p className="flex gap-2 items-center">
             <span>장르 구분</span>
 
-            {book.class_nm.split(" > ").map((item) => (
-              <span>{item}</span>
+            {book.class_nm.split(" > ").map((item, index) => (
+              <span key={index} >{item}</span>
             ))}
           </p>
           <p>

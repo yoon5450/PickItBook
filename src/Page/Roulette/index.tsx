@@ -82,7 +82,6 @@ function RandomRoulette() {
         return p;
     }
   }, [filterTap, kdc, dtl_kdc, ageKey, genderKey]);
-  console.log(params);
 
 
   // 5. 룰렛에 뿌릴 데이터 가져오기
@@ -92,8 +91,6 @@ function RandomRoulette() {
   // 5-2. 필터링한 책 가져오기
   const { data: bookList, isLoading: isBookListLoading, error: BookListError, isPending: isBookListPending } = usePopularBookFetching(params ?? {});
   if (BookListError) console.error(BookListError, "장르별 책 불러오기 실패");
-  // if (isBookListLoading) console.log("장르별 책 가져오는중");
-  // if (isBookListPending) console.log('장르 pending...')
 
   // 5-3. 필터링한 책 가공
   const filterBooks = useMemo(() => {

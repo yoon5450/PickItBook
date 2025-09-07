@@ -49,7 +49,7 @@ function Root() {
         (payload) => {
 
           const payloadData = payload.new as RewardPayload;
-          console.log('payloadData ID : ', payloadData.id);
+          // console.log('payloadData ID : ', payloadData.id);
 
           if (handleIDs.current.has(payloadData.id)) return;
           handleIDs.current.add(payloadData.id);

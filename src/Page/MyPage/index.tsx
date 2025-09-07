@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useProfileStore } from "@/store/useProfileStore";
 import { showSuccessAlert, showConfirmAlert } from "@/utils/confirmAlert";
 
+
 function MyPage() {
   const { email, nickname, created_at, profile_image, fetchUser, setNickname } =
     useProfileStore();
@@ -92,11 +93,13 @@ function MyPage() {
     }
 
     showSuccessAlert("프로필 저장 완료", "변경사항이 성공적으로 저장되었습니다.");
+
   };
 
   async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
     setProfileImage(file);
+
 
     if (!file) return;
     setFilePreview(file, setImagePreview);
@@ -107,6 +110,7 @@ function MyPage() {
       confirmText: "네, 변경합니다",
       cancelText: "취소",
     });
+
 
     if (!result.isConfirmed) return;
 
@@ -137,6 +141,7 @@ function MyPage() {
       .from("user_profile")
       .update({ profile_image: cacheBustedUrl })
       .eq("id", user.id);
+
 
     if (updateError) {
       alert("프로필 갱신 실패: " + updateError.message);
@@ -240,9 +245,8 @@ function MyPage() {
               onChange={(e) => setPassword(e.target.value)}
               disabled={isSocialLogin}
               autoComplete="new-password"
-              className={`w-full h-[50px] border border-[var(--color-background-gray)] rounded px-4 ${
-                isSocialLogin ? "bg-gray-200 text-gray-700" : ""
-              }`}
+              className={`w-full h-[50px] border border-[var(--color-background-gray)] rounded px-4 ${isSocialLogin ? "bg-gray-200 text-gray-700" : ""
+                }`}
             />
           </div>
           <div className="flex flex-col w-[400px]">
@@ -258,9 +262,8 @@ function MyPage() {
               onChange={(e) => setPasswordConfirm(e.target.value)}
               disabled={isSocialLogin}
               autoComplete="new-password"
-              className={`w-full h-[50px] border border-[var(--color-background-gray)] rounded px-4 ${
-                isSocialLogin ? "bg-gray-200 text-gray-700" : ""
-              }`}
+              className={`w-full h-[50px] border border-[var(--color-background-gray)] rounded px-4 ${isSocialLogin ? "bg-gray-200 text-gray-700" : ""
+                }`}
             />
           </div>
         </div>
