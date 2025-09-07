@@ -23,7 +23,7 @@ interface Props {
     bottom?: KdcItemType
   } | null>>
   setFilterTap?: React.Dispatch<React.SetStateAction<"장르" | "연령" | "추천" | null>>
-
+  setAppliedFilter?: React.Dispatch<React.SetStateAction<"장르" | "연령" | "추천" | null>>
 }
 
 function Filter({
@@ -38,6 +38,7 @@ function Filter({
   onClose,
   setFilterItem,
   setFilterTap,
+  setAppliedFilter,
 }: Props) {
 
   // 상위(두 번째 자리가 0) / 하위 분리
@@ -89,6 +90,7 @@ function Filter({
       if ((e.target as Element)?.closest('[data-filter-trigger]')) return;
       // 모달 내부를 클릭할때는 외부로 인식하지 않게 예외처리
       if (panelRef.current && panelRef.current.contains(t)) return;
+      setAppliedFilter?.("장르");
       setFilterTap?.(null);
       onClose?.();
     };
@@ -133,6 +135,7 @@ function Filter({
               type="button"
               onClick={() => {
                 setFilterItem({ top: item });
+                setAppliedFilter?.("장르");
                 if (cursorRef.current)
                   gsap.set(cursorRef.current, { autoAlpha: 0, height: 0 });
               }}
@@ -179,9 +182,11 @@ function Filter({
                 onClick={() => {
                   if (item.code !== filterItem.bottom?.code) {
                     setFilterItem({ ...filterItem, bottom: item });
+                    setAppliedFilter?.("장르");
                     requestAnimationFrame(() => updateCursorFor(item.code));
                   } else {
                     setFilterItem({ top: filterItem.top });
+                    setAppliedFilter?.("장르");
                     if (cursorRef.current)
                       gsap.to(cursorRef.current, {
                         autoAlpha: 0,
