@@ -29,8 +29,9 @@ export default function MyReviewSection() {
   const { data, isLoading } = useGetMyReviewsWithCount(
     user?.id ?? "",
     PAGE_SIZE,
-    (currentPage - 1) * PAGE_SIZE
-  );
+    (currentPage - 1) * PAGE_SIZE,
+     { enabled: !!user?.id } 
+  )
 
   const rows = data?.data ?? [];
   const totalCount = data?.count ?? 0;
