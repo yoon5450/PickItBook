@@ -9,7 +9,7 @@ function Footer() {
       </p>
       <div className="flex gap-4">
         <a
-          href="https://app.sli.do/event/c4H1r3aUMWaWgLwECFXEQU/live/questions"
+          href="https://app.sli.do/event/c4H1r3aUMWaWgLwECFXEQU"
           target="_blank"
           className="inline-block w-8"
         >
