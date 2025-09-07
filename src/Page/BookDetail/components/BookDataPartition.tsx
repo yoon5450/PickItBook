@@ -10,6 +10,7 @@ import { useAssignMissions } from "@/api/useMissionsFetching";
 import { useAuthStore } from "@/store/useAuthStore";
 import tw from "@/utils/tw";
 import { showInfoAlert } from "@/Components/sweetAlert";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   data: BookDetailData | undefined;
@@ -29,7 +30,12 @@ function BookDataPatition({
 
   const { mutate: toggleBookmark, isPending: togglePending } =
     useToggleBookmark(isbn13);
-  const { mutate: assignMission } = useAssignMissions(isbn13);
+  const qc = useQueryClient();
+  const { mutate: assignMission } = useAssignMissions(isbn13, {
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["missions", "book", isbn13] });
+    },
+  });
 
   // 서버단에서 북마크 정보 join해서 주는 게 낫나?
   const [isBookmarked, setIsBookmarked] = useState<boolean>();
@@ -61,7 +67,10 @@ function BookDataPatition({
 
   const handleClickAssignMission = () => {
     if (!isLogIn) {
-      showInfoAlert("로그인 필요", "미션을 수령하기 위해서는 로그인해야 합니다");
+      showInfoAlert(
+        "로그인 필요",
+        "미션을 수령하기 위해서는 로그인해야 합니다"
+      );
       return;
     }
     assignMission();
