@@ -19,25 +19,25 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
   // 미션 세부 정보 가져오기
   const {
     data: missionDetailData,
-    isPending: isMissionDetailDataPending,
+    // isPending: isMissionDetailDataPending,
     error: missionDetailDataError
   } = useGetMissionDetailByTemplateID(missionTemplateID ?? '');
-  console.log(missionDetailData?.[0].reward.code);
+  // console.log(missionDetailData?.[0].reward.code);
 
   // 미션에 관련된 책 제목 가져오기
   const {
     data: bookName,
-    isPending: isBookNamePending,
+    // isPending: isBookNamePending,
     error: bookNameError
   } = useBookDetail(isbn13);
 
   // 뱃지 목록 가져오기
   const {
     data: badges,
-    isPending: isBadgesPending,
+    // isPending: isBadgesPending,
     error: badgesError
   } = useUserBadges(user?.id ?? '');
-  console.log(badges);
+  // console.log(badges);
 
 
   // 미션 종류 분기
@@ -68,9 +68,9 @@ function MissionCompletePopup({ isbn13, missionCompletePopup, missionTemplateID,
 
 
   // 디버깅 로그
-  if (isMissionDetailDataPending) console.log("미션 상세 정보 가져오는중...");
-  if (isBookNamePending) console.log("책 정보 가져오는중...");
-  if (isBadgesPending) console.log('뱃지 정보 가져오는중...');
+  // if (isMissionDetailDataPending) console.log("미션 상세 정보 가져오는중...");
+  // if (isBookNamePending) console.log("책 정보 가져오는중...");
+  // if (isBadgesPending) console.log('뱃지 정보 가져오는중...');
 
   if (missionDetailDataError) console.error(missionDetailDataError, "미션 상세 정보 불러오기 실패");
   if (bookNameError && missionDetailData?.[0]?.kind !== "achievement") console.log("책 이름 가져오기 실패");

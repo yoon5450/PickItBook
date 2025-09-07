@@ -112,7 +112,6 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
   // 6. 책 닫기
   useEffect(() => {
     setIsOpen(false);
-    if (pickBook) console.log(pickBook)
   }, [isbn13])
 
   // 7. 책 열기
@@ -156,7 +155,6 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
     if (copy?.length === undefined) return null;
     if (!copy.indexOf('>')) return copy.trim();
     const genreArr = copy?.split(' > ').reverse()
-    console.log(genreArr)
     return genreArr[0]
   }
   // xl : 1280 lg : 1024 md : 768 sm : 640
