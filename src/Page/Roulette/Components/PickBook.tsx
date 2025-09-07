@@ -207,8 +207,8 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                           <p className="font-semibold text-lg lg:text-2xl text-primary-black pl-1">미션</p>
                           <div className="w-full px-2 flex flex-row justify-between gap-1" >
                             <p className="text-xs sm:text-sm lg:text-[16px] xl:text-[18px]">
-                              <span className="text-primary text-sm sm:text-[16px] lg:text-[18px] xl:text-[20px]">{bookData.book.bookname}</span>
-                              의<br /> 미션이 도착했어요!
+                              <span className="text-primary text-sm sm:text-[16px] lg:text-[18px] xl:text-[20px] line-clamp-1 sm:line-clamp-2 lg:line-clamp-none">{bookData.book.bookname}</span>
+                              의 미션이 도착했어요!
                             </p>
                           </div>
                           {
@@ -245,7 +245,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                       </div>
 
                       {/* 2. 책 왼쪽 영역 (책 상세 정보 영역) */}
-                      <div className={tw(openBook({ intent: 'pageLeft', isOpen }), "pt-15 sm:pt-13 pb-9 px-9", "pageLeft")}>
+                      <div className={tw(openBook({ intent: 'pageLeft', isOpen }), "pt-13 sm:pt-13 pb-9 px-9", "pageLeft")}>
                         {/* 2-1. 책 표지 여닫는 버튼 */}
                         <div className="absolute bottom-[8px] sm:bottom-[11px] right-[9px] sm:right-[11px] w-10 h-10 sm:w-14 sm:h-14 rotate-135 bg-pattern z-10"></div>
                         <button onClick={handleOpenBook} className="absolute bottom-0 right-0 w-7 h-7 sm:w-10 sm:h-10 bg-gray-700"></button>
@@ -254,7 +254,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
                         <div className="rotate-x-180 sm:-rotate-z-180 flex flex-col gap-2">
 
                           {/* 2-2-1. 책 이름 */}
-                          <p className="font-semibold text-lg md:text-xl lg:text-2xl text-primary-black pr-5 sm:pr-0">{bookData.book.bookname}</p>
+                          <p className="font-semibold text-lg md:text-xl lg:text-2xl text-primary-black pr-5 sm:pr-0 ">{bookData.book.bookname}</p>
 
                           {/* 2-2-2. 책 평점 */}
                           <RatingStars value={ratingAvg ? ratingAvg : 0} size={28} gap={2} />
@@ -273,7 +273,7 @@ function PickBook({ pickBook, isOpenPickBook, setIsOpenPickBook }: Props) {
 
                           {/* 2-2-4. 책 설명 */}
                           <div>
-                            <p className="text-xs lg:text-sm xl:text-[16px] line-clamp-[7] lg:line-clamp-[12]">
+                            <p className="text-xs lg:text-sm xl:text-[16px] line-clamp-[3] lg:line-clamp-[12]">
                               {bookData.book.description}
                             </p>
                           </div>
