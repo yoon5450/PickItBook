@@ -25,7 +25,7 @@ export const logicRpcRepo = {
 
   // isbn에 대한 미션 번들 번호를 받아옵니다.
   getBundleIdByISBN: async (isbn13: string) => {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .rpc("fn_pick_bundle_by_isbn", {
         p_isbn: isbn13,
       })
@@ -35,7 +35,5 @@ export const logicRpcRepo = {
       console.error(error);
       return;
     }
-
-    console.log(data);
   },
 };

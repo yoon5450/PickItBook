@@ -21,7 +21,6 @@ export const routes = createBrowserRouter([
       {
         index: true,
         Component: Main,
-        loader: () => console.log("loader 위치"),
       },
       {
         path: "test",

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePageEnterAnimation } from "./usePageEnterAnimation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useProfileStore } from "@/store/useProfileStore";
+import { showConfirmAlert, showInfoAlert } from "@/Components/sweetAlert";
 
 function MyPage() {
   const { email, nickname, created_at, profile_image, fetchUser, setNickname } =
@@ -90,7 +91,7 @@ function MyPage() {
       }
     }
 
-    alert("프로필이 저장되었습니다.");
+    showInfoAlert('프로필이 저장되었습니다');
   };
 
   async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -98,12 +99,11 @@ function MyPage() {
     setProfileImage(file);
 
     if (file) {
-      setFilePreview(file, setImagePreview);
-
-      const confirmUpload = window.confirm(
+      const { isConfirmed } = await showConfirmAlert(
         "선택한 이미지를 프로필 사진으로 변경하시겠습니까?"
-      );
-      if (!confirmUpload) return;
+      )
+      if (!isConfirmed) return;
+      setFilePreview(file, setImagePreview);
 
       const {
         data: { user },
@@ -142,7 +142,7 @@ function MyPage() {
       }
 
       fetchUser(user.id);
-      alert("프로필 이미지가 변경되었습니다.");
+      showInfoAlert("프로필 이미지가 변경되었습니다");
     }
   }
 
@@ -246,9 +246,8 @@ function MyPage() {
               onChange={(e) => setPassword(e.target.value)}
               disabled={isSocialLogin}
               autoComplete="new-password"
-              className={`w-full h-[50px] border border-[var(--color-background-gray)] rounded px-4 ${
-                isSocialLogin ? "bg-gray-200 text-gray-700" : ""
-              }`}
+              className={`w-full h-[50px] border border-[var(--color-background-gray)] rounded px-4 ${isSocialLogin ? "bg-gray-200 text-gray-700" : ""
+                }`}
             />
           </div>
           <div className="flex flex-col w-[400px]">
@@ -264,9 +263,8 @@ function MyPage() {
               onChange={(e) => setPasswordConfirm(e.target.value)}
               disabled={isSocialLogin}
               autoComplete="new-password"
-              className={`w-full h-[50px] border border-[var(--color-background-gray)] rounded px-4 ${
-                isSocialLogin ? "bg-gray-200 text-gray-700" : ""
-              }`}
+              className={`w-full h-[50px] border border-[var(--color-background-gray)] rounded px-4 ${isSocialLogin ? "bg-gray-200 text-gray-700" : ""
+                }`}
             />
           </div>
         </div>
