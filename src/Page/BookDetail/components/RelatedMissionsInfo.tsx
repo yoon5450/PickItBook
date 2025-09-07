@@ -26,7 +26,7 @@ function RelatedMissionsInfo({ relatedMissions }: Props) {
                     key={m.template_id}
                     className="flex items-center justify-between rounded-lg bg-white px-3 py-2 ring-1 ring-amber-200"
                   >
-                    <span className="truncate text-sm font-medium text-amber-900">
+                    <span className="truncate text-sm font-medium text-amber-900 w-1/2">
                       {m.description}
                     </span>
                     {!m.assigned && (
