@@ -89,7 +89,7 @@ function ReviewWritePartition({ data, missions }: Props) {
         className={tw(
           "inline-flex p-2 transition items-center rounded-md bg-amber-500/10 hover:bg-inherit px-2 mb-2",
           "text-amber-700 font-semibold ring-1 ring-inset ring-amber-600/20",
-          !hasMissions && "hover:bg-amber-700"
+          !hasMissions && "hover:bg-amber-500/10"
         )}
         onClick={() => setIsRelatedOpen((prev) => !prev)}
       >
