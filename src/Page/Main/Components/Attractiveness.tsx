@@ -29,7 +29,7 @@ const Attractiveness = () => {
 
     const scrollTrigger = ScrollTrigger.create({
       trigger: section,
-      start: "top 60%",
+      start: "top 70%",
       anticipatePin: 1,
       animation: gsap
         .timeline()

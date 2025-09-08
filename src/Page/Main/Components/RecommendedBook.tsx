@@ -50,7 +50,7 @@ const RecommendedBook = () => {
 
     const scrollTrigger = ScrollTrigger.create({
       trigger: section,
-      start: "top 70%",
+      start: "top 75%",
       anticipatePin: 1,
       animation: gsap
         .timeline()
