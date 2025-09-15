@@ -24,9 +24,7 @@ function BookDetail() {
   }, []);
 
   // BookDetail 정보 불러오기
-  const {
-    data: BookDetailData,
-  } = useBookDetail(isbn13);
+  const { data: BookDetailData } = useBookDetail(isbn13);
 
   // Review 정보 불러오기
   const { data: reviewData } = useGetReview(isbn13);
@@ -50,9 +48,13 @@ function BookDetail() {
       : Math.ceil((summary / reviewData?.length) * 10) / 10;
   }, [reviewData]);
 
+  const isMissionAssigned = useMemo(() => {
+    return missionData?.[0].assigned;
+  }, [missionData]);
+
   const reviewSize = useMemo(() => {
-    return reviewData?.length
-  }, [reviewData])
+    return reviewData?.length;
+  }, [reviewData]);
 
   return (
     <div className="flex justify-center w-full bg-pattern">
@@ -62,7 +64,7 @@ function BookDetail() {
         <PartitionBase title="도서 정보">
           <BookDataPartition
             data={BookDetailData}
-            isMissionAssigned={missionData?.[0].assigned}
+            isMissionAssigned={isMissionAssigned}
             ratingAvg={ratingAvg}
             reviewSize={reviewSize}
           />
@@ -82,16 +84,16 @@ function BookDetail() {
           <MisstionPartition data={missionData} />
         </PartitionBase>
 
-        <PartitionBase title="유저 평점">
-          <UserScorePatition data={reviewData} ratingAvg={ratingAvg}/>
+        <PartitionBase title="3줄 요약">
+          <SummaryPartition missions={missionData} isbn13={isbn13} />
         </PartitionBase>
 
-        <PartitionBase title="3줄 요약">
-          <SummaryPartition missions={missionData} isbn13={isbn13}/>
+        <PartitionBase title="유저 평점">
+          <UserScorePatition data={reviewData} ratingAvg={ratingAvg} />
         </PartitionBase>
 
         <PartitionBase title="리뷰 작성">
-          <ReviewWritePartition data={BookDetailData} />
+          <ReviewWritePartition missions={missionData} data={BookDetailData} />
         </PartitionBase>
 
         <PartitionBase

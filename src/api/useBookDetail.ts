@@ -144,9 +144,9 @@ export function useBookDetail(
       const ageResult = ensureArray(ageData).map((item) => item.age)
 
       // 안 오는 애들이 있는데? 예외사항이 있는듯?
-      if (!total || !ageResult) {
-        console.log("제공되지 않는 통계");
-      }
+      // if (!total || !ageResult) {
+      //   console.log("제공되지 않는 통계");
+      // }
 
       return {
         book,

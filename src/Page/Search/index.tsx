@@ -16,7 +16,7 @@ import type { Tables } from "@/@types/database.types";
 export type listMode = "line" | "grid";
 
 export type MergedType = BookItemType &
-    Pick<Tables<"v_review_stats">, "avg_score" | "rating_count">;
+  Pick<Tables<"v_review_stats">, "avg_score" | "rating_count">;
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -89,7 +89,7 @@ function Search() {
     const items = data?.items ?? [];
     const stats = reviewsScoreData ?? [];
     const map = new Map(stats.map((s) => [s.isbn13, s]));
-    console.log(map);
+    // console.log(map);
     return items.map((item) => {
       const s = map.get(item.isbn13);
       return {

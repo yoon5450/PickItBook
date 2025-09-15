@@ -1,8 +1,11 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+} from "@tanstack/react-query";
 import { missionsRepo } from "./missions.repo.supabase";
 import type { MissionItemType } from "@/@types/global";
 import { logicRpcRepo } from "./logicRpc.repo.supabase";
-
 
 type UseMissionsFetchingOptions = {
   enabled?: boolean;
@@ -35,7 +38,10 @@ export const useGetMissionByISBN = (
 };
 
 // 해당 isbn에 대한 미션들을 로그인한 유저에게 수락 처리합니다.
-export const useAssignMissions = (isbn13: string | undefined) => {
+export const useAssignMissions = (
+  isbn13: string | undefined,
+  options?: UseMutationOptions<unknown, Error, void>
+) => {
   return useMutation({
     mutationKey: ["missionAssign", isbn13],
     mutationFn: async () => {
@@ -43,5 +49,6 @@ export const useAssignMissions = (isbn13: string | undefined) => {
       return await logicRpcRepo.setBundle(isbn13);
     },
     retry: 0,
+    ...options
   });
 };

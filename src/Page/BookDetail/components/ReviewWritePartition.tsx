@@ -1,41 +1,54 @@
+import type { MissionItemType } from "@/@types/global";
 import type { BookDetailData } from "@/api/useBookDetail";
 import { useSetReviewWithFiles } from "@/api/useReviewFetching";
 import RatingStars from "@/Components/RatingStar";
+import { showInfoAlert } from "@/Components/sweetAlert";
 import { useProfileStore } from "@/store/useProfileStore";
 import { setFilePreview } from "@/utils/setFilePreview";
-import React, { useId, useState } from "react";
+import React, { useId, useMemo, useState } from "react";
 import { BiImageAdd } from "react-icons/bi";
-import Swal from "sweetalert2";
+import RelatedMissionsInfo from "./RelatedMissionsInfo";
+import tw from "@/utils/tw";
 
 interface Props {
   data: BookDetailData | undefined;
+  missions?: MissionItemType[];
 }
 
 // TODO : 같은 유저 중복 입력 방어
-function ReviewWritePartition({ data }: Props) {
+function ReviewWritePartition({ data, missions }: Props) {
   const reviewId = useId();
   const { id } = useProfileStore();
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [image, setImage] = useState<File>();
+  const [isRelatedOpen, setIsRelatedOpen] = useState<boolean>(false);
   const { mutate } = useSetReviewWithFiles();
 
   const uploadImgId = useId();
+
+  const relatedMissions = useMemo(
+    () =>
+      missions?.filter((item) => {
+        const tf = item.code.includes("REVIEW") && !item.completed;
+        return tf;
+      }),
+    [missions]
+  );
+
+  const hasMissions = relatedMissions && relatedMissions?.length > 0;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!id) {
-      Swal.fire(
-        "로그인 필요",
-        "<div>리뷰는 로그인 후에 작성하실 수 있습니다.</div>"
-      );
+      showInfoAlert("로그인 필요", "리뷰는 로그인 후에 작성하실 수 있습니다");
       return;
     }
 
     if (rating === 0) {
-      Swal.fire("평점 입력 필요", "<div>평점을 입력해주세요</div>");
+      showInfoAlert("평점 입력 필요", "평점을 입력해주세요");
       return;
     }
 
@@ -64,14 +77,35 @@ function ReviewWritePartition({ data }: Props) {
       setImage(file);
       setFilePreview(file, setImagePreview);
     } else {
-      Swal.fire("오류", "유효하지 않은 파일입니다.");
+      showInfoAlert("오류", "유효하지 않은 파일입니다.");
     }
   };
 
   return (
     <div className="p-4">
+      <button
+        type="button"
+        disabled={!hasMissions}
+        className={tw(
+          "inline-flex p-2 transition items-center rounded-md bg-amber-500/10 hover:bg-inherit px-2 mb-2",
+          "text-amber-700 font-semibold ring-1 ring-inset ring-amber-600/20",
+          !hasMissions && "hover:bg-amber-500/10"
+        )}
+        onClick={() => setIsRelatedOpen((prev) => !prev)}
+      >
+        {hasMissions ? (
+          <span>남은 관련 미션 {relatedMissions?.length}개</span>
+        ) : (
+          <span>관련 미션이 없습니다.</span>
+        )}
+      </button>
+
+      {isRelatedOpen && (
+        <RelatedMissionsInfo relatedMissions={relatedMissions} />
+      )}
+
       <form
-        className="flex flex-col items-end gap-2"
+        className="flex flex-col items-end gap-2 mt-2"
         action=""
         onSubmit={handleSubmit}
       >

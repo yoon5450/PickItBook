@@ -12,12 +12,12 @@ interface Props {
   onSearch: ({ key, value }: { key: SearchKey; value: string }) => void;
 }
 
-function PopularKeywords({onSearch}:Props) {
+function PopularKeywords({ onSearch }: Props) {
   return (
     <div className="flex gap-2 items-center">
       <span className="font-semibold">인기 검색어</span>
-      {DUMMY_POPULAR.map((item) => (
-        <a className="cursor-pointer" onClick={() => onSearch({key:"keyword", value:item})}>{item}</a>
+      {DUMMY_POPULAR.map((item, index) => (
+        <a key={index} className="cursor-pointer" onClick={() => onSearch({ key: "keyword", value: item })}>{item}</a>
       ))}
     </div>
   );
