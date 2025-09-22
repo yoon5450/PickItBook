@@ -36,13 +36,12 @@ export default defineConfig({
     port: 3000,
     open: false,
     proxy: {
-      // 프론트가 호출하는 경로 그대로 유지
-      "/api/data4library": {
-        target: "http://3.35.131.185", // 도메인 붙이기 전엔 http + IP
+      // 프론트에서 호출: /api/data4library/...
+      '/api/data4library': {
+        // target: 'https://data4library.kr', // HTTPS 지원 시 권장
+        target: 'http://data4library.kr', // HTTPS 미지원이면 이거
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/data4library/, "/api"),
-        //공유 토큰을 헤더로 넣고 싶을 때:
-        // headers: { "x-proxy-token": process.env.VITE_PROXY_TOKEN as string },
+        rewrite: (p) => p.replace(/^\/api\/data4library/, ''),
       },
     },
   },
