@@ -16,7 +16,9 @@ function SocialButton({ social, className }: Props) {
   // 환경에 따른 동적 리다이렉트 URL 설정
   const redirectURL = import.meta.env.VITE_REDIRECT_URL || window.location.origin
 
-  const handleSignInWithOAuth = async () => {
+    const handleSignInWithOAuth = async () => {
+    console.log('VITE_REDIRECT_URL:', import.meta.env.VITE_REDIRECT_URL);
+    console.log('redirectURL:', redirectURL);
     localStorage.setItem('pending_provider', social);
     await supabase.auth.signInWithOAuth({
       provider: social,
