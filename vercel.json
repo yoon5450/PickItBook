@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/data4library/:path*",
+      "destination": "http://data4library.kr/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/"
     }
