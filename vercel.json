@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/data4library/(.*)",
-      "destination": "http://data4library.kr/api"
+      "destination": "http://data4library.kr/api/"
     },
     {
       "source": "/(.*)",
