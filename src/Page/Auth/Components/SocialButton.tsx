@@ -13,7 +13,7 @@ function SocialButton({ social, className }: Props) {
 
   const lastProvider = useAuthStore((s) => s.lastProvider)
   const isLastProvider = lastProvider === social ? true : false
-  const redirectURL = import.meta.env.DEV ? 'http://localhost:3000' : 'https://fes-5-project-team-6.vercel.app'
+  const redirectURL = import.meta.env.DEV ? 'http://localhost:3000' : 'https://pick-it-book.vercel.app'
 
   const handleSignInWithOAuth = async () => {
     localStorage.setItem('pending_provider', social);
