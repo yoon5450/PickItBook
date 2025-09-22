@@ -13,7 +13,8 @@ function SocialButton({ social, className }: Props) {
 
   const lastProvider = useAuthStore((s) => s.lastProvider)
   const isLastProvider = lastProvider === social ? true : false
-  const redirectURL = 'https://pick-it-book.vercel.app'
+  // 환경에 따른 동적 리다이렉트 URL 설정
+  const redirectURL = import.meta.env.VITE_REDIRECT_URL || window.location.origin
 
   const handleSignInWithOAuth = async () => {
     localStorage.setItem('pending_provider', social);
